@@ -1,0 +1,60 @@
+---
+title: "Geolocating Political Donations in Canada"
+author:
+  - name: "Benedict Cummins-Mburu"
+  - name: "Rohan Alexander"
+    email: "rohan.alexander@utoronto.ca"
+    attributes: 
+        corresponding: true
+thanks: "Code and data are available at: [https://github.com/bennypk1/geolocating-political-donations](https://github.com/bennypk1/geolocating-political-donations)."
+date: today
+date-format: long
+format: pdf
+linestretch: 1.3
+number-sections: true
+bibliography: references.bib
+---
+
+
+
+# Literature Review
+
+Throughout, we will be discussing both the U.S. House of Representatives and the Canadian House of Commons. For the sake of this paper, these can be seen as equivalent, and will be jointly referred to as the "House". Similarly, Canadian Members of Parliament (MPs) and American Congressmen will be jointly referred to as Legislators.
+
+## Political Donation, Participation, and Theories of Representation
+
+## American Research on Out-of-District Donations during Congressional Elections 
+
+We focus on Congressional elections since these (1) have had the most work done on them, and (2) are the American equivalent to how the House of Commons members are elected in Canadian federal elections (disregarding the Senate, Cabinet, and PM elections). We further restricted our scope of relevant papers to those dicussing out-of-district donations during an election cycle.
+
+## Political Donations in the Canadian Context: What Has Been Done 
+
+## Data Section
+
+# Write about donations to candidates (download the donation rules PDF)
+
+# in the other folder, 
+
+# Appendix A: background on federal election rules
+
+### Table 1: amounty changes by $25 every day
+### paragraph about maximum contribution
+
+### also talk about 
+
+### need to talk to Martin about getting the scraping code
+
+### Rohan knows:
+### "Where do donors come from?"
+### "Who controls the purse strings?" (Besco, Young, Garnett, Semra are all known by Rohan)
+
+
+# Note: Semra has: "Canadian Elections Dataset" on her website, has characteristics of candidates
+
+### CJPS: Research Note would be the target journal (there is a wordcount, should be mindful of)
+
+
+
+### Plot: number of donations per day (Fig 1a, b: for count and gross amount)
+### Plot: 
+### 

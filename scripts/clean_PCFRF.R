@@ -1,0 +1,48 @@
+# Purpose: Format Statistics Canada's PCFRF TXT File into a 1:1 Mapping, then Save as a CSV
+# Author: Benedict Cummins-Mburu
+# Last Updated: 26 May 2026
+# Contact: b.cumminsmburu@utoronto.ca
+# License: MIT
+
+# ------- Setup --------
+library(tidyverse)
+path_to_raw_PCFRF <- "data/conversion_files/PCFRF_dataNatFED2013_082021.txt"
+
+
+# ------- Parse TXT and Establish 1:1 Mapping --------
+
+# Define the exact character positions for the columns
+col_positions <- fwf_positions(
+  start = c(1, 7, 12),
+  end = c(6, 11, 67),
+  col_names = c("postal_code", "fed_uid", "fed_name")
+)
+
+# Read TXT file
+fed_mapping <- read_fwf(
+  file = path_to_raw_PCFRF,
+  col_positions = col_positions,
+  col_types = cols(.default = col_character()),
+  trim_ws = TRUE
+)
+
+# Reduce to a  1:1 mapping
+final_mapping_df1 <- fed_mapping %>%
+  mutate(
+    FED = fed_name,
+    PC = postal_code
+  ) %>%
+  select(FED, PC) %>%
+  distinct(PC, .keep_all = TRUE)
+
+# Switch from Latin-1 to UTF-8
+
+final_mapping_df <- final_mapping_df1 %>%
+  mutate(FED = iconv(FED, from = "Windows-1252", to = "UTF-8"))
+
+# ------- Save as a CSV --------
+
+write_csv(
+  final_mapping_df,
+  "data/conversion_files/cleaned_PCFRF_dataNatFED2013_082021.csv"
+)
