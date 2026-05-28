@@ -52,38 +52,6 @@ Follow-up American research has found that out-of-district campaign contribution
 To an even greater extent than in Canada, individual donors are the primary source of funding for both U.S. campaigns and U.S. congressmen (Gimpel et al., 2008 ; Baker 2016). This fact, paired with the many known effects of out-of-district donors on campaigns and representatives discussed above paint the picture that representatives “represent” little more than the whims of their national donor base.
 
 
-## Political Donations in the Canadian Context: What Has Been Done 
-
-## Data Section
-
-# Write about donations to candidates (download the donation rules PDF)
-
-# in the other folder, 
-
-# Appendix A: background on federal election rules
-
-### Table 1: amount changes by $25 every day
-### paragraph about maximum contribution
-
-### also talk about 
-
-### need to talk to Martin about getting the scraping code
-
-### Rohan knows:
-### "Where do donors come from?"
-### "Who controls the purse strings?" (Besco, Young, Garnett, Semra are all known by Rohan)
-
-
-# Note: Semra has: "Canadian Elections Dataset" on her website, has characteristics of candidates
-
-### CJPS: Research Note would be the target journal (there is a wordcount, should be mindful of)
-
-
-
-### Plot: number of donations per day (Fig 1a, b: for count and gross amount)
-### Plot: 
-### 
-
-
+# Data
 
 # Appendix A: Background on Federal Donation Limits
