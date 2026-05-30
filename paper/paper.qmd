@@ -13,6 +13,7 @@ format: pdf
 linestretch: 1.3
 number-sections: true
 bibliography: references.bib
+link-citations: true
 ---
 
 # Introduction
@@ -49,19 +50,21 @@ Follow-up American research has found that out-of-district campaign contribution
 
 To an even greater extent than in Canada, individual donors are the primary source of funding for both U.S. campaigns and U.S. congressmen (Gimpel et al., 2008 ; Baker 2016). This fact, paired with the many known effects of out-of-district donors on campaigns and representatives discussed above paint the picture that representatives “represent” little more than the whims of their national donor base.
 
-# Data
-
 # Appendix A: Background on Federal Donation Limits
 
 The Canadian Elections Act imposes contribution limits on the following registered, federal political entities (see a full list of definitions at Elections Canada, 2026): political parties, local electoral district associations (EDAs), candidates, party nomination contestants, and party leadership contestants (Elections Canada 2026). Regulated expenses for any of these entities cannot exceed \[values determined on an annual basis, different for each riding)\] (apart from leadership contestants, who have no legal spending limit). Notably, registered third paries are not contribution-limited by the Act. However, expenses relating to their activities are capped on a per-riding basis, similar to other political entities (numbers for 2026 ; Elections Canada, 2026).
 
 Only Canadian citizens or permanent residents can make contributions (Elections. Canada, 2026). Any donor who contributed \$20 or more to any of the five federal political entities listed above must have their name recorded (but not reported to Elections Canada ; Elections Canada, 2026). Donors with contributions exceeding \$200 must also have their names and addresses recorded and reported to Elections Canada (Elections Canada, 2026). Cash donations above \$20 are prohibited (Elections Canada, 2026).
 
-| Political Entity | 2026 Annual Limit (CAD) |
-|------------------------------------|------------------------------------|
-| To each registered national party | 1,775 |
-| In total, to all EDAs, nomination contestants, and candidates (for each registered party) | 1,775 |
-| In total, to each independent or non-affiliated candidate | 1,775 |
++-------------------------------------------------------------------------------------------+-------------------------+
+| Political Entity                                                                          | 2026 Annual Limit (CAD) |
++===========================================================================================+=========================+
+| To each registered national party                                                         | 1,775                   |
++-------------------------------------------------------------------------------------------+-------------------------+
+| In total, to all EDAs, nomination contestants, and candidates (for each registered party) | 1,775                   |
++-------------------------------------------------------------------------------------------+-------------------------+
+| In total, to each independent or non-affiliated candidate                                 | 1,775                   |
++-------------------------------------------------------------------------------------------+-------------------------+
 
 : 2026 Annual Limits on Individual Contributions, Loans, and Loan Guarantees (adapted from Elections Canada website)
 
@@ -78,3 +81,74 @@ Only Canadian citizens or permanent residents can make contributions (Elections.
 - Electoral district boundaries are subject to change every 10 years, as required by the Constitution of Canada (Elections Canada, 2026)
 
 - Increases by \$25 each year
+
+# Appendix B: Source to IJF
+
+The raw donations dataset is from Elections Canada's "Open data on contributions" page (see Elections Canada, 2026), and was accessed for this study on May 5, 2026. This dataset represents all contribution reports filed by registered political entities (Appendix A) from January 2004 to present (Elections Canada, 2026). This is the exact data the IJF starts with.
+
+Table B1 shows how each source column is cleaned and mapped by the IJF. Source data had 10,095,198 entries, while IJF had 8,095,810 entries.
+
+IJF appended extra archived data from the site (Elections Canada, 2026), covering donations to political entities and candidates from 1993 - 2004. These do not matter for our analysis.
+
+In the raw data, 31,873 rows (0.3% of the total data) is not from Individual donors (Buisnesses, Corporations, Trade, Associations, Government, Unincorporated). These can immediately be ignored.
+
++------------------------------------------------------------------------------------------------+---------------------+--------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Column Name (EC)                                                                               | Column Name (IJF)   | IJF Cleaning | Value Information                                                                                                                                                                         |
++================================================================================================+=====================+==============+===========================================================================================================================================================================================+
+| Political Entity                                                                               | political_entity    | No changes   | Entity of recipient.                                                                                                                                                                      |
++------------------------------------------------------------------------------------------------+---------------------+--------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Recipient ID                                                                                   | N/A                 | N/A          | 34,054 unique IDs ; seemingly an ID for each unique recipient. This would be very useful to me if go to the trouble to show it's accurate.                                                |
+|                                                                                                |                     |              |                                                                                                                                                                                           |
+|                                                                                                |                     |              | IJF only has 13,387 unique `recipient` entries. What happened?                                                                                                                            |
++------------------------------------------------------------------------------------------------+---------------------+--------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Recipient ; Recipient last name ; Recipient first name ; Recipient middle initial              | recipient           | No changes   | Name of recipient                                                                                                                                                                         |
++------------------------------------------------------------------------------------------------+---------------------+--------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Political Party of Recipient                                                                   | political_party     | No changes\* | Party of recipient. IJF made changes, but don't matter to us.                                                                                                                             |
++------------------------------------------------------------------------------------------------+---------------------+--------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Electoral District                                                                             | electoral_district  | No changes   | Electoral district of recipient.                                                                                                                                                          |
++------------------------------------------------------------------------------------------------+---------------------+--------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Electoral event                                                                                | electoral_event     | CHANGES      | "Annual" is the most common by far, followed by "Quarterly". "Annual" only captures "Registered associations" and "Registered parties". "Quarterly" only captures "Registered parties".   |
+|                                                                                                |                     |              |                                                                                                                                                                                           |
+|                                                                                                |                     |              | - IJF data has "0", "1" and "2" as electoral events, don't know why. Also added other events such as missing by-laws, not relevant though. They span multiple years and entities as well. |
+|                                                                                                |                     |              | - I'm only using the three election cycles. But may need all of it within the 2013 - 2023 range.                                                                                          |
++------------------------------------------------------------------------------------------------+---------------------+--------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Fiscal/Election date                                                                           |                     |              |                                                                                                                                                                                           |
++------------------------------------------------------------------------------------------------+---------------------+--------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Contribution Recieved date                                                                     |                     |              |                                                                                                                                                                                           |
++------------------------------------------------------------------------------------------------+---------------------+--------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Form ID ; Part Number of Return ; Financial Report ; Financial Report part                     | N/A                 | N/A          | Not important, can ignore.                                                                                                                                                                |
++------------------------------------------------------------------------------------------------+---------------------+--------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Contributor type                                                                               | donor_type          | No changes   | I'm only keeping Individuals. Others only represent 0.3% of the data anyways.                                                                                                             |
++------------------------------------------------------------------------------------------------+---------------------+--------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Contributor name ; Contributor last name ; Contributor first name ; Contributor middle initial | donor_full_name     | No changes   |                                                                                                                                                                                           |
++------------------------------------------------------------------------------------------------+---------------------+--------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Contributor City ; Contributor Province ; Contributor Postal code                              | donor_location      | No changes   |                                                                                                                                                                                           |
++------------------------------------------------------------------------------------------------+---------------------+--------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Monetary amount                                                                                | amount_monetary     | No changes   |                                                                                                                                                                                           |
++------------------------------------------------------------------------------------------------+---------------------+--------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Non-Monetary amount                                                                            | amount_non_monetary | No changes   |                                                                                                                                                                                           |
++------------------------------------------------------------------------------------------------+---------------------+--------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Contribution given through                                                                     | N/A                 | N/A          | is constant NA in source, can disregard.                                                                                                                                                  |
++------------------------------------------------------------------------------------------------+---------------------+--------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+**Ask Martin**:
+
+- Why are there 0, 1, and 2 in abundance as 'electoral_event'?
+
+- Why are 2M rows missing? Checked: not a date issue.
+
+- Why aren't you saving recipient ID? If two donors have same name I'm finished. I need this column.
+
+- Is `donation_date` coming from `Fiscal/Election date` or `Contribution Recieved date`?
+
+- If I could just get `Contributor postal code` . But if literally the only thing you did was concatenate them with commas, then I can just extract it myself.
+
+- Confirm all the "no changes" above.
+
+# Appendix C: IJF to Clean
+
+**Cleaning Steps we can Definitely Do (on IJF data)**:
+
+- Restrict `donation_date` to between 2013 and 2023
+
+  - At this stage, check that the unique number of `electoral_district` is 338.
