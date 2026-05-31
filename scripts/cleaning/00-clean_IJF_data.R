@@ -272,10 +272,40 @@ if (n_entities_changed_08 == invalid_entities_count_07) {
   stop("Validation Error: Cleaning Step 8 changed the wrong number of rows.")
 }
 
-# 9. Extract Donor Postal Code
+# 9. Extract Donor Postal Code (0.36% confirmed had no location data ; 0.45% could not extract postal code. So, we are at most missing 0.09% postal codes.)
+
+clean_data_09 <- clean_data_08 %>%
+  mutate(
+    donor_postal_code = str_remove_all(donor_location, "[\\s-]"),
+    donor_postal_code = str_to_upper(donor_postal_code),
+    donor_postal_code = str_replace_all(
+      donor_postal_code,
+      c("O" = "0", "I" = "1", "!" = "1")
+    ),
+    donor_postal_code = str_extract(donor_postal_code, "([A-Z][0-9]){3}$")
+  ) %>%
+  mutate(
+    donor_postal_code = ifelse(
+      str_detect(donor_postal_code, "^[WZ]|[DFIOQU]"),
+      NA,
+      donor_postal_code
+    )
+  ) # only 418 cases (NOT VALIDATED)
+if (nrow(clean_data_09) == nrow(clean_data_08)) {
+  message("Validation Passed.")
+} else {
+  stop(
+    "validation Failed: Cleaning Step 9 changed the number of rows when it should not have."
+  )
+}
+# DIAGNOSTIC: To better assess coverage, find true NAs
+# true_missing_postal_codes <- clean_data_08 %>%
+#   filter(str_detect(donor_location, "^[ ,\\.;]*$"))
+# nrow(true_missing_postal_codes) / nrow(clean_data_08) * 100
+
+# TODO: this code does not check if the postal code has ever been used. Download PCCF for this.
 
 # TODO: Columns left to clean:
-# - donor_location
 # - electoral_district (need to validate against location ; WE ARE ASSUMING THAT LOCATION IS CORRECT ALWAYS)
 # - electoral_event (ask Martin about "0", "1", and "2")
 # - recipient (ask Martin about recipient_ID)
