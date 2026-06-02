@@ -11,7 +11,7 @@
 
 # --------- Setup ----------
 library(tidyverse)
-raw_IJF_data <- read_csv("data/raw_data/raw_data_MVP.csv")
+raw_IJF_data <- read_csv("data/raw_data/raw_data_IJF.csv")
 
 # --- Constants ----
 
@@ -310,9 +310,17 @@ if (nrow(clean_data_09) == nrow(clean_data_08)) {
 # - electoral_event (ask Martin about "0", "1", and "2")
 # - recipient (ask Martin about recipient_ID)
 # - donor_full_name (figure out later)
-# - amount_monetary ; amount_non_monetary (deal with 0 abd negative values)
+# - amount_monetary ; amount_non_monetary (deal with 0 and negative values)
+
+# END.
+cleaned_IJF_data <- clean_data_09
 
 # ------ Write to CSV -------
-# message("IJF raw data cleaning complete, saving to CSV.")
-# write_csv(cleaned_IJF_data, "")
-# message("CSV saved successfully --- END.")
+nrow(cleaned_IJF_data)
+nrow(raw_IJF_data)
+
+# TODO: message how many rows were lost.
+# TODO: change to save this as the fancy dataframe Rohan was talking about.
+message("IJF raw data cleaning complete, saving to CSV.")
+write_csv(cleaned_IJF_data, "data/clean_data/clean_data_IJF.csv")
+message("CSV saved successfully --- END.")

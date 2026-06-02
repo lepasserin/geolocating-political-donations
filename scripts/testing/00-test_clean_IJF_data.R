@@ -6,7 +6,7 @@
 
 # ---- Setup --------
 library(tidyverse)
-focal_data <- clean_data_09
+focal_data <- read_csv("data/clean_data/clean_data_IJF.csv")
 
 # ----- Constants -----
 

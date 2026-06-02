@@ -88,9 +88,11 @@ The raw donations dataset is from Elections Canada's "Open data on contributions
 
 Table B1 shows how each source column is cleaned and mapped by the IJF. Source data had 10,095,198 entries, while IJF had 8,095,810 entries.
 
-IJF appended extra archived data from the site (Elections Canada, 2026), covering donations to political entities and candidates from 1993 - 2004. These do not matter for our analysis.
+IJF appended extra archived data from the site (Elections Canada, 2026), covering donations to political entities and candidates from 1993 - 2004. These do not matter for our analysis, and were discarded.
 
 In the raw data, 31,873 rows (0.3% of the total data) is not from Individual donors (Buisnesses, Corporations, Trade, Associations, Government, Unincorporated). These can immediately be ignored.
+
+Donations were dated based on their posted "contribution received date". When this was not available, used "Fiscal / Election date".
 
 +------------------------------------------------------------------------------------------------+---------------------+--------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 | Column Name (EC)                                                                               | Column Name (IJF)   | IJF Cleaning | Value Information                                                                                                                                                                         |
@@ -112,9 +114,9 @@ In the raw data, 31,873 rows (0.3% of the total data) is not from Individual don
 |                                                                                                |                     |              | - IJF data has "0", "1" and "2" as electoral events, don't know why. Also added other events such as missing by-laws, not relevant though. They span multiple years and entities as well. |
 |                                                                                                |                     |              | - I'm only using the three election cycles. But may need all of it within the 2013 - 2023 range.                                                                                          |
 +------------------------------------------------------------------------------------------------+---------------------+--------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| Fiscal/Election date                                                                           |                     |              |                                                                                                                                                                                           |
+| Fiscal/Election date                                                                           | donation_date\*     |              | used if Contribution Recieved Date is not available                                                                                                                                       |
 +------------------------------------------------------------------------------------------------+---------------------+--------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| Contribution Recieved date                                                                     |                     |              |                                                                                                                                                                                           |
+| Contribution Recieved date                                                                     | donation_date       |              |                                                                                                                                                                                           |
 +------------------------------------------------------------------------------------------------+---------------------+--------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 | Form ID ; Part Number of Return ; Financial Report ; Financial Report part                     | N/A                 | N/A          | Not important, can ignore.                                                                                                                                                                |
 +------------------------------------------------------------------------------------------------+---------------------+--------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
@@ -138,10 +140,6 @@ In the raw data, 31,873 rows (0.3% of the total data) is not from Individual don
 - Why are 2M rows missing? Checked: not a date issue.
 
 - Why aren't you saving recipient ID? If two donors have same name I'm finished. I need this column.
-
-- Is `donation_date` coming from `Fiscal/Election date` or `Contribution Recieved date`?
-
-- If I could just get `Contributor postal code` . But if literally the only thing you did was concatenate them with commas, then I can just extract it myself.
 
 - Confirm all the "no changes" above.
 
