@@ -6,7 +6,8 @@
 
 # ---- Setup --------
 library(tidyverse)
-focal_data <- read_csv("data/clean_data/clean_data_IJF.csv")
+library(arrow)
+focal_data <- read_csv("data/clean_data/clean_data_IJF.parquet")
 
 # ----- Constants -----
 
@@ -24,8 +25,56 @@ EXPECTED_COLUMN_NAMES <- c(
   "amount_non_monetary",
   "donor_postal_code"
 )
-EXPECTED_POLITICAL_ENTITIES <- c()
-EXPECTED_POLITICAL_PARTIES <- c()
+
+EXPECTED_POLITICAL_ENTITIES <- c(
+  # n = 5
+  "Leadership contestants",
+  "Nomination contestants",
+  "Candidates",
+  "Registered parties",
+  "Registered associations"
+)
+
+EXPECTED_POLITICAL_PARTIES <- c(
+  # n = 37
+  "Liberal Party of Canada",
+  "New Democratic Party",
+  "Bloc Québécois",
+  "Conservative Party of Canada",
+  "Green Party of Canada",
+  "Christian Heritage Party of Canada",
+  "Canadian Action Party",
+  "Independent",
+  "Progressive Canadian Party",
+  "Libertarian Party of Canada",
+  "Marijuana Party",
+  "Marxist-Leninist Party of Canada",
+  "First Peoples National Party of Canada",
+  "Western Block Party",
+  "United Party of Canada",
+  "Parti Rhinocéros Party",
+  "Pirate Party of Canada",
+  "People's Political Power Party of Canada",
+  "Animal Protection Party of Canada",
+  "Newfoundland and Labrador First Party",
+  "Communist Party of Canada",
+  "People's Party of Canada",
+  "Party for Accountability, Competency and Transparency",
+  "Forces et Démocratie",
+  "Canada Party",
+  "Seniors Party of Canada",
+  "National Advancement Party of Canada",
+  "Alliance of the North",
+  "National Citizens Alliance of Canada",
+  "Canadian Nationalist Party",
+  "Direct Democracy Party of Canada",
+  "Parti pour l'Indépendance du Québec",
+  "Maverick Party",
+  "Free Party Canada",
+  "Centrist Party of Canada",
+  "Veterans Coalition Party of Canada",
+  "Canadian Future Party"
+)
 EXPECTED_DATE_RANGE <- c(
   lubridate::ymd("2004-01-01"),
   lubridate::ymd("2026-05-05")

@@ -1,17 +1,19 @@
 # Purpose: General Ceaning Script for Raw IJF Data.
 # Author: Benedict Cummins-Mburu
-# Last Updated: 30 May 2026
+# Last Updated: 2 Jun 2026
 # Contact: b.cumminsmburu@utoronto.ca
 # License: MIT
 # Notes:
-# - `raw_data_MVP.csv` is accurate as of May 5, 2026. Will likely be updated, fixing errors.
+# - `raw_data_IJF.csv` is accurate as of May 5, 2026. Will likely be updated, fixing errors.
 # - First round of cleaning. More specialized data frames will use this later in the pipeline.
 # - Script contain some validation code to justify the renoval of certain entries or columns.
-# - Final dataframe should represent all (mostly) Individual contributions between 2004 and 2026.
+# - Final dataframe represents all Individual contributions between 2004 and 2026.
 
 # --------- Setup ----------
-library(tidyverse)
-raw_IJF_data <- read_csv("data/raw_data/raw_data_IJF.csv")
+library(tidyverse) # for data cleaning
+library(data.table) # for speedy CSV reading
+library(arrow) # to save result as parquet
+raw_IJF_data <- fread("data/raw_data/raw_data_IJF.csv", data.table = FALSE)
 
 # --- Constants ----
 
@@ -314,13 +316,21 @@ if (nrow(clean_data_09) == nrow(clean_data_08)) {
 
 # END.
 cleaned_IJF_data <- clean_data_09
+rows_discarded_total <- nrow(raw_IJF_data) - nrow(cleaned_IJF_data)
+perc_rows_discarded <- round(rows_discarded_total / nrow(raw_IJF_data) * 100, 2)
 
-# ------ Write to CSV -------
-nrow(cleaned_IJF_data)
-nrow(raw_IJF_data)
+# ------ Write to Parquet -------
 
-# TODO: message how many rows were lost.
 # TODO: change to save this as the fancy dataframe Rohan was talking about.
-message("IJF raw data cleaning complete, saving to CSV.")
-write_csv(cleaned_IJF_data, "data/clean_data/clean_data_IJF.csv")
-message("CSV saved successfully --- END.")
+message(paste0(
+  "IJF raw data cleaning complete, discarded ",
+  as.character(rows_discarded_total),
+  " rows total (",
+  perc_rows_discarded,
+  "%), saving to Parquet."
+))
+write_parquet(
+  cleaned_IJF_data,
+  "data/clean_data/clean_data_IJF.parquet"
+)
+message("Parquet saved successfully --- END OF SCRIPT.")
