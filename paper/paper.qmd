@@ -6,6 +6,7 @@ author:
     email: "rohan.alexander@utoronto.ca"
     attributes: 
         corresponding: true
+abstract: "Political representation is fundamentally geographical, that is, in Canada Federal MPs represent geographical ridings. And yet, with various caveats, any Canadian living anywhere, can donate to any MP representing any riding. We examine the pattern of geographical political donations in Canada between 2013 and 2023. We document considerable out-of-riding donation patterns, especially differenced by an MPs race and gender. Our work has implications for thinking about the extent of political representation in Canada, and which parts of the population may be over- or under-represented."
 thanks: "Code and data are available at: [https://github.com/bennypk1/geolocating-political-donations](https://github.com/bennypk1/geolocating-political-donations)."
 date: today
 date-format: long
