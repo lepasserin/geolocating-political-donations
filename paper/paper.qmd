@@ -17,7 +17,17 @@ bibliography: references.bib
 link-citations: true
 ---
 
-# Introduction
+```{r}
+#| include: false
+#| warning: false
+#| message: false
+library(tidyverse)
+library(knitr)
+library(here)
+library(grid)
+```
+
+# Introduction (IPR)
 
 "Although political parties and candidates must disclose the names of their donors, use of those lists for any purpose is prohibited, so researchers cannot use them to identify the target population" [@garnett_lifeblood_2022]. However, [@garnett_where_2024] uses to geolocate donors anyways. Further in the paper they say: "Using the disclosed postal code of donors paired with census data, Carmichael & Hayes (2014) find that donors are more likely to live in wealthier neighborhoods. More recently, a pair of articles have analyzed Elections Canada’s administrative dataset, (which discloses the names of donors, the amounts they donated, and to whom) using predictive analytics to identify donor ethnicity (Besco and Tolley 2020) and gender (Tolley, Besco, and Sevi 2020)". Very confusing.
 
@@ -49,18 +59,204 @@ Follow-up American research has found that out-of-district campaign contribution
 
 To an even greater extent than in Canada, individual donors are the primary source of funding for both U.S. campaigns and U.S. congressmen [@gimpel_check_2008; @baker_getting_2016]. This fact, paired with the many known effects of out-of-district donors on campaigns and representatives discussed above paint the picture that representatives “represent” little more than the whims of their national donor base.
 
+# Data
+
+## Data Overview
+
+The data used in this paper was sourced primarily from Election Canada's Open Data website [@canada_open_2025]. Their (NAME OF SET) represents all donations made by individuals to registered federal political entities since January 2004 [@canada_open_2025]. Since that start date, the *Canada Elections Act* has required that all contributions (monetary or otherwise) valued at over $20 be recorded by the recipient and shared with (WHO?) [@canada_understanding_2026]. Contributors associated with contributions valued at over $200 [representing the large majority of contributions ; CITATION] must have their full name and address recorded as well [@canada_understanding_2026].
+
+For donations valued at over $200, the donor's name, location (including postal code), as well as the recipient's name, FED (if applicable), party (if applicable), type (e.g. National party, Candiate, etc.) To assess whether or not a donation was out-of-district, the publically available donor postal codes were matched with their corresponding FED using Statistics Canada's Postal Code Conversion Files. To simplify our cleaning and analysis, we restricted our focus to only contributions made within the 2013 representational order, corresponding to the period between Oct 2nd, 2015 and Apr 22nd, 2024 [@canada_redistribution_2025]. This is the largest such order present in the full dataset, notably capturing X% of total recorded contributions, and 3 general election periods [42nd, 43rd, and 44th respectively ; the same ones as @garnett_where_2024, allowing for direct comparison with her work]. Our data was further augnmented with CENSUS DATA ... Our cleaning procedure is described in full in Appendix X. Table 1 displays the first few entries of a subset of the cleaned data.
+
+```{r}
+#| warning: false
+#| message: false
+#| echo: false
+#| label: table-1
+Table_1 <- read_csv(here::here("other/tables/Table_1.csv"))
+Table_1 <- Table_1 %>% head(4)
+Table_1 %>% knitr::kable(caption = "First 4 Rows of Cleaned Donations Data (Subset of Columns)")
+```
+
+## Longitudinal Data Summaries
+
+Below we present a few longitudinal (i.e. time-indexed) visualizations. All types of donations occurred at much higher rates in December compared to other months, regardless of the year, recipient type, party affiliation, etc. This is likely a clerical error (ELABORATE). This did not impact our analysis (CHECK THIS WHEN ANALYSIS IS CARRIED OUT), however December donations in all Figures presented below were imputed using their neighboring November and January values, and their recorded monetary amounts were redistributed accross their associated years so that nothing was lost. This served to reduce visual clutter from large, phantom peaks at the end of each year.
+
+Although Figures below only display trends in Monthly donation sums, donation counts were largely identical, and are shown in Appendix A.
+
+```{r}
+#| warning: false
+#| message: false
+#| echo: false
+#| label: fig-national-entity
+#| fig-cap: "Federal Political Donations to National Entities (Oct 2015 - Apr 2024), Subsetted by Entity. Dashed vertical lines indicate general election dates for the 42nd, 43rd, and 44th general elections respectively."
+Figure_1 <- readRDS(here::here("other/figures/Figure_1a.rds"))
+Figure_1 + 
+  labs(
+    title = NULL,
+    fill = NULL
+    ) +
+  theme(
+    axis.title.y = element_text(size = 8),
+    legend.text = element_text(size = 6),
+    legend.title = NULL,
+    legend.key.size = grid::unit(5, "mm")
+  )
+```
+
+```{r}
+#| warning: false
+#| message: false
+#| echo: false
+#| label: fig-national-party
+#| fig-cap: "Federal Political Donations to National Entities (Oct 2015 - Apr 2024), Subsetted by Party. Only data from top 4 parties is shown. Dashed vertical lines indicate general election dates for the 42nd, 43rd, and 44th general elections respectively."
+Figure_4 <- readRDS(here::here("other/figures/Figure_4a.rds"))
+Figure_4 + 
+  labs(
+    title = NULL,
+    fill = NULL
+    ) +
+  theme(
+    axis.title.y = element_text(size = 8),
+    legend.text = element_text(size = 6),
+    legend.title = NULL,
+    legend.key.size = grid::unit(5, "mm")
+  )
+```
+
+@fig-national-entity and @fig-national-party display the timeline of donatios to Leadership Contestants and National (i.e. Registered) parties. The 6 main peaks in the graph clearly correspond to general election periods (peaks followed immediately by grey lines) and Conservative party leadership campaigns (blue-tipped peaks in @fig-national-entity). Interestingly, elections and leadership contests result in relatively similar amounts of donations to national political entites, with the notable exception of the 2022 Conservative leadership race, won by current Opposition Leader Pierre Poilievre. Overall, donations to national entities seem to have increased during this period, following the increasing trend observed from 2004 - 2015 by McMahon and Wolfe (@mcmahon_follow_2015), and particularly starying in 2022, a recent phenomenon driven primarily by increased donations to the Conservative and Liberal parties (@fig-national-party).
+
+```{r}
+#| warning: false
+#| message: false
+#| echo: false
+#| label: fig-local-in-entity
+#| fig-cap: "In-District Donations to Local Political Entities (Oct 2015 - Apr 2024), Subsetted by Entity. Dashed vertical lines indicate general election dates for the 42nd, 43rd, and 44th general elections respectively."
+Figure_2 <- readRDS(here::here("other/figures/Figure_2a.rds"))
+Figure_2 + 
+  labs(
+    title = NULL,
+    fill = NULL
+    ) +
+  theme(
+    axis.title.y = element_text(size = 8),
+    legend.text = element_text(size = 6),
+    legend.title = NULL,
+    legend.key.size = grid::unit(5, "mm")
+  )
+```
+
+```{r}
+#| warning: false
+#| message: false
+#| echo: false
+#| label: fig-local-out-entity
+#| fig-cap: "Out-of-District Donations to Local Political Entities (Oct 2015 - Apr 2024), Subsetted by Entity. Dashed vertical lines indicate general election dates for the 42nd, 43rd, and 44th general elections respectively."
+Figure_3 <- readRDS(here::here("other/figures/Figure_3a.rds"))
+Figure_3 + 
+  labs(
+    title = NULL,
+    fill = NULL
+    ) +
+  theme(
+    axis.title.y = element_text(size = 8),
+    legend.text = element_text(size = 6),
+    legend.title = NULL,
+    legend.key.size = grid::unit(5, "mm")
+  )
+```
+
+```{r}
+#| warning: false
+#| message: false
+#| echo: false
+#| label: fig-local-out-party
+#| fig-cap: "Out-of-District Donations to Local Political Entities (Oct 2015 - Apr 2024), Subsetted by Party. Only data from top 4 parties is shown. Dashed vertical lines indicate general election dates for the 42nd, 43rd, and 44th general elections respectively."
+Figure_5 <- readRDS(here::here("other/figures/Figure_5a.rds"))
+Figure_5 + 
+  labs(
+    title = NULL,
+    fill = NULL
+    ) +
+  theme(
+    axis.title.y = element_text(size = 8),
+    legend.text = element_text(size = 6),
+    legend.title = NULL,
+    legend.key.size = grid::unit(5, "mm")
+  )
+```
+
+```{r}
+#| warning: false
+#| message: false
+#| echo: false
+#| label: fig-local-in-party
+#| fig-cap: "In-District Donations to Local Political Entities (Oct 2015 - Apr 2024), Subsetted by Party. Only data from top 4 parties is shown. Dashed vertical lines indicate general election dates for the 42nd, 43rd, and 44th general elections respectively."
+Figure_6 <- readRDS(here::here("other/figures/Figure_5a.rds"))
+Figure_6 + 
+  labs(
+    title = NULL,
+    fill = NULL
+    ) +
+  theme(
+    axis.title.y = element_text(size = 8),
+    legend.text = element_text(size = 6),
+    legend.title = NULL,
+    legend.key.size = grid::unit(5, "mm")
+  )
+```
+
+@fig-local-in-entity, @fig-local-out-entity, @fig-local-in-party, and @fig-local-out-party display various subsets of donations to Local Political Entities (i.e. EDAs, Candiates, and Registered Associations). @fig-local-in-entity and @fig-local-in-party showcase in-district local donations, broken down by entity and party respectively. @fig-local-out-entity and @fig-local-out-party show the same breakdowns but for out-of-district local donations (the reader should note that donations to National political bodies cannot be "in-district" or "out-of-district", hence why it is not considered at that level). Like with Figures @fig-national-entity and @fig-national-party, donations to EDAs and Candidates peak during general election periods. Nomination Contestants are relatively scarce, even though many nomination capmaigns occured in Canada during this period (CITATION). Donations to Candidates are restricted to elections (HOWEVER THIS MAY BE AN ISSUE WITH THE DATA, TO BE INVESTIGATED MORE THOROUGHLY). Most notably, the longitudinal distribution of in and out-of-district donations is seemingly identical, both during and outside of general elections.
+
+#NOTE TO ROHAN: lull observed in 2019 is likely a data error.
+#NOTE TO ROHAN: Probably don't need 4 Figures for Local Entity donations, just included for completions' sake. I would keep just the Entity-stratified ones, and state in the main text that "subsetting by Party revealed no striking trends, see Appendix".
+
+```{r}
+#| warning: false
+#| message: false
+#| echo: false
+#| label: table-prop-ood-entity-out
+Table_2 <- read_csv(here::here("other/tables/Table_2.csv"))
+Table_2 <- Table_2 %>% filter(str_detect(political_entity, "^Registered")) # TO FOCUS ON MAIN POINT
+Table_2 <- Table_2 %>%
+  mutate(across(everything(), ~replace(.x, .x == 0, NA)))
+Table_2 %>% knitr::kable(caption = "Proportion of out-of-district donations issued to key Entities outside election cycles.")
+```
+
+```{r}
+#| warning: false
+#| message: false
+#| echo: false
+#| label: table-prop-ood-entity-in
+Table_3 <- read_csv(here::here("other/tables/Table_3.csv"))
+Table_3 <- Table_3 %>% head(3) # TO FOCUS ON MAIN POINT
+Table_3 <- Table_3 %>%
+  mutate(across(everything(), ~replace(.x, .x == 0, NA)))
+Table_3 %>% knitr::kable(caption = "Proportion of out-of-district donations issued to key Entities within election cycles.")
+```
+
+```{r}
+#| warning: false
+#| message: false
+#| echo: false
+#| label: table-in-out-cycle
+Table_4 <- read_csv(here::here("other/tables/Table_4.csv"))
+Table_4 <- Table_4 %>%
+  mutate(across(everything(), ~replace(.x, .x == 0, NA)))
+Table_4 %>% knitr::kable(caption = "Donations in and out of election cycles by party, for the top 4 Parties.")
+```
+
+
+@table-prop-ood-entity-out, and @table-prop-ood-entity-in, and @table-in-out-cycle showcase some key annual summary statistics. Accross parties, donations are mainly accumulated outside of election capmaigns (see @table-in-out-cycle) ; around 10-15% of donor-sourced funds among the top 4 Parties, with the notable exception of the NDP at 25%. However, roughly 45% of donor-sourced funds to local entites (i.e. EDAs and Candidates) orginated from outside their districts, both in and out of election cycles. The identical and stagnant longitudinal distribution between in and ou-of donors illustrated in Figures @fig-local-out-entity shows that this proportion is roughly constant over time, unlike the increasing OOD proportion of donations in the U.S. over a similar time period (CITATION). In all cases, the count proportions were smaller than the amount proportions. This means that, on average, out-of-district and out-of-cycle donors are contributing larger amounts.
+
+
+#NOTE TO ROHAN: NAs in the table are intentional: some entities can't be assessed for OOD donation.
+#NOTE TO ROHAN: I think the donor count columns should be removed from each of these 3 Tables. IMO, nothing is gained from them. Could be in Appendix.
 
 \newpage
 
 \appendix
 
 # Background on Federal Donation Limits {#sec-background}
-
-\setcounter{figure}{0}
-\renewcommand{\thefigure}{A\arabic{figure}}
-
-\setcounter{table}{0}
-\renewcommand{\thetable}{A\arabic{table}}
 
 The Canadian Elections Act imposes contribution limits on the following registered, federal political entities [see a full list of definitions at @canada_political_2026]: political parties, local electoral district associations (EDAs), candidates, party nomination contestants, and party leadership contestants [@canada_annual_2026]. Regulated expenses for any of the entities themselves cannot exceed specific values (determined on an annual basis, different for each riding. Leadership contestants are a notable exception, with no campaign spending limits. See @canada_expenses_2026). Notably, registered third parties are not contribution-limited by the Act [@canada_third_2026]. However, expenses relating to their activities are capped on a per-riding basis, similar to other political entities [@canada_expenses_2026]
 
@@ -93,12 +289,6 @@ Only Canadian citizens or permanent residents can make contributions [@canada_un
 - Increases by \$25 each year
 
 # Source to IJF {#sec-source}
-
-\setcounter{figure}{0}
-\renewcommand{\thefigure}{B\arabic{figure}}
-
-\setcounter{table}{0}
-\renewcommand{\thetable}{B\arabic{table}}
 
 The raw donations dataset is from Elections Canada's "Open data on contributions" page (see @canada_open_2025), and was accessed for this study on May 5, 2026. This dataset represents all contribution reports filed by registered political entities (see Appendix A) from January 2004 to present [@canada_open_2025]. This is the exact data the IJF starts with.
 
@@ -160,12 +350,6 @@ Donations were dated based on their posted "contribution received date". When th
 - Confirm all the "no changes" above.
 
 # IJF to Clean {#sec-ijfclean}
-
-\setcounter{figure}{0}
-\renewcommand{\thefigure}{C\arabic{figure}}
-
-\setcounter{table}{0}
-\renewcommand{\thetable}{C\arabic{table}}
 
 XXX
 
