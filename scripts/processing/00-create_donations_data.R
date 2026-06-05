@@ -16,6 +16,12 @@ PCFRF_2022 <- read_parquet("data/clean_data/clean_PCFRF_2022.parquet")
 
 VALID_FEDS <- unique(PCFRF_2022$FED)
 VALID_FED_ENTRIES <- c(VALID_FEDS, NA)
+INVALID_GENERAL_ELECTION_PERIODS <- c(
+  "39th general election",
+  "40th general election",
+  "41st general election",
+  "45th general election"
+)
 
 if (length(VALID_FEDS) == 338) {
   message("Validation Passed.")
@@ -54,7 +60,6 @@ created_donations_data_02 <- created_donations_data_01 %>%
   )
 
 # 3. Removing Invalid Recipient Ridings (a negligible 87 entries are removed in this step.)
-# TODO: review these invalid data more closely later.
 created_donations_data_03 <- created_donations_data_02 %>%
   filter(recipient_district %in% VALID_FED_ENTRIES)
 
@@ -90,14 +95,20 @@ if (
   )
 }
 
-# 5. Create New Column for OOD Donations
+# 5. Removing Invalid Electoral Events (a negligible 12 entries are removed in this step.)
+# TODO: rewrite this when talked with Martin about weird numeric entries to `electoral-event`
 created_donations_data_05 <- created_donations_data_04 %>%
+  filter(!(electoral_event %in% INVALID_GENERAL_ELECTION_PERIODS))
+
+# 6. Create New Column for OOD Donations
+created_donations_data_06 <- created_donations_data_05 %>%
   mutate(is_out_of_district = donor_district != recipient_district)
 
 # 6. Validate Other Aspects of the Data
-# TODO: refactor these tests in the larger cleaning script later.
+
 # Note: All donations where `recipient_district` is NA are issued to "Leadership contestants" or "Registered parties".
 # Note: All donations where `recipient_district` is valid and present are issued to "Registered associations", "Candidates", or "Nomination Contestants"
+# Note: Most (> 95%) of donations said to have been made during a general election had dates that reflected that. This justfies the use of `electoral_event` later in the pipeline.
 
 if (
   all(
@@ -110,7 +121,7 @@ if (
   )
 ) {
   message(
-    "Validation Passed: NA districts only belong to Leadership contestants or Registered parties."
+    "Validation Passed."
   )
 } else {
   stop(
@@ -135,12 +146,9 @@ if (
   )
 }
 
-if (all()) {
-  # END.
-  created_donations_data <- created_donations_data_05
-}
 
-# TODO: this data still somehow encompasses elections 39 - 44. 39 - 42 shouldn't be here.
+# END.
+created_donations_data <- created_donations_data_06
 
 # ----- Write to Parquet -----
 
