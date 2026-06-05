@@ -1,9 +1,10 @@
 # Setup
 library(tidyverse)
-raw_data <- read_csv("data/raw_data/raw_data_MVP.csv")
+library(data.table) # for speedy CSV reading
+raw_data <- read_csv("data/raw_data/raw_data_IJF.csv")
 
 raw_EC_data <- read_csv(
-  "/Users/benedictcummins-mburu/Library/CloudStorage/OneDrive-UniversityofToronto/Desktop/PoliticalFinance/od_cntrbtn_de_e.csv"
+  "/Users/benedictcummins-mburu/Library/CloudStorage/OneDrive-UniversityofToronto/Desktop/data thats too big/OpenData-ElectionsCanada-asSubmitted.csv"
 )
 
 # Talking Points

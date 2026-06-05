@@ -300,6 +300,7 @@ if (nrow(clean_data_09) == nrow(clean_data_08)) {
     "validation Failed: Cleaning Step 9 changed the number of rows when it should not have."
   )
 }
+
 # DIAGNOSTIC: To better assess coverage, find true NAs
 # true_missing_postal_codes <- clean_data_08 %>%
 #   filter(str_detect(donor_location, "^[ ,\\.;]*$"))
@@ -321,7 +322,6 @@ perc_rows_discarded <- round(rows_discarded_total / nrow(raw_IJF_data) * 100, 2)
 
 # ------ Write to Parquet -------
 
-# TODO: change to save this as the fancy dataframe Rohan was talking about.
 message(paste0(
   "IJF raw data cleaning complete, discarded ",
   as.character(rows_discarded_total),
