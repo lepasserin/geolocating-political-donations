@@ -49,7 +49,18 @@ Follow-up American research has found that out-of-district campaign contribution
 
 To an even greater extent than in Canada, individual donors are the primary source of funding for both U.S. campaigns and U.S. congressmen [@gimpel_check_2008; @baker_getting_2016]. This fact, paired with the many known effects of out-of-district donors on campaigns and representatives discussed above paint the picture that representatives “represent” little more than the whims of their national donor base.
 
-# Appendix A: Background on Federal Donation Limits
+
+\newpage
+
+\appendix
+
+# Background on Federal Donation Limits {#sec-background}
+
+\setcounter{figure}{0}
+\renewcommand{\thefigure}{A\arabic{figure}}
+
+\setcounter{table}{0}
+\renewcommand{\thetable}{A\arabic{table}}
 
 The Canadian Elections Act imposes contribution limits on the following registered, federal political entities [see a full list of definitions at @canada_political_2026]: political parties, local electoral district associations (EDAs), candidates, party nomination contestants, and party leadership contestants [@canada_annual_2026]. Regulated expenses for any of the entities themselves cannot exceed specific values (determined on an annual basis, different for each riding. Leadership contestants are a notable exception, with no campaign spending limits. See @canada_expenses_2026). Notably, registered third parties are not contribution-limited by the Act [@canada_third_2026]. However, expenses relating to their activities are capped on a per-riding basis, similar to other political entities [@canada_expenses_2026]
 
@@ -81,9 +92,13 @@ Only Canadian citizens or permanent residents can make contributions [@canada_un
 
 - Increases by \$25 each year
 
-- "The new boundary limits become effective on the first dissolution of Parliament that occurs at least seven months after the date of proclamation." Quoted from @canada_timeline_2023.
+# Source to IJF {#sec-source}
 
-# Appendix B: Source to IJF
+\setcounter{figure}{0}
+\renewcommand{\thefigure}{B\arabic{figure}}
+
+\setcounter{table}{0}
+\renewcommand{\thetable}{B\arabic{table}}
 
 The raw donations dataset is from Elections Canada's "Open data on contributions" page (see @canada_open_2025), and was accessed for this study on May 5, 2026. This dataset represents all contribution reports filed by registered political entities (see Appendix A) from January 2004 to present [@canada_open_2025]. This is the exact data the IJF starts with.
 
@@ -143,5 +158,15 @@ Donations were dated based on their posted "contribution received date". When th
 - Why aren't you saving recipient ID? If two donors have same name I'm finished. I need this column.
 
 - Confirm all the "no changes" above.
+
+# IJF to Clean {#sec-ijfclean}
+
+\setcounter{figure}{0}
+\renewcommand{\thefigure}{C\arabic{figure}}
+
+\setcounter{table}{0}
+\renewcommand{\thetable}{C\arabic{table}}
+
+XXX
 
 # References
