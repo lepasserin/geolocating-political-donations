@@ -31,9 +31,10 @@ fed_mapping <- read_fwf(
 final_mapping_df1 <- fed_mapping %>%
   mutate(
     FED = fed_name,
+    FEDUID = fed_uid,
     PC = postal_code
   ) %>%
-  select(FED, PC) %>%
+  select(FED, PC, FEDUID) %>%
   distinct(PC, .keep_all = TRUE)
 
 # Switch from Latin-1 to UTF-8

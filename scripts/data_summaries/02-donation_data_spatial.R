@@ -12,7 +12,7 @@
 library(tidyverse)
 library(lubridate)
 library(arrow)
-donations_data <- read_parquet("data/processed_data/donations_data.parquet")
+FED_OOD_data <- read_parquet("data/processed_data/FED_donations_data.parquet")
 
 PARTIES_VISUALIZED <- c(
   "Conservative Party of Canada",
@@ -20,11 +20,3 @@ PARTIES_VISUALIZED <- c(
   "New Democratic Party",
   "Green Party of Canada"
 )
-
-# -- Subset Donations Data --
-
-local_donations <- donations_data %>%
-  filter(
-    political_entity %in%
-      c("Candidates", "Nomination contestants", "Registered associations")
-  )
