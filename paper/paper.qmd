@@ -27,19 +27,7 @@ library(here)
 library(grid)
 ```
 
-# Introduction (IPR)
-
-"Although political parties and candidates must disclose the names of their donors, use of those lists for any purpose is prohibited, so researchers cannot use them to identify the target population" [@garnett_lifeblood_2022]. However, [@garnett_where_2024] uses to geolocate donors anyways. Further in the paper they say: "Using the disclosed postal code of donors paired with census data, Carmichael & Hayes (2014) find that donors are more likely to live in wealthier neighborhoods. More recently, a pair of articles have analyzed Elections Canada’s administrative dataset, (which discloses the names of donors, the amounts they donated, and to whom) using predictive analytics to identify donor ethnicity (Besco and Tolley 2020) and gender (Tolley, Besco, and Sevi 2020)". Very confusing.
-
-NOTE: in intro, we should make the case that there are many reasons (based on (1) the political structure, (2) the social dynamics, and (3) actual empirical evidence) to believe that Canadian OODs are NOT partisan, just simply because participation is not partisan in general.
-
-NOTE: Before this, should explain theoretically why OODs ought to be partisan, and the ways that Americans have proven that theirs are partisan (there's a strong case to be formulated here).
-
-NOTE: Next, I'm able to say "Given the theoretical grounding for OOD to be partisan, and the strong evidence that Canadian politics is distincly non-partisan (would use softer and more nuanced phrasing), an analysis of OOD donations is optimal to confirm these Canadian ideas".
-
-NOTE: This is where we'll start with the paragraph about what we're doing, which I think would be best left for after more about the data has been uncovered.
-
-NOTE: to make my statement about OODs in Canada softer, could frame it as what best "explains" OOD donation, as opposed to "OOD in Canada is NOT partisan, while it IS in Amercia". My point is that the set of OOD motivations in Canada and U.S. is the same, but the relative weight of the elements is clearly different. This can be substantiated by comparing OOD results between countries, and explaining the differences with reference to erxisting findings in both contexts. 
+# Introduction
 
 # Literature Review
 
@@ -57,11 +45,11 @@ Much research has been done to determine the socio-demographic characteristics o
 
 Garnett et al. propose that donors in Canada donate for two reasons: political (i.e. for representational gain) and transactional [@garnett_lifeblood_2022]. They find that political motivations are more prevalent overall, but especially among older and affluent donors who contributed larger sums. Transactional donations were more likely at the local level, while political donations were more likely at the national level [@garnett_lifeblood_2022].
 
-When analyzing donor-recipient relationships, Canadian research has found that donors tend to donate more to candidates that they share aspects of their identity with [@tolley_who_2022; @besco_ethnic_2022]. Tolley et al. found that women donors are more likely to donate to women candidates [@tolley_who_2022], and Besco & Tolley found high rates of co-ethnic donation, particularly among South Asian donors [@besco_ethnic_2022]. More generally, South Asian political participation appears to be particularly heightened in Canada, relative to other ethnocultural groups [see @garnett_where_2024 and Bronsens, 2012]. Together with previous findings on donor motivation, these results the hypothesis that out-of-district donors in Canada are likely socially motivated, seeking individual-based representation.
+When analyzing donor-recipient relationships, Canadian research has found that donors tend to donate more to candidates that they share aspects of their identity with [@tolley_who_2022; @besco_ethnic_2022]. Tolley et al. found that women donors are more likely to donate to women candidates [@tolley_who_2022], and Besco & Tolley found high rates of co-ethnic donation, particularly among South Asian donors [@besco_ethnic_2022]. More generally, South Asian political participation appears to be particularly heightened in Canada, relative to other ethnocultural groups [@garnett_where_2024]. Together with previous findings on donor motivation, these results the hypothesis that out-of-district donors in Canada are likely socially motivated, seeking individual-based representation.
 
-Some work has also been done assessing the impacts of large amounts of political donation on representation.  Among incumbent Legislators, voting behaviour is seemingly independent of the composition of their donor base [@peoples_impact_2008]. However, an older study found that local campaign donations during the 1993 and 1997 elections meaningfully affected the amount of votes a candidate receives [@eagles_effectiveness_2004].
+Some work has also been done assessing the impacts of large amounts of political donation on representation. Among incumbent Legislators, voting behaviour is seemingly independent of the composition of their donor base [@peoples_impact_2008]. However, an older study found that local campaign donations during the 1993 and 1997 elections meaningfully affected the amount of votes a candidate receives [@eagles_effectiveness_2004].
 
-Finally, we describe some unique aspects of Canadian political engagement, and particularly those that distinguish us from the U.S., where the large majority of work on out-of-district donations has been done. These differences will help us formulate hypotheses to guide our analysis. Most notably, party loyalty in Canada is weak ; it is estimated that only around 2% of Canadians are registered members of any political party [@garnett_lifeblood_2022], compared with around 40% in the U.S [@usafacts_how_2026]. This has been attributed to many things, including the argument that Canada's multi-party system de-emphasizes partisan membership [@carty_politics_2002]. This system also invites more ephemeral loyalties, based on specific policies or identities, and not broad-scope ideological affiliation. Many (historically) large parties in Canada were founded for specific reasons, for example the Bloc Quebecois, Reform Party, and Green Party, which cater(ed) to a very specific audience. High rates of immigration may have increase emphasis on cutural and not political belonging [@carty_politics_2002 ; @besco_ethnic_2022].
+Finally, we describe some unique aspects of Canadian political engagement, and particularly those that distinguish us from the U.S., where the large majority of work on out-of-district donations has been done. These differences will help us formulate hypotheses to guide our analysis. Most notably, party loyalty in Canada is weak ; it is estimated that only around 2% of Canadians are registered members of any political party [@garnett_lifeblood_2022], compared with around 40% in the U.S [@usafacts_how_2026]. This has been attributed to many things, including the argument that Canada's multi-party system de-emphasizes partisan membership [@carty_politics_2002]. This system also invites more ephemeral loyalties, based on specific policies or identities, and not broad-scope ideological affiliation. Many (historically) large parties in Canada were founded for specific reasons, for example the Bloc Quebecois, Reform Party, and Green Party, which cater(ed) to a very specific audience. High rates of immigration may have increase emphasis on cutural and not political belonging [@carty_politics_2002; @besco_ethnic_2022].
 
 ## American Out-of-District Donations to U.S. Congrssional Representatives
 
@@ -75,18 +63,19 @@ To an even greater extent than in Canada, individual donors are the primary sour
 
 ## Data Overview
 
-The data used in this paper was sourced primarily from Election Canada's Open Data website [@canada_open_2025]. Their (NAME OF SET) represents all donations made by individuals to registered federal political entities since January 2004 [@canada_open_2025]. Since that start date, the *Canada Elections Act* has required that all contributions (monetary or otherwise) valued at over $20 be recorded by the recipient and shared with (WHO?) [@canada_understanding_2026]. Contributors associated with contributions valued at over $200 [representing the large majority of contributions ; CITATION] must have their full name and address recorded as well [@canada_understanding_2026].
+The data used in this paper was sourced primarily from Election Canada's Open Data website [@canada_open_2025]. Their (NAME OF SET) represents all donations made by individuals to registered federal political entities since January 2004 [@canada_open_2025]. Since that start date, the *Canada Elections Act* has required that all contributions (monetary or otherwise) valued at over \$20 be recorded by the recipient and shared with (WHO?) [@canada_understanding_2026]. Contributors associated with contributions valued at over \$200 \[representing the large majority of contributions ; CITATION\] must have their full name and address recorded as well [@canada_understanding_2026].
 
-For donations valued at over $200, the donor's name, location (including postal code), as well as the recipient's name, FED (if applicable), party (if applicable), type (e.g. National party, Candiate, etc.). To assess whether or not a donation was out-of-district, the publically available donor postal codes were matched with their corresponding FED using Statistics Canada's Postal Code Conversion Files. To simplify our cleaning and analysis, we restricted our focus to only contributions made within the 2013 representational order, corresponding to the period between Oct 2nd, 2015 and Apr 22nd, 2024 [@canada_redistribution_2025]. This is the largest such order present in the full dataset, notably capturing X% of total recorded contributions, and 3 general election periods [42nd, 43rd, and 44th respectively ; the same ones as @garnett_where_2024, allowing for direct comparison with her work]. Our data was further augnmented with CENSUS DATA ... Our cleaning procedure is described in full in Appendix X.
+For donations valued at over \$200, the donor's name, location (including postal code), as well as the recipient's name, FED (if applicable), party (if applicable), type (e.g. National party, Candiate, etc.). To assess whether or not a donation was out-of-district, the publically available donor postal codes were matched with their corresponding FED using Statistics Canada's Postal Code Conversion Files. To simplify our cleaning and analysis, we restricted our focus to only contributions made within the 2013 representational order, corresponding to the period between Oct 2nd, 2015 and Apr 22nd, 2024 [@canada_redistribution_2025]. This is the largest such order present in the full dataset, notably capturing X% of total recorded contributions, and 3 general election periods [42nd, 43rd, and 44th respectively ; the same ones as @garnett_where_2024, allowing for direct comparison with her work]. Our data was further augnmented with CENSUS DATA ... Our cleaning procedure is described in full in Appendix X.
 
 ```{r}
 #| warning: false
 #| message: false
 #| echo: false
 #| label: tbl-1-1
+#| tbl-cap: "First 4 Rows of Cleaned Individual Donations Data (Subset of Columns)."
 Table_1_1 <- read_csv(here::here("other/tables/Table_1_1.csv"))
 Table_1_1 <- Table_1_1 %>% head(4)
-Table_1_1 %>% knitr::kable(caption = "First 4 Rows of Cleaned Individual Donations Data (Subset of Columns)")
+Table_1_1 %>% knitr::kable()
 ```
 
 ```{r}
@@ -94,9 +83,10 @@ Table_1_1 %>% knitr::kable(caption = "First 4 Rows of Cleaned Individual Donatio
 #| message: false
 #| echo: false
 #| label: tbl-1-2
+#| tbl-cap: "First 4 Rows of Cleaned District Flows Data (Subset of Columns)"
 Table_1_2 <- read_csv(here::here("other/tables/Table_1_2.csv"))
 Table_1_2 <- Table_1_2 %>% head(4)
-Table_1_2 %>% knitr::kable(caption = "First 4 Rows of Cleaned District Flows Data (Subset of Columns)")
+Table_1_2 %>% knitr::kable()
 ```
 
 Our cleaning produced two related datasets that were used for different parts of the analysis. The first represented all individual contributions made during our focal period, to any recipient. @tbl-1-1 displays the first few rows and columns of this data. This dataset was used to document prelimiary findings, and understand how out-of-district donations relate to in-district donations. The second is a subset of the first, and includes only donations whose recipients are local political entities (Candidates, Nomination Contestants, and EDAs). This second dataset was subsequently wrangled such that each row represented a donor-recipient district pair, allowing us to effecrively track interdistrict flows of donations at various points in time and space. @tbl-1-2 displays the first few rows and columns of this data. National entities (Leadership Contestants and Registered Parties) were necessarily excluded from this data since they cannot be tied to any one local FED.
@@ -147,7 +137,7 @@ Figure_4 +
   )
 ```
 
-@fig-national-entity and @fig-national-party display the timeline of donatios to Leadership Contestants and National (i.e. Registered) parties. The 6 main peaks in the graph clearly correspond to general election periods (peaks followed immediately by grey lines) and Conservative party leadership campaigns (blue-tipped peaks in @fig-national-entity). Interestingly, elections and leadership contests result in relatively similar amounts of donations to national political entites, with the notable exception of the 2022 Conservative leadership race, won by current Opposition Leader Pierre Poilievre. Overall, donations to national entities seem to have increased during this period, following the increasing trend observed from 2004 - 2015 by McMahon and Wolfe [@mcmahon_follow_2015], and particularly starying in 2022, a recent phenomenon driven primarily by increased donations to the Conservative and Liberal parties (@fig-national-party). Although National Parties are somewhat out of scope when analyzing out-of-district donations, understanding their trends provides helpful context, especially since they represent the large majority (~90%) of donations in our dataset.
+@fig-national-entity and @fig-national-party display the timeline of donatios to Leadership Contestants and National (i.e. Registered) parties. The 6 main peaks in the graph clearly correspond to general election periods (peaks followed immediately by grey lines) and Conservative party leadership campaigns (blue-tipped peaks in @fig-national-entity). Interestingly, elections and leadership contests result in relatively similar amounts of donations to national political entites, with the notable exception of the 2022 Conservative leadership race, won by current Opposition Leader Pierre Poilievre. Overall, donations to national entities seem to have increased during this period, following the increasing trend observed from 2004 - 2015 by McMahon and Wolfe [@mcmahon_follow_2015], and particularly starying in 2022, a recent phenomenon driven primarily by increased donations to the Conservative and Liberal parties (@fig-national-party). Although National Parties are somewhat out of scope when analyzing out-of-district donations, understanding their trends provides helpful context, especially since they represent the large majority (\~90%) of donations in our dataset.
 
 ```{r}
 #| warning: false
@@ -229,21 +219,19 @@ Figure_6 +
   )
 ```
 
-@fig-local-in-entity, @fig-local-out-entity, @fig-local-in-party, and @fig-local-out-party display various subsets of donations to Local Political Entities (i.e. EDAs, Candiates, and Registered Associations). @fig-local-in-entity and @fig-local-in-party showcase in-district local donations, broken down by entity and party respectively. @fig-local-out-entity and @fig-local-out-party show the same breakdowns but for out-of-district local donations (the reader should note that donations to National political bodies cannot be "in-district" or "out-of-district", hence why it is not considered at that level). Like with Figures @fig-national-entity and @fig-national-party, donations to EDAs and Candidates peak during general election periods. Nomination Contestants are relatively scarce, even though many nomination capmaigns occured in Canada during this period (CITATION). This is likely because these contests recieve little media coverage, and occur entirely among local by the party (@pruysers_nomination_contests_2016). This is unlike Leadership contests, which receive widespread national media coverage, at least among the largest parties (CITATION), whichm may explain why they appear clearly in @fig-national-entity. Donations to Candidates are restricted to elections (HOWEVER THIS MAY BE AN ISSUE WITH THE DATA, TO BE INVESTIGATED MORE THOROUGHLY). Most notably, the longitudinal distribution of in and out-of-district donations is seemingly identical, both during and outside of general elections.
-
-#NOTE TO ROHAN: lull observed in 2019 is likely a data error.
-#NOTE TO ROHAN: Probably don't need 4 Figures for Local Entity donations, just included for completions' sake. I would keep just the Entity-stratified ones, and state in the main text that "subsetting by Party revealed no striking trends, see Appendix".
+@fig-local-in-entity, @fig-local-out-entity, @fig-local-in-party, and @fig-local-out-party display various subsets of donations to Local Political Entities (i.e. EDAs, Candiates, and Registered Associations). @fig-local-in-entity and @fig-local-in-party showcase in-district local donations, broken down by entity and party respectively. @fig-local-out-entity and @fig-local-out-party show the same breakdowns but for out-of-district local donations (the reader should note that donations to National political bodies cannot be "in-district" or "out-of-district", hence why it is not considered at that level). Like with Figures @fig-national-entity and @fig-national-party, donations to EDAs and Candidates peak during general election periods. Nomination Contestants are relatively scarce, even though many nomination capmaigns occured in Canada during this period (CITATION). This is likely because these contests recieve little media coverage, and occur entirely among local by the party [@pruysers_nomination_contests_2016]. This is unlike Leadership contests, which receive widespread national media coverage, at least among the largest parties (CITATION), whichm may explain why they appear clearly in @fig-national-entity. Donations to Candidates are restricted to elections (HOWEVER THIS MAY BE AN ISSUE WITH THE DATA, TO BE INVESTIGATED MORE THOROUGHLY). Most notably, the longitudinal distribution of in and out-of-district donations is seemingly identical, both during and outside of general elections.
 
 ```{r}
 #| warning: false
 #| message: false
 #| echo: false
 #| label: table-prop-ood-entity-out
+#| tbl-cap: "Summary Statistics for Donations given outside election cycles."
 Table_2_1 <- read_csv(here::here("other/tables/Table_2_1.csv"))
 Table_2_1 <- Table_2_1 %>% filter(str_detect(political_entity, "^Registered")) # TO FOCUS ON MAIN POINT
 Table_2_1 <- Table_2_1 %>%
   mutate(across(everything(), ~replace(.x, .x == 0, NA)))
-Table_2_1 %>% knitr::kable(caption = "Summary Statistics for Donations given outside election cycles.")
+Table_2_1 %>% knitr::kable()
 ```
 
 ```{r}
@@ -251,11 +239,12 @@ Table_2_1 %>% knitr::kable(caption = "Summary Statistics for Donations given out
 #| message: false
 #| echo: false
 #| label: table-prop-ood-entity-in
+#| tbl-cap: "Summary Statistics for Donations given within election cycles."
 Table_2_2 <- read_csv(here::here("other/tables/Table_2_2.csv"))
 Table_2_2 <- Table_2_2 %>% head(3) # TO FOCUS ON MAIN POINT
 Table_2_2 <- Table_2_2 %>%
   mutate(across(everything(), ~replace(.x, .x == 0, NA)))
-Table_2_2 %>% knitr::kable(caption = "Summary Statistics for Donations given within election cycles.")
+Table_2_2 %>% knitr::kable()
 ```
 
 ```{r}
@@ -263,19 +252,14 @@ Table_2_2 %>% knitr::kable(caption = "Summary Statistics for Donations given wit
 #| message: false
 #| echo: false
 #| label: table-in-out-cycle
+#| tbl-cap: "Donations in and out of election cycles by party, for the top 4 Parties."
 Table_2_3 <- read_csv(here::here("other/tables/Table_2_3.csv"))
 Table_2_3 <- Table_2_3 %>%
   mutate(across(everything(), ~replace(.x, .x == 0, NA)))
-Table_2_3 %>% knitr::kable(caption = "Donations in and out of election cycles by party, for the top 4 Parties.")
+Table_2_3 %>% knitr::kable()
 ```
 
 @table-prop-ood-entity-out, and @table-prop-ood-entity-in, and @table-in-out-cycle showcase some key annual summary statistics. Accross parties, donations are mainly accumulated outside of election capmaigns (see @table-in-out-cycle) ; around 10-15% of donor-sourced funds among the top 4 Parties, with the notable exception of the NDP at 25%. However, roughly 45% of donor-sourced funds to local entites (i.e. EDAs and Candidates) orginated from outside their districts, both in and out of election cycles. The identical and stagnant longitudinal distribution between in and ou-of donors illustrated in Figures @fig-local-out-entity shows that this proportion is roughly constant over time, unlike the increasing OOD proportion of donations in the U.S. over a similar time period (CITATION). In all cases, the count proportions were smaller than the amount proportions. This means that, on average, out-of-district and out-of-cycle donors are contributing larger amounts.
-
-
-#NOTE TO ROHAN: NAs in the table are intentional: some entities can't be assessed for OOD donation.
-#NOTE TO ROHAN: I think the donor count columns should be removed from each of these 3 Tables. IMO, nothing is gained from them. Could be in Appendix.
-#NOTE TO ROHAN: Although I excluded Nomination Contests from the Table because they had very little donations, they had an annual out-of-district funding rate of 76%, way higher than the ~40% of others. I just didn't think it was super meaningful to discuss.
-#NOTE TO ROHAN: May want to drop Green party for these types of visualizations in-text, kind of just clutter. Might be sacriligeous to do though, not sure.
 
 ## District Flows Data Summary
 
@@ -291,17 +275,13 @@ The Canadian Elections Act imposes contribution limits on the following register
 
 Only Canadian citizens or permanent residents can make contributions [@canada_understanding_2026]. Any donor who contributed \$20 or more to any of the five federal political entities listed above must have their name recorded (but not reported to Elections Canada ; @canada_understanding_2026). Donors with contributions exceeding \$200 must also have their names and addresses recorded and reported to Elections Canada [@canada_understanding_2026]. Cash donations above \$20 are prohibited [@canada_understanding_2026].
 
-+-------------------------------------------------------------------------------------------+-------------------------+
-| Political Entity                                                                          | 2026 Annual Limit (CAD) |
-+===========================================================================================+=========================+
-| To each registered national party                                                         | 1,775                   |
-+-------------------------------------------------------------------------------------------+-------------------------+
-| In total, to all EDAs, nomination contestants, and candidates (for each registered party) | 1,775                   |
-+-------------------------------------------------------------------------------------------+-------------------------+
-| In total, to each independent or non-affiliated candidate                                 | 1,775                   |
-+-------------------------------------------------------------------------------------------+-------------------------+
+| Political Entity | 2026 Annual Limit (CAD) |
+|------------------------------------------------------|------------------|
+| To each registered national party | 1,775 |
+| In total, to all EDAs, nomination contestants, and candidates (for each registered party) | 1,775 |
+| In total, to each independent or non-affiliated candidate | 1,775 |
 
-: 2026 Annual Limits on Individual Contributions, Loans, and Loan Guarantees (adapted from Elections Canada website)
+: 2026 Annual Limits on Individual Contributions, Loans, and Loan Guarantees (adapted from Elections Canada website).
 
 | Politician            | Own-Campaign Contribution Limit |
 |-----------------------|---------------------------------|
@@ -327,59 +307,6 @@ IJF appended extra archived data from the site [see @canada_open_2025], covering
 
 In the raw data, 31,873 rows (0.3% of the total data) is not from Individual donors (Buisnesses, Corporations, Trade, Associations, Government, Unincorporated). These can immediately be ignored.
 
-Donations were dated based on their posted "contribution received date". When this was not available, used "Fiscal / Election date".
-
-+------------------------------------------------------------------------------------------------+---------------------+--------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| Column Name (EC)                                                                               | Column Name (IJF)   | IJF Cleaning | Value Information                                                                                                                                                                         |
-+================================================================================================+=====================+==============+===========================================================================================================================================================================================+
-| Political Entity                                                                               | political_entity    | No changes   | Entity of recipient.                                                                                                                                                                      |
-+------------------------------------------------------------------------------------------------+---------------------+--------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| Recipient ID                                                                                   | N/A                 | N/A          | 34,054 unique IDs ; seemingly an ID for each unique recipient. This would be very useful to me if go to the trouble to show it's accurate.                                                |
-|                                                                                                |                     |              |                                                                                                                                                                                           |
-|                                                                                                |                     |              | IJF only has 13,387 unique `recipient` entries. What happened?                                                                                                                            |
-+------------------------------------------------------------------------------------------------+---------------------+--------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| Recipient ; Recipient last name ; Recipient first name ; Recipient middle initial              | recipient           | No changes   | Name of recipient                                                                                                                                                                         |
-+------------------------------------------------------------------------------------------------+---------------------+--------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| Political Party of Recipient                                                                   | political_party     | No changes\* | Party of recipient. IJF made changes, but don't matter to us.                                                                                                                             |
-+------------------------------------------------------------------------------------------------+---------------------+--------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| Electoral District                                                                             | electoral_district  | No changes   | Electoral district of recipient.                                                                                                                                                          |
-+------------------------------------------------------------------------------------------------+---------------------+--------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| Electoral event                                                                                | electoral_event     | CHANGES      | "Annual" is the most common by far, followed by "Quarterly". "Annual" only captures "Registered associations" and "Registered parties". "Quarterly" only captures "Registered parties".   |
-|                                                                                                |                     |              |                                                                                                                                                                                           |
-|                                                                                                |                     |              | - IJF data has "0", "1" and "2" as electoral events, don't know why. Also added other events such as missing by-laws, not relevant though. They span multiple years and entities as well. |
-|                                                                                                |                     |              | - I'm only using the three election cycles. But may need all of it within the 2013 - 2023 range.                                                                                          |
-+------------------------------------------------------------------------------------------------+---------------------+--------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| Fiscal/Election date                                                                           | donation_date\*     |              | used if Contribution Recieved Date is not available                                                                                                                                       |
-+------------------------------------------------------------------------------------------------+---------------------+--------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| Contribution Recieved date                                                                     | donation_date       |              |                                                                                                                                                                                           |
-+------------------------------------------------------------------------------------------------+---------------------+--------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| Form ID ; Part Number of Return ; Financial Report ; Financial Report part                     | N/A                 | N/A          | Not important, can ignore.                                                                                                                                                                |
-+------------------------------------------------------------------------------------------------+---------------------+--------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| Contributor type                                                                               | donor_type          | No changes   | I'm only keeping Individuals. Others only represent 0.3% of the data anyways.                                                                                                             |
-+------------------------------------------------------------------------------------------------+---------------------+--------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| Contributor name ; Contributor last name ; Contributor first name ; Contributor middle initial | donor_full_name     | No changes   |                                                                                                                                                                                           |
-+------------------------------------------------------------------------------------------------+---------------------+--------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| Contributor City ; Contributor Province ; Contributor Postal code                              | donor_location      | No changes   |                                                                                                                                                                                           |
-+------------------------------------------------------------------------------------------------+---------------------+--------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| Monetary amount                                                                                | amount_monetary     | No changes   |                                                                                                                                                                                           |
-+------------------------------------------------------------------------------------------------+---------------------+--------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| Non-Monetary amount                                                                            | amount_non_monetary | No changes   |                                                                                                                                                                                           |
-+------------------------------------------------------------------------------------------------+---------------------+--------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| Contribution given through                                                                     | N/A                 | N/A          | is constant NA in source, can disregard.                                                                                                                                                  |
-+------------------------------------------------------------------------------------------------+---------------------+--------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-
-**Ask Martin**:
-
-- Why are there 0, 1, and 2 in abundance as 'electoral_event'?
-
-- Why are 2M rows missing? Checked: not a date issue.
-
-- Why aren't you saving recipient ID? If two donors have same name I'm finished. I need this column.
-
-- Confirm all the "no changes" above.
-
 # IJF to Clean {#sec-ijfclean}
-
-XXX
 
 # References
