@@ -106,14 +106,9 @@ Table_1_2 %>% knitr::kable()
 
 @tbl-1-1 provides a description of the focal variables used throughout this study, and an example of each. Most contributions included in our analyses (**X%**) were addressed to national-level political entities; either party leadership contestants, or the federal parties themselves. Since these entities are not tied to local FEDs, contributions addressed to them cannot be declared as in or out of district. Longitudinal trends in these contributions are briefly discussed in **Add Section**. To explicitly track large-scale flows between donors and local political entities (candidates, nomination contestants, and electoral district associations), we wrangled a secondary dataset representing aggregated flows between every pair of FEDs. Flows were recorded (e.g. grand total aomunt sent, total amount sent during an election cycle, etc.). The first few rows and columns of this dataset are shown in @tbl-1-2.
 
-## General Trends in Donations overall **CHANGE TITLE**
+## General Trends in Donations Overall
 
-We start with a brief discription of donation trends in general, to provide context for our analysis of out-of-district donations.
-
-
-Below we present a few longitudinal visualizations of the first dataset. We start with the disclaimer that all types of donations occurred at much higher rates in December compared to other months, regardless of year, recipient type, party affiliation, etc. This is likely a clerical error (ELABORATE). This did not impact our analysis (CHECK THIS WHEN FLOW ANALYSIS IS CARRIED OUT), however December donations in all Figures presented below were imputed using their neighboring November and January values, and their recorded monetary amounts were redistributed accross their associated years so that nothing was lost. This served to reduce visual clutter from large, phantom peaks at the end of each year.
-
-Although Figures below only display trends in Monthly donation sums, donation counts were largely identical, and are shown in Appendix X.
+We start by briefly documenting summaries and trends in donatons generally, to provide context for our analysis of out-of-district donations. Only for figures [**LIST**], donations dated in December of a given year were redistributed accross the other months of that year, to address a clerical error (see **Appendix X** for a list of all modifications made to the data for the purposes of visualization). 
 
 ```{r}
 #| warning: false
@@ -348,5 +343,10 @@ IJF appended extra archived data from the site [see @canada_open_2025], covering
 In the raw data, 31,873 rows (0.3% of the total data) is not from Individual donors (Buisnesses, Corporations, Trade, Associations, Government, Unincorporated). These can immediately be ignored.
 
 # IJF to Clean {#sec-ijfclean}
+
+# Modifications to Data for Figures
+
+- LONGITUDINAL FIGURES: We start with the disclaimer that all types of donations occurred at much higher rates in December compared to other months, regardless of year, recipient type, party affiliation, etc. This is likely a clerical error (ELABORATE). This did not impact our analysis (CHECK THIS WHEN FLOW ANALYSIS IS CARRIED OUT), however December donations in all Figures presented below were imputed using their neighboring November and January values, and their recorded monetary amounts were redistributed accross their associated years so that nothing was lost. This served to reduce visual clutter from large, phantom peaks at the end of each year.
+
 
 # References
