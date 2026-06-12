@@ -1,6 +1,5 @@
-political_entity,avg_annual_total_amount,avg_annual_total_count,prop_sum_ood,prop_num_ood
-Registered parties,43601159.92401523,344577.7,0,0
-Leadership contestants,5244796.832222217,33876.444444444445,0,0
-Registered associations,5189646.8989999425,34876.9,0.454050994770781,0.2628960716118692
-Nomination contestants,211492.346,314.4,0.5859851590090168,0.5722010178117048
-Candidates,137154.468,258.6,0.5258648008462984,0.4853054911059551
+Entity,Mean Annual Sum,Mean Annual Count,OOD % (Sum),OOD % (Count)
+Candidates (in-cycle),6362770,10373,0.42,0.39
+Candidates (out-of-cycle),170942,259,0.51,0.49
+EDAs (in-cycle),7061080,17960,0.47,0.35
+EDAs (out-of-cycle),5197769,34877,0.45,0.26

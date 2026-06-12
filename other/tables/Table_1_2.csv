@@ -1,4 +1,4 @@
-sending_district,receiving_district,n_donations,donation_amount
+Sending District,Receiving District,Donations (count),Donations (amount)
 Abbotsford,Abbotsford,355,150135
 Abbotsford,Banff--Airdrie,1,1000
 Abbotsford,Burnaby North--Seymour,2,3000

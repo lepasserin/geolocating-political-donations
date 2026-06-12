@@ -1,4 +1,4 @@
-variable,example,description
+Variable,Example,Description
 donor_name,Alexandra Lulka,Donor full name.
 donor_district,Eglinton--Lawrence,District associated with donor postal code.
 donation_date,2015-10-18,Date donation was received.

@@ -37,11 +37,12 @@ Table_1 <- donations_data %>%
 Table_2 <- FED_donations_data %>%
   select(all_of(FED_DONATIONS_DATA_FOCAL_COLUMNS)) %>%
   rename(
-    n_donations = n_donations_all_both,
-    donation_amount = donation_amount_all_both
+    `Sending District` = sending_district,
+    `Receiving District` = receiving_district,
+    `Donations (count)` = n_donations_all_both,
+    `Donations (amount)` = donation_amount_all_both
   ) %>%
   head(4)
-
 
 Table_3 <- data.frame(
   variable = c(
@@ -81,6 +82,11 @@ Table_3 <- data.frame(
       "Entity type of the recipient.",
       "Recipient party affiliation (if any)."
     )
+  ) %>%
+  rename(
+    Variable = variable,
+    Example = example,
+    Description = description
   )
 
 # -------- Save ---------
