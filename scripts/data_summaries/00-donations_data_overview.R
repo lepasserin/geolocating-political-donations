@@ -26,8 +26,8 @@ DONATIONS_DATA_FOCAL_COLUMNS <- c(
 FED_DONATIONS_DATA_FOCAL_COLUMNS <- c(
   "sending_district",
   "receiving_district",
-  "n_donations_all_both",
-  "donation_amount_all_both"
+  "n_donations_all_local",
+  "donation_amount_all_local"
 )
 
 Table_1 <- donations_data %>%
@@ -39,8 +39,8 @@ Table_2 <- FED_donations_data %>%
   rename(
     `Sending District` = sending_district,
     `Receiving District` = receiving_district,
-    `Donations (count)` = n_donations_all_both,
-    `Donations (amount)` = donation_amount_all_both
+    `Donations (count)` = n_donations_all_local,
+    `Donations (amount)` = donation_amount_all_local
   ) %>%
   head(4)
 

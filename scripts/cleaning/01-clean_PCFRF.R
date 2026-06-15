@@ -9,6 +9,23 @@ library(tidyverse)
 library(arrow)
 path_to_raw_PCFRF <- "data/raw_data/raw_PCFRF_2022.txt"
 
+# ----- Constants ------
+
+PROVINCE_CODES <- c(
+  "10" = "Newfoundland and Labrador",
+  "11" = "Prince Edward Island",
+  "12" = "Nova Scotia",
+  "13" = "New Brunswick",
+  "24" = "Quebec",
+  "35" = "Ontario",
+  "46" = "Manitoba",
+  "47" = "Saskatchewan",
+  "48" = "Alberta",
+  "59" = "British Columbia",
+  "60" = "Yukon",
+  "61" = "Northwest Territories",
+  "62" = "Nunavut"
+)
 
 # ------- Parse TXT and Establish 1:1 Mapping --------
 
@@ -32,15 +49,25 @@ final_mapping_df1 <- fed_mapping %>%
   mutate(
     FED = fed_name,
     FEDUID = fed_uid,
-    PC = postal_code
+    PC = postal_code,
+    PROVINCE = PROVINCE_CODES[str_sub(FEDUID, 1, 2)]
   ) %>%
-  select(FED, PC, FEDUID) %>%
+  select(FED, PC, FEDUID, PROVINCE) %>%
   distinct(PC, .keep_all = TRUE)
 
 # Switch from Latin-1 to UTF-8
 
 final_mapping_df <- final_mapping_df1 %>%
   mutate(FED = iconv(FED, from = "Windows-1252", to = "UTF-8"))
+
+# ------- Validation --------
+
+if (all(!is.na(final_mapping_df$PROVINCE))) {
+  message("Validation Passed.")
+} else {
+  stop("Validation Failed: Some FEDs could not be mapped to Provinces.")
+}
+
 
 # ------- Save as a CSV --------
 
