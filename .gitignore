@@ -50,3 +50,15 @@ rsconnect/
 
 # Mac data storage temp files
 .DS_Store
+
+# Large Files
+data/raw_data/lfed000b21a_e
+data/raw_data/OpenData-ElectionsCanada-asSubmitted.csv
+data/raw_data/od_cntrbtn_audt_e.csv
+data/raw_data/raw_data_IJF.csv
+data/raw_data/raw_data_IJF_fix2026-06-17.csv
+data/clean_data/clean_data_IJF.parquet
+data/processed_data/donations_data.parquet
+data/clean_data/clean_FED_shapefile.rds
+data/processed_data/donations_data_appendix.parquet
+data/raw_data/raw_PCFRF_2022.txt
