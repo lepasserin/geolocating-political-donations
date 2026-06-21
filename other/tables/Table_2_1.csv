@@ -1,5 +1,5 @@
-Entity,Mean Annual Sum,Mean Annual Count,OOD % (Sum),OOD % (Count)
-Candidates (in-cycle),6362770,10373,0.42,0.39
-Candidates (out-of-cycle),170942,259,0.51,0.49
-EDAs (in-cycle),7061080,17960,0.47,0.35
-EDAs (out-of-cycle),5197769,34877,0.45,0.26
+Entity,Amount,% of Total,OOD %
+Candidates (in-cycle),19088309,20.3%,42.1%
+Candidates (out-of-cycle),1724938,1.8%,51.0%
+EDAs (in-cycle),21209606,22.6%,46.7%
+EDAs (out-of-cycle),51996459,55.3%,45.4%
