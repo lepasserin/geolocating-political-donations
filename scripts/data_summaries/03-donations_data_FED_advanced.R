@@ -28,14 +28,6 @@ province_centroids <- province_shapes %>%
   st_drop_geometry() %>%
   select(PROVINCE, x, y)
 
-VALID_FED_NAMES <- unique(FED_shapefile$FED)
-
-fed_to_region <- FED_shapefile %>%
-  st_drop_geometry() %>%
-  mutate(region = PROVINCE_REGION_MAP[PROVINCE]) %>%
-  select(name = FED, region) %>%
-  distinct()
-
 # ----- Constants -----
 
 PROVINCE_REGION_MAP <- c(
@@ -62,6 +54,13 @@ REGION_COLOURS <- c(
   "BC" = "#CC79A7",
   "Other" = "#999999"
 )
+VALID_FED_NAMES <- unique(FED_shapefile$FED)
+
+fed_to_region <- FED_shapefile %>%
+  st_drop_geometry() %>%
+  mutate(region = PROVINCE_REGION_MAP[PROVINCE]) %>%
+  select(name = FED, region) %>%
+  distinct()
 
 # ----- Figure Wrapper -----
 

@@ -251,11 +251,10 @@ make_ood_breakdown_table <- function(
 party_ood_received <- function(donations_data, party, entity) {
   donations_data %>%
     filter(political_entity == entity, political_party == party) %>%
-    mutate(amount = amount_monetary + amount_non_monetary) %>%
     group_by(recipient_district) %>%
     summarise(
-      total = sum(amount, na.rm = TRUE),
-      ood = sum(amount[is_out_of_district], na.rm = TRUE),
+      total = sum(total_amount),
+      ood = sum(total_amount[is_out_of_district]),
       .groups = "drop"
     ) %>%
     mutate(prop_ood = ood / total) %>%

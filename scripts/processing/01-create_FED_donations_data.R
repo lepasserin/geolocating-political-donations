@@ -1,30 +1,15 @@
 # Purpose: Build District-Level Donations Flow Network Dataset.
 # Author: Benedict Cummins-Mburu
-# Last Updated: 12 Jun 2026
+# Last Updated: 21 Jun 2026
 # Contact: b.cumminsmburu@utoronto.ca
 # License: MIT
 
 # --------- Setup ----------
 library(tidyverse)
 library(arrow)
+library(sf)
 donations_data <- read_parquet("data/processed_data/donations_data.parquet")
 FED_shapefile <- readRDS("data/clean_data/clean_FED_shapefile.rds")
-# TODO: refactor these changes into the cleaning script.
-donations_data <- donations_data %>%
-  mutate(
-    electoral_event_clean = case_when(
-      donation_date >= as.Date("2015-08-02") &
-        donation_date <= as.Date("2015-10-19") ~ "General Election",
-      donation_date >= as.Date("2019-09-11") &
-        donation_date <= as.Date("2019-10-21") ~ "General Election",
-      donation_date >= as.Date("2021-08-15") &
-        donation_date <= as.Date("2021-09-20") ~ "General Election",
-      TRUE ~ "Non-Election"
-    ),
-    total_amount = amount_monetary + amount_non_monetary
-  ) %>%
-  filter(total_amount <= 25000)
-
 PCFRF_2022 <- read_parquet("data/clean_data/clean_PCFRF_2022.parquet")
 
 # ---- Pre-Processing ------
@@ -66,7 +51,7 @@ make_flow <- function(data, n_col, amt_col) {
     ) %>%
     summarise(
       "{n_col}" := n(),
-      "{amt_col}" := sum(total_amount, na.rm = TRUE),
+      "{amt_col}" := sum(total_amount),
       .groups = "drop"
     )
 }
@@ -91,15 +76,15 @@ base_edges <- make_flow(
 # Slices
 eda_all <- subsetted_data %>%
   filter(political_entity == "Registered associations")
-eda_off <- eda_all %>% filter(electoral_event_clean == "Non-Election")
-eda_on <- eda_all %>% filter(electoral_event_clean == "General Election")
+eda_off <- eda_all %>% filter(!is_general_election_period)
+eda_on <- eda_all %>% filter(is_general_election_period)
 candidates_on <- subsetted_data %>%
   filter(
     political_entity == "Candidates",
-    electoral_event_clean == "General Election"
+    is_general_election_period
   )
 both_on <- subsetted_data %>%
-  filter(electoral_event_clean == "General Election")
+  filter(is_general_election_period)
 
 # Join all 10 edge columns onto base
 FED_donations_data_1 <- base_edges %>%

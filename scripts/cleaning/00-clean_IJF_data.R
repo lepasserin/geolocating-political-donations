@@ -1,11 +1,11 @@
 # Purpose: General Ceaning Script for Raw IJF Data.
 # Author: Benedict Cummins-Mburu
-# Last Updated: 2 Jun 2026
+# Last Updated: 19 Jun 2026
 # Contact: b.cumminsmburu@utoronto.ca
 # License: MIT
 # Notes:
-# - `raw_data_IJF.csv` is accurate as of May 5, 2026. Will likely be updated, fixing errors.
-# - First round of cleaning. More specialized data frames will use this later in the pipeline.
+# - `raw_data_IJF_fix2026-06-17.csv` is accurate as of June 17, 2026.
+# - First round of cleaning. More specialized tasks will draw on this dataset later in the pipeline.
 # - Script contain some validation code to justify the renoval of certain entries or columns.
 # - Final dataframe represents all Individual contributions between 2004 and 2026.
 
@@ -13,13 +13,16 @@
 library(tidyverse) # for data cleaning
 library(data.table) # for speedy CSV reading
 library(arrow) # to save result as parquet
-raw_IJF_data <- fread("data/raw_data/raw_data_IJF.csv", data.table = FALSE)
+raw_IJF_data <- fread(
+  "data/raw_data/raw_data_IJF_fix2026-06-17.csv",
+  data.table = FALSE
+)
 
 # --- Constants ----
 
 VALID_DATE_RANGE <- c(
   lubridate::ymd("2004-01-01"),
-  lubridate::ymd("2026-05-05")
+  lubridate::ymd("2026-06-17")
 )
 VALID_DONOR_TYPE <- "Individuals"
 
@@ -70,10 +73,14 @@ VALID_POLITICAL_PARTIES <- c(
   "Free Party Canada",
   "Centrist Party of Canada",
   "Veterans Coalition Party of Canada",
-  "Canadian Future Party"
+  "Canadian Future Party",
+  "Reforge Party"
 )
 
 # -------- Cleaning --------
+
+# 0. Perform ingestion de-duping (normally done in IJF pipeline, special case)
+raw_IJF_data <- raw_IJF_data %>% distinct()
 
 # 1. Remove Columns `s`, `added` (since irrelevant).
 
@@ -97,12 +104,12 @@ clean_data_01 <- raw_IJF_data %>%
 if (all(!is.na(clean_data_01$donation_year))) {
   message("Validation Passed.")
 } else {
-  stop("Validation Error: some entries in column `year` are not integers.")
+  stop("Validation Error: some entries in column `donation_year` are missing.")
 }
 if (all(!is.na(clean_data_01$year))) {
   message("Validation Passed.")
 } else {
-  stop("Validation Error: some entries in column `year` are not integers.")
+  stop("Validation Error: some entries in column `year` are missing.")
 }
 if (all(clean_data_01$year %% 1 == 0)) {
   message("Validation Passed.")
@@ -124,27 +131,21 @@ if (all(clean_data_01$donation_year == clean_data_01$year)) {
 clean_data_02 <- clean_data_01 %>%
   select(-year)
 
-# 3. Remove NA Dates (since all < 2004, so irrelvant).
+# 3. Check that all dates are present.
 
-if (
-  all(clean_data_02[is.na(clean_data_02$donation_date), ]$donation_year <= 2003)
-) {
+if (all(!is.na(clean_data_02$donation_date))) {
   message("Validation Passed.")
 } else {
-  stop(
-    "Validation Error: Some null dates have posted years strictly later than 2003."
-  )
+  stop("Validation Error: Some dates are missing.")
 }
-clean_data_03 <- clean_data_02 %>%
-  filter(!is.na(donation_date))
+clean_data_03 <- clean_data_02
 
-# 4. Remove Invalid Dates (< 0.01% of the data at this stage)
+# 4. Check that date and year aggree + remove invalid dates.
 
-Marian_Archibold_case_03 <- clean_data_03[
+check_4 <- clean_data_03[
   (year(clean_data_03$donation_date) != clean_data_03$donation_year),
-] # given the year is correct and date is invalid, assumed year = 2001 was correct. Since out of range, just removed row directly.
-Marian_Archibold_rid_03 <- Marian_Archibold_case_03$rid
-if (length(Marian_Archibold_rid_03) == 1) {
+]
+if (nrow(check_4) == 0) {
   message("Validation Passed.")
 } else {
   stop(
@@ -156,7 +157,7 @@ invalid_dates_03 <- clean_data_03 %>%
     donation_date < VALID_DATE_RANGE[1] | donation_date > VALID_DATE_RANGE[2]
   )
 invalid_date_count_03 <- nrow(invalid_dates_03)
-if ((invalid_date_count_03 / nrow(clean_data_03)) < 0.0001) {
+if ((invalid_date_count_03 / nrow(clean_data_03)) < 0.00001) {
   message("Validation Passed.")
 } else {
   stop(
@@ -207,9 +208,6 @@ if (all(clean_data_05$amount == clean_data_05$amount_non_monetary)) {
 clean_data_06 <- clean_data_05 %>%
   select(-amount)
 
-this <- clean_data_06 %>% filter(amount_monetary + amount_non_monetary <= 0.0)
-nrow(this)
-
 # 7. Clean Column `political_entity` (simple handling of 18 poorly formatted entries)
 
 clean_data_07 <- clean_data_06 %>%
@@ -238,7 +236,7 @@ if (n_entities_changed_07 == invalid_entities_count_06) {
   stop("Validation Error: Cleaning Step 7 changed the wrong number of rows.")
 }
 
-# 8. Clean Column `political_party` (join "Independent" and "No Affiliation ; join "United Party of Canada (UP)" and "United Party of Canada")
+# 8. Clean Column `political_party` (join "Independent" and "No Affiliation ; join "United Party of Canada (UP)" and "United Party of Canada"). Also match slightly different recipient and party names.
 
 clean_data_08 <- clean_data_07 %>%
   mutate(
@@ -248,8 +246,31 @@ clean_data_08 <- clean_data_07 %>%
       political_party == "No Affiliation" ~ "Independent",
       TRUE ~ political_party
     )
+  ) %>%
+  mutate(
+    recipient = case_when(
+      recipient == "United Party of Canada (UP)" ~ "United Party of Canada",
+      recipient ==
+        "Competency and Transparency Party for Accountability" ~ "Party for Accountability, Competency and Transparency",
+      TRUE ~ political_party
+    )
   )
 
+registered_party_check <- clean_data_08 %>%
+  filter(political_entity == "Registered parties") %>%
+  filter(political_party != recipient)
+
+if (nrow(registered_party_check) == 0) {
+  message("Validation Passed.")
+} else {
+  stop(
+    paste0(
+      "Validation Failed: ",
+      nrow(registered_party_check),
+      " rows where political_party != recipient for Registered Parties."
+    )
+  )
+}
 if (all(clean_data_08$political_party %in% VALID_POLITICAL_PARTIES)) {
   message("Validation Passed.")
 } else {
@@ -274,9 +295,226 @@ if (n_entities_changed_08 == invalid_entities_count_07) {
   stop("Validation Error: Cleaning Step 8 changed the wrong number of rows.")
 }
 
-# 9. Extract Donor Postal Code (0.36% confirmed had no location data ; 0.45% could not extract postal code. So, we are at most missing 0.09% postal codes.)
+# 9. Filter For Strictly Positive Donation Amounts
 
+if (
+  all(is.double(
+    clean_data_08$amount_monetary + clean_data_08$amount_non_monetary
+  )) &&
+    all(
+      !is.na(
+        clean_data_08$amount_monetary + clean_data_08$amount_non_monetary
+      )
+    )
+) {
+  message("Validation Passed.")
+} else {
+  stop(
+    "Validation Failed: Some summed contribution amounts are missing or not numbers."
+  )
+}
 clean_data_09 <- clean_data_08 %>%
+  filter(amount_monetary + amount_non_monetary > 0)
+
+invalid_amounts_08 <- clean_data_08 %>%
+  filter(amount_monetary + amount_non_monetary <= 0)
+if ((nrow(invalid_amounts_08) / nrow(clean_data_08)) < 0.0002) {
+  message("Validation Passed.")
+} else {
+  stop(
+    "Validation Failed: A non-trivial amount of rows were removed in Cleaning Step 9."
+  )
+}
+if (nrow(clean_data_09) == (nrow(clean_data_08) - nrow(invalid_amounts_08))) {
+  message("Validation Passed.")
+} else {
+  stop(
+    "Validation Failed: Wrong number of rows were removed in Cleaning Step 9."
+  )
+}
+
+# 10. Filter for Present, Reasonably Long Donor and Recipient Names
+
+if (all(!is.na(clean_data_09$donor_full_name))) {
+  message("Validation Passed.")
+} else {
+  stop("Validation Failed: Some donor names are NA")
+}
+if (all(!is.na(clean_data_09$recipient))) {
+  message("Validation Passed.")
+} else {
+  stop("Validation Failed: Some recipient names are NA")
+}
+
+clean_data_10 <- clean_data_09 %>%
+  filter(
+    nchar(trimws(donor_full_name)) >= 4 &
+      nchar(trimws(recipient)) >= 4
+  )
+
+invalid_names_09 <- clean_data_09 %>%
+  filter(
+    nchar(trimws(donor_full_name)) < 4 |
+      nchar(trimws(recipient)) < 4
+  )
+
+if ((nrow(invalid_names_09) / nrow(clean_data_09)) < 0.00001) {
+  message("Validation Passed.")
+} else {
+  stop(
+    "Validation Failed: A non-trivial amount of rows were removed in Cleaning Step 10."
+  )
+}
+if (nrow(clean_data_10) == (nrow(clean_data_09) - nrow(invalid_names_09))) {
+  message("Validation Passed.")
+} else {
+  stop(
+    "Validation Failed: Wrong number of rows were removed in Cleaning Step 10."
+  )
+}
+
+# 11. Identify Aggregate Rows, then Remove Non-Aggregate Rows Above $25,000
+
+clean_data_11 <- clean_data_10 %>%
+  mutate(is_aggregated = str_detect(donor_full_name, "^Contribut")) %>%
+  mutate(donor_location = ifelse(is_aggregated, NA, donor_location))
+filter(is_aggregated | (amount_monetary + amount_non_monetary <= 25000))
+
+if (
+  ((nrow(clean_data_10) - nrow(clean_data_11)) / nrow(clean_data_10)) < 0.00001
+) {
+  message("Validation Passed.")
+} else {
+  stop(
+    "Validation Failed: A non-trivial amount of rows were removed in Cleaning Step 11."
+  )
+}
+
+# 12. Validate and Clean `electoral_event`.
+
+if (all(!is.na(clean_data_11$electoral_event))) {
+  message("Validation Passed.")
+} else {
+  stop("Validation Failed: Some electoral events are NA.")
+}
+missing_event_entities <- clean_data_11 %>%
+  filter(is.na(electoral_event) | electoral_event == "") %>%
+  distinct(political_entity) %>%
+  pull(political_entity)
+
+if (
+  setequal(
+    missing_event_entities,
+    c("Leadership contestants", "Nomination contestants")
+  )
+) {
+  message("Validation Passed.")
+} else {
+  stop(
+    "Validation Failed: Unexpected political entities are missing `electoral_event`."
+  )
+}
+event_lead_nom <- clean_data_11 %>%
+  filter(
+    political_entity %in% c("Leadership contestants", "Nomination contestants")
+  ) %>%
+  distinct(electoral_event) %>%
+  pull(electoral_event)
+if (
+  setequal(
+    event_lead_nom,
+    c("")
+  )
+) {
+  message("Validation Passed.")
+} else {
+  stop(
+    "Validation Failed: Unexpected political entities are missing `electoral_event`."
+  )
+}
+clean_data_12 <- clean_data_11 %>%
+  mutate(
+    electoral_event = case_when(
+      political_entity ==
+        "Leadership contestants" ~ "Unknown leadership contest",
+      political_entity ==
+        "Nomination contestants" ~ "Unknown nomination contest",
+      TRUE ~ electoral_event
+    )
+  )
+if (all(!(clean_data_12$electoral_event == ""))) {
+  message("Validation Passed.")
+} else {
+  stop("Validation Failed: Some electoral events are still empty.")
+}
+if (length(unique(clean_data_12$electoral_event)) < 50) {
+  message("Validation Passed.")
+} else {
+  stop(
+    "Validation Failed: number of unique entries in `electoral_event` is unreasonably large. "
+  )
+}
+
+# 13. Validate `electoral_district`.
+
+if (all(!is.na(clean_data_12$electoral_district))) {
+  message("Validation Passed.")
+} else {
+  stop("Validation Failed: Some electoral district entries are NA. ")
+}
+missing_district_entities <- clean_data_12 %>%
+  filter(electoral_district == "") %>%
+  distinct(political_entity) %>%
+  pull(political_entity)
+if (
+  setequal(
+    missing_district_entities,
+    c("Leadership contestants", "Registered parties")
+  )
+) {
+  message("Validation Passed.")
+} else {
+  stop(
+    "Validation Failed: Unexpected political entities are missing `electoral_district`."
+  )
+}
+district_lead_part <- clean_data_12 %>%
+  filter(
+    !political_entity %in% c("Leadership contestants", "Registered parties")
+  ) %>%
+  filter(electoral_district == "")
+if (nrow(district_lead_part) == 0) {
+  message("Validation Passed.")
+} else {
+  stop(
+    "Validation Failed: Rows outside Leadership/Nomination contestants are missing `electoral_district`."
+  )
+}
+if (length(unique(clean_data_12$electoral_district)) < 700) {
+  message("Validation Passed.")
+} else {
+  stop(
+    "Validation Failed: number of unique entries in `electoral_district` is unreasonably large."
+  )
+}
+clean_data_13 <- clean_data_12 %>%
+  mutate(
+    electoral_district = ifelse(
+      electoral_district == "",
+      NA,
+      electoral_district
+    )
+  )
+
+# 14. Clean `donor_location` and extract donor postal code (0.36% confirmed had no location data ; 0.45% could not extract postal code. So, we are at most missing 0.09% postal codes.)
+
+if (all(!is.na(clean_data_13$donor_location))) {
+  message("Validation Passed.")
+} else {
+  stop("Validation Failed: Some donor locations are entries are NA.")
+}
+
+clean_data_14 <- clean_data_13 %>%
   mutate(
     donor_postal_code = str_remove_all(donor_location, "[\\s-]"),
     donor_postal_code = str_to_upper(donor_postal_code),
@@ -292,33 +530,28 @@ clean_data_09 <- clean_data_08 %>%
       NA,
       donor_postal_code
     )
-  ) # only 418 cases (NOT VALIDATED)
-if (nrow(clean_data_09) == nrow(clean_data_08)) {
-  message("Validation Passed.")
-} else {
-  stop(
-    "validation Failed: Cleaning Step 9 changed the number of rows when it should not have."
-  )
-}
+  ) %>%
+  select(-donor_location)
 
-# DIAGNOSTIC: To better assess coverage, find true NAs
-# true_missing_postal_codes <- clean_data_08 %>%
-#   filter(str_detect(donor_location, "^[ ,\\.;]*$"))
-# nrow(true_missing_postal_codes) / nrow(clean_data_08) * 100
 
-# TODO: this code does not check if the postal code has ever been used. Download PCCF for this.
-
-# TODO: Columns left to clean:
-# - electoral_district (need to validate against location ; WE ARE ASSUMING THAT LOCATION IS CORRECT ALWAYS)
-# - electoral_event (ask Martin about "0", "1", and "2")
-# - recipient (ask Martin about recipient_ID)
-# - donor_full_name (figure out later)
-# - amount_monetary ; amount_non_monetary (deal with 0 and negative values)
+# DIAGNOSTICS:
+# diagnoastic_data <- clean_data_14 %>% filter(!is_aggregated)
+# match_rate <- 1 - mean(is.na(diagnoastic_data$donor_postal_code))
+# diagnose_invalid_postal_codes <- clean_data_14 %>%
+#   filter(!is_aggregated) %>%
+#   group_by(is.na(donor_postal_code)) %>%
+#   summarise(
+#     n = n(),
+#     sum = sum(amount_monetary + amount_non_monetary)
+#   )
+# invalid_postal_codes <- clean_data_14 %>%
+#   filter(!is_aggregated & is.na(donor_postal_code)) %>%
+#   summarize(n = n(), sum = sum(amount_monetary + amount_non_monetary))
 
 # END.
-cleaned_IJF_data <- clean_data_09
+cleaned_IJF_data <- clean_data_14
 rows_discarded_total <- nrow(raw_IJF_data) - nrow(cleaned_IJF_data)
-perc_rows_discarded <- round(rows_discarded_total / nrow(raw_IJF_data) * 100, 2)
+perc_rows_discarded <- round(rows_discarded_total / nrow(raw_IJF_data) * 100, 5)
 
 # ------ Write to Parquet -------
 

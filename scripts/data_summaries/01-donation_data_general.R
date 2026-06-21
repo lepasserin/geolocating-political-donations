@@ -10,21 +10,6 @@ library(arrow)
 library(cowplot)
 library(slider)
 donations_data <- read_parquet("data/processed_data/donations_data.parquet")
-# TODO: refactor these changes into the cleaning script.
-donations_data <- donations_data %>%
-  mutate(
-    electoral_event_clean = case_when(
-      donation_date >= as.Date("2015-08-02") &
-        donation_date <= as.Date("2015-10-19") ~ "General Election",
-      donation_date >= as.Date("2019-09-11") &
-        donation_date <= as.Date("2019-10-21") ~ "General Election",
-      donation_date >= as.Date("2021-08-15") &
-        donation_date <= as.Date("2021-09-20") ~ "General Election",
-      TRUE ~ "Non-Election"
-    ),
-    total_amount = amount_monetary + amount_non_monetary
-  ) %>%
-  filter(total_amount <= 25000) # removing 2 errors ; SHOULD DO THIS IN THE CLEANING SCRIPT!!
 
 # -- Constants & Helpers --
 NATIONAL <- c("Registered parties", "Leadership contestants")
@@ -127,19 +112,23 @@ plot_data <- donations_data %>%
     group = factor(group, levels = c("National entity", "Local entity"))
   ) %>%
   filter(political_entity != "Nomination contestants") %>%
-  group_by(electoral_event_clean, group, political_entity) %>%
-  summarise(total_amount = sum(total_amount, na.rm = TRUE), .groups = "drop")
+  group_by(is_general_election_period, group, political_entity) %>%
+  summarise(total_amount = sum(total_amount), .groups = "drop")
 
-make_plot <- function(data, cycle_label, panel_title) {
+make_plot <- function(data, is_election, panel_title) {
   data %>%
-    filter(electoral_event_clean == cycle_label) %>%
-    ggplot(aes(x = group, y = total_amount, fill = political_entity)) +
+    filter(is_general_election_period == is_election) %>%
+    mutate(prop = total_amount / sum(total_amount)) %>%
+    ggplot(aes(x = group, y = prop, fill = political_entity)) +
     geom_col(position = position_stack()) +
-    scale_y_continuous(
-      labels = scales::dollar_format(scale = 1e-6, suffix = "M")
-    ) +
+    scale_y_continuous(labels = scales::percent_format()) +
     scale_fill_manual(values = ENTITY_COLOURS, drop = FALSE) +
-    labs(x = "Entity Type", y = NULL, fill = NULL, title = panel_title) +
+    labs(
+      x = "Entity Type",
+      y = "Proportion of contributed amount",
+      fill = NULL,
+      title = panel_title
+    ) +
     theme_classic() +
     theme(
       plot.title = element_text(face = "bold", hjust = 0.5, size = 10),
@@ -147,14 +136,15 @@ make_plot <- function(data, cycle_label, panel_title) {
       axis.text = element_text(face = "plain")
     )
 }
+
 Figure_2_1_a <- make_plot(
   plot_data,
-  "General Election",
+  TRUE,
   "A. During Election Cycles"
 )
 Figure_2_1_b <- make_plot(
   plot_data,
-  "Non-Election",
+  FALSE,
   "B. Outside Election Cycles"
 )
 p1 <- Figure_2_1_a + theme(legend.position = "none")
@@ -197,53 +187,53 @@ Figure_2_2_data <- donations_data %>%
   ) %>%
   group_by(month, party_group) %>%
   summarise(
-    total_donated = sum(amount_monetary + amount_non_monetary, na.rm = TRUE),
+    total_donated = sum(total_amount),
     n_donors = n(),
     .groups = "drop"
   ) %>%
   rename(political_party = party_group) %>%
   redistribute_december_ma(stratifying_column = "political_party")
 
-Figure_2_2_v1 <- Figure_2_2_data %>%
-  ggplot(aes(x = month, y = total_donated / 1e6, fill = political_party)) +
-  geom_area(alpha = 0.85, color = "white", linewidth = 0.3) +
-  geom_vline(
-    xintercept = as.Date(c("2015-10-19", "2019-10-21", "2021-09-20")),
-    color = "darkgray",
-    linetype = "dashed",
-    linewidth = 0.7
-  ) +
-  annotate(
-    "text",
-    x = as.Date(c("2015-10-19", "2019-10-21", "2021-09-20")),
-    y = Inf,
-    label = c("Oct 19, 2015", "Oct 21, 2019", "Sep 20, 2021"),
-    angle = 90,
-    hjust = 1.1,
-    vjust = -0.4,
-    size = 2,
-    color = "darkgray"
-  ) +
-  scale_fill_manual(values = PARTY_COLOURS) +
-  scale_x_date(
-    date_breaks = "1 year",
-    date_minor_breaks = "1 month",
-    date_labels = "%Y"
-  ) +
-  labs(
-    x = NULL,
-    y = "Monthly Donation Total (in millions of dollars)",
-    fill = NULL
-  ) +
-  theme_classic() +
-  theme(
-    legend.position = "top",
-    axis.title.y = element_text(size = 8),
-    axis.text = element_text(size = 8),
-    panel.grid.minor.x = element_line(color = "grey90", linewidth = 0.3),
-    legend.text = element_text(size = 6),
-    legend.key.size = grid::unit(5, "mm")
-  )
+# Figure_2_2_v1 <- Figure_2_2_data %>%
+#   ggplot(aes(x = month, y = total_donated / 1e6, fill = political_party)) +
+#   geom_area(alpha = 0.85, color = "white", linewidth = 0.3) +
+#   geom_vline(
+#     xintercept = as.Date(c("2015-10-19", "2019-10-21", "2021-09-20")),
+#     color = "darkgray",
+#     linetype = "dashed",
+#     linewidth = 0.7
+#   ) +
+#   annotate(
+#     "text",
+#     x = as.Date(c("2015-10-19", "2019-10-21", "2021-09-20")),
+#     y = Inf,
+#     label = c("Oct 19, 2015", "Oct 21, 2019", "Sep 20, 2021"),
+#     angle = 90,
+#     hjust = 1.1,
+#     vjust = -0.4,
+#     size = 2,
+#     color = "darkgray"
+#   ) +
+#   scale_fill_manual(values = PARTY_COLOURS) +
+#   scale_x_date(
+#     date_breaks = "1 year",
+#     date_minor_breaks = "1 month",
+#     date_labels = "%Y"
+#   ) +
+#   labs(
+#     x = NULL,
+#     y = "Monthly Donation Total (in millions of dollars)",
+#     fill = NULL
+#   ) +
+#   theme_classic() +
+#   theme(
+#     legend.position = "top",
+#     axis.title.y = element_text(size = 8),
+#     axis.text = element_text(size = 8),
+#     panel.grid.minor.x = element_line(color = "grey90", linewidth = 0.3),
+#     legend.text = element_text(size = 6),
+#     legend.key.size = grid::unit(5, "mm")
+#   )
 
 Figure_2_2_v2 <- Figure_2_2_data %>%
   ggplot(aes(x = month, y = total_donated / 1e6, color = political_party)) +
@@ -269,7 +259,8 @@ Figure_2_2_v2 <- Figure_2_2_data %>%
   scale_x_date(
     date_breaks = "1 year",
     date_minor_breaks = "1 month",
-    date_labels = "%Y"
+    date_labels = "%Y",
+    guide = guide_axis(minor.ticks = TRUE)
   ) +
   labs(
     x = NULL,
@@ -281,124 +272,125 @@ Figure_2_2_v2 <- Figure_2_2_data %>%
     legend.position = "top",
     axis.title.y = element_text(size = 8),
     axis.text = element_text(size = 8),
-    panel.grid.minor.x = element_line(color = "grey90", linewidth = 0.3),
+    axis.minor.ticks.length.x.bottom = rel(0.6),
     legend.text = element_text(size = 6),
     legend.key.size = grid::unit(5, "mm")
   )
 
 # ------ Figure 2.3 --------
 
-Figure_2_3_data <- donations_data %>%
-  filter(political_entity %in% c("Candidates", "Registered associations")) %>%
-  mutate(
-    party_group = if_else(
-      political_party %in% PARTIES_NAMED,
-      political_party,
-      "Other"
-    ),
-    party_group = factor(
-      party_group,
-      levels = c(
-        "Conservative Party of Canada",
-        "Liberal Party of Canada",
-        "New Democratic Party",
-        "Other"
-      )
-    ),
-    month = lubridate::floor_date(donation_date, "month")
-  ) %>%
-  group_by(month, party_group) %>%
-  summarise(
-    total_donated = sum(amount_monetary + amount_non_monetary, na.rm = TRUE),
-    n_donors = n(),
-    .groups = "drop"
-  ) %>%
-  rename(political_party = party_group) %>%
-  redistribute_december_ma(stratifying_column = "political_party")
+# Figure_2_3_data <- donations_data %>%
+#   filter(political_entity %in% c("Candidates", "Registered associations")) %>%
+#   mutate(
+#     party_group = if_else(
+#       political_party %in% PARTIES_NAMED,
+#       political_party,
+#       "Other"
+#     ),
+#     party_group = factor(
+#       party_group,
+#       levels = c(
+#         "Conservative Party of Canada",
+#         "Liberal Party of Canada",
+#         "New Democratic Party",
+#         "Other"
+#       )
+#     ),
+#     month = lubridate::floor_date(donation_date, "month")
+#   ) %>%
+#   group_by(month, party_group) %>%
+#   summarise(
+#     total_donated = sum(total_amount),
+#     n_donors = n(),
+#     .groups = "drop"
+#   ) %>%
+#   rename(political_party = party_group) %>%
+#   redistribute_december_ma(stratifying_column = "political_party")
 
-Figure_2_3_v1 <- Figure_2_3_data %>%
-  ggplot(aes(x = month, y = total_donated / 1e6, fill = political_party)) +
-  geom_area(alpha = 0.85, color = "white", linewidth = 0.3) +
-  geom_vline(
-    xintercept = as.Date(c("2015-10-19", "2019-10-21", "2021-09-20")),
-    color = "darkgray",
-    linetype = "dashed",
-    linewidth = 0.7
-  ) +
-  annotate(
-    "text",
-    x = as.Date(c("2015-10-19", "2019-10-21", "2021-09-20")),
-    y = Inf,
-    label = c("Oct 19, 2015", "Oct 21, 2019", "Sep 20, 2021"),
-    angle = 90,
-    hjust = 1.1,
-    vjust = -0.4,
-    size = 2,
-    color = "darkgray"
-  ) +
-  scale_fill_manual(values = PARTY_COLOURS) +
-  scale_x_date(
-    date_breaks = "1 year",
-    date_minor_breaks = "1 month",
-    date_labels = "%Y"
-  ) +
-  labs(
-    x = NULL,
-    y = "Monthly Donation Total (in millions of dollars)",
-    fill = NULL
-  ) +
-  theme_classic() +
-  theme(
-    legend.position = "top",
-    axis.title.y = element_text(face = "plain", size = 8),
-    axis.text = element_text(size = 12),
-    axis.text.x = element_text(size = 8),
-    panel.grid.minor.x = element_line(color = "grey90", linewidth = 0.3),
-    legend.text = element_text(size = 6),
-    legend.key.size = grid::unit(5, "mm")
-  )
+# Figure_2_3_v1 <- Figure_2_3_data %>%
+#   ggplot(aes(x = month, y = total_donated / 1e6, fill = political_party)) +
+#   geom_area(alpha = 0.85, color = "white", linewidth = 0.3) +
+#   geom_vline(
+#     xintercept = as.Date(c("2015-10-19", "2019-10-21", "2021-09-20")),
+#     color = "darkgray",
+#     linetype = "dashed",
+#     linewidth = 0.7
+#   ) +
+#   annotate(
+#     "text",
+#     x = as.Date(c("2015-10-19", "2019-10-21", "2021-09-20")),
+#     y = Inf,
+#     label = c("Oct 19, 2015", "Oct 21, 2019", "Sep 20, 2021"),
+#     angle = 90,
+#     hjust = 1.1,
+#     vjust = -0.4,
+#     size = 2,
+#     color = "darkgray"
+#   ) +
+#   scale_fill_manual(values = PARTY_COLOURS) +
+#   scale_x_date(
+#     date_breaks = "1 year",
+#     date_minor_breaks = "1 month",
+#     date_labels = "%Y"
+#   ) +
+#   labs(
+#     x = NULL,
+#     y = "Monthly Donation Total (in millions of dollars)",
+#     fill = NULL
+#   ) +
+#   theme_classic() +
+#   theme(
+#     legend.position = "top",
+#     axis.title.y = element_text(face = "plain", size = 8),
+#     axis.text = element_text(size = 12),
+#     axis.text.x = element_text(size = 8),
+#     panel.grid.minor.x = element_line(color = "grey90", linewidth = 0.3),
+#     legend.text = element_text(size = 6),
+#     legend.key.size = grid::unit(5, "mm")
+#   )
 
-Figure_2_3_v2 <- Figure_2_3_data %>%
-  ggplot(aes(x = month, y = total_donated / 1e6, color = political_party)) +
-  geom_line(linewidth = 0.8) +
-  geom_vline(
-    xintercept = as.Date(c("2015-10-19", "2019-10-21", "2021-09-20")),
-    color = "darkgray",
-    linetype = "dashed",
-    linewidth = 0.7
-  ) +
-  annotate(
-    "text",
-    x = as.Date(c("2015-10-19", "2019-10-21", "2021-09-20")),
-    y = Inf,
-    label = c("Oct 19, 2015", "Oct 21, 2019", "Sep 20, 2021"),
-    angle = 90,
-    hjust = 1.1,
-    vjust = -0.4,
-    size = 2,
-    color = "darkgray"
-  ) +
-  scale_color_manual(values = PARTY_COLOURS) +
-  scale_x_date(
-    date_breaks = "1 year",
-    date_minor_breaks = "1 month",
-    date_labels = "%Y"
-  ) +
-  labs(
-    x = NULL,
-    y = "Monthly Donation Total (in millions of dollars)",
-    color = NULL
-  ) +
-  theme_classic() +
-  theme(
-    legend.position = "top",
-    axis.title.y = element_text(face = "plain", size = 8),
-    axis.text = element_text(size = 12),
-    axis.text.x = element_text(size = 8),
-    panel.grid.minor.x = element_line(color = "grey90", linewidth = 0.3),
-    legend.text = element_text(size = 6),
-    legend.key.size = grid::unit(5, "mm")
-  )
+# Figure_2_3_v2 <- Figure_2_3_data %>%
+#   ggplot(aes(x = month, y = total_donated / 1e6, color = political_party)) +
+#   geom_line(linewidth = 0.8) +
+#   geom_vline(
+#     xintercept = as.Date(c("2015-10-19", "2019-10-21", "2021-09-20")),
+#     color = "darkgray",
+#     linetype = "dashed",
+#     linewidth = 0.7
+#   ) +
+#   annotate(
+#     "text",
+#     x = as.Date(c("2015-10-19", "2019-10-21", "2021-09-20")),
+#     y = Inf,
+#     label = c("Oct 19, 2015", "Oct 21, 2019", "Sep 20, 2021"),
+#     angle = 90,
+#     hjust = 1.1,
+#     vjust = -0.4,
+#     size = 2,
+#     color = "darkgray"
+#   ) +
+#   scale_color_manual(values = PARTY_COLOURS) +
+#   scale_x_date(
+#     date_breaks = "1 year",
+#     date_minor_breaks = "1 month",
+#     date_labels = "%Y",
+#     guide = guide_axis(minor.ticks = TRUE)
+#   ) +
+#   labs(
+#     x = NULL,
+#     y = "Monthly Donation Total (in millions of dollars)",
+#     color = NULL
+#   ) +
+#   theme_classic() +
+#   theme(
+#     legend.position = "top",
+#     axis.title.y = element_text(face = "plain", size = 8),
+#     axis.text = element_text(size = 12),
+#     axis.text.x = element_text(size = 8),
+#     axis.minor.ticks.length.x.bottom = rel(0.6),
+#     legend.text = element_text(size = 6),
+#     legend.key.size = grid::unit(5, "mm")
+#   )
 
 # ------ Figure 2.4 (In-District: Candidates & EDAs) --------
 
@@ -426,54 +418,54 @@ Figure_2_4_data <- donations_data %>%
   ) %>%
   group_by(month, party_group) %>%
   summarise(
-    total_donated = sum(amount_monetary + amount_non_monetary, na.rm = TRUE),
+    total_donated = sum(total_amount),
     n_donors = n(),
     .groups = "drop"
   ) %>%
   rename(political_party = party_group) %>%
   redistribute_december_ma(stratifying_column = "political_party")
 
-Figure_2_4_v1 <- Figure_2_4_data %>%
-  ggplot(aes(x = month, y = total_donated / 1e6, fill = political_party)) +
-  geom_area(alpha = 0.85, color = "white", linewidth = 0.3) +
-  geom_vline(
-    xintercept = as.Date(c("2015-10-19", "2019-10-21", "2021-09-20")),
-    color = "darkgray",
-    linetype = "dashed",
-    linewidth = 0.7
-  ) +
-  annotate(
-    "text",
-    x = as.Date(c("2015-10-19", "2019-10-21", "2021-09-20")),
-    y = Inf,
-    label = c("Oct 19, 2015", "Oct 21, 2019", "Sep 20, 2021"),
-    angle = 90,
-    hjust = 1.1,
-    vjust = -0.4,
-    size = 2,
-    color = "darkgray"
-  ) +
-  scale_fill_manual(values = PARTY_COLOURS) +
-  scale_x_date(
-    date_breaks = "1 year",
-    date_minor_breaks = "1 month",
-    date_labels = "%Y"
-  ) +
-  labs(
-    x = NULL,
-    y = "Monthly Donation Total (in millions of dollars)",
-    fill = NULL
-  ) +
-  theme_classic() +
-  theme(
-    legend.position = "top",
-    axis.title.y = element_text(face = "plain", size = 8),
-    axis.text = element_text(size = 12),
-    axis.text.x = element_text(size = 8),
-    panel.grid.minor.x = element_line(color = "grey90", linewidth = 0.3),
-    legend.text = element_text(size = 6),
-    legend.key.size = grid::unit(5, "mm")
-  )
+# Figure_2_4_v1 <- Figure_2_4_data %>%
+#   ggplot(aes(x = month, y = total_donated / 1e6, fill = political_party)) +
+#   geom_area(alpha = 0.85, color = "white", linewidth = 0.3) +
+#   geom_vline(
+#     xintercept = as.Date(c("2015-10-19", "2019-10-21", "2021-09-20")),
+#     color = "darkgray",
+#     linetype = "dashed",
+#     linewidth = 0.7
+#   ) +
+#   annotate(
+#     "text",
+#     x = as.Date(c("2015-10-19", "2019-10-21", "2021-09-20")),
+#     y = Inf,
+#     label = c("Oct 19, 2015", "Oct 21, 2019", "Sep 20, 2021"),
+#     angle = 90,
+#     hjust = 1.1,
+#     vjust = -0.4,
+#     size = 2,
+#     color = "darkgray"
+#   ) +
+#   scale_fill_manual(values = PARTY_COLOURS) +
+#   scale_x_date(
+#     date_breaks = "1 year",
+#     date_minor_breaks = "1 month",
+#     date_labels = "%Y"
+#   ) +
+#   labs(
+#     x = NULL,
+#     y = "Monthly Donation Total (in millions of dollars)",
+#     fill = NULL
+#   ) +
+#   theme_classic() +
+#   theme(
+#     legend.position = "top",
+#     axis.title.y = element_text(face = "plain", size = 8),
+#     axis.text = element_text(size = 12),
+#     axis.text.x = element_text(size = 8),
+#     panel.grid.minor.x = element_line(color = "grey90", linewidth = 0.3),
+#     legend.text = element_text(size = 6),
+#     legend.key.size = grid::unit(5, "mm")
+#   )
 
 Figure_2_4_v2 <- Figure_2_4_data %>%
   ggplot(aes(x = month, y = total_donated / 1e6, color = political_party)) +
@@ -499,7 +491,8 @@ Figure_2_4_v2 <- Figure_2_4_data %>%
   scale_x_date(
     date_breaks = "1 year",
     date_minor_breaks = "1 month",
-    date_labels = "%Y"
+    date_labels = "%Y",
+    guide = guide_axis(minor.ticks = TRUE)
   ) +
   labs(
     x = NULL,
@@ -512,7 +505,7 @@ Figure_2_4_v2 <- Figure_2_4_data %>%
     axis.title.y = element_text(face = "plain", size = 8),
     axis.text = element_text(size = 12),
     axis.text.x = element_text(size = 8),
-    panel.grid.minor.x = element_line(color = "grey90", linewidth = 0.3),
+    axis.minor.ticks.length.x.bottom = rel(0.6),
     legend.text = element_text(size = 6),
     legend.key.size = grid::unit(5, "mm")
   )
@@ -543,54 +536,54 @@ Figure_2_5_data <- donations_data %>%
   ) %>%
   group_by(month, party_group) %>%
   summarise(
-    total_donated = sum(amount_monetary + amount_non_monetary, na.rm = TRUE),
+    total_donated = sum(total_amount),
     n_donors = n(),
     .groups = "drop"
   ) %>%
   rename(political_party = party_group) %>%
   redistribute_december_ma(stratifying_column = "political_party")
 
-Figure_2_5_v1 <- Figure_2_5_data %>%
-  ggplot(aes(x = month, y = total_donated / 1e6, fill = political_party)) +
-  geom_area(alpha = 0.85, color = "white", linewidth = 0.3) +
-  geom_vline(
-    xintercept = as.Date(c("2015-10-19", "2019-10-21", "2021-09-20")),
-    color = "darkgray",
-    linetype = "dashed",
-    linewidth = 0.7
-  ) +
-  annotate(
-    "text",
-    x = as.Date(c("2015-10-19", "2019-10-21", "2021-09-20")),
-    y = Inf,
-    label = c("Oct 19, 2015", "Oct 21, 2019", "Sep 20, 2021"),
-    angle = 90,
-    hjust = 1.1,
-    vjust = -0.4,
-    size = 2,
-    color = "darkgray"
-  ) +
-  scale_fill_manual(values = PARTY_COLOURS) +
-  scale_x_date(
-    date_breaks = "1 year",
-    date_minor_breaks = "1 month",
-    date_labels = "%Y"
-  ) +
-  labs(
-    x = NULL,
-    y = "Monthly Donation Total (in millions of dollars)",
-    fill = NULL
-  ) +
-  theme_classic() +
-  theme(
-    legend.position = "top",
-    axis.title.y = element_text(face = "plain", size = 8),
-    axis.text = element_text(size = 12),
-    axis.text.x = element_text(size = 8),
-    panel.grid.minor.x = element_line(color = "grey90", linewidth = 0.3),
-    legend.text = element_text(size = 6),
-    legend.key.size = grid::unit(5, "mm")
-  )
+# Figure_2_5_v1 <- Figure_2_5_data %>%
+#   ggplot(aes(x = month, y = total_donated / 1e6, fill = political_party)) +
+#   geom_area(alpha = 0.85, color = "white", linewidth = 0.3) +
+#   geom_vline(
+#     xintercept = as.Date(c("2015-10-19", "2019-10-21", "2021-09-20")),
+#     color = "darkgray",
+#     linetype = "dashed",
+#     linewidth = 0.7
+#   ) +
+#   annotate(
+#     "text",
+#     x = as.Date(c("2015-10-19", "2019-10-21", "2021-09-20")),
+#     y = Inf,
+#     label = c("Oct 19, 2015", "Oct 21, 2019", "Sep 20, 2021"),
+#     angle = 90,
+#     hjust = 1.1,
+#     vjust = -0.4,
+#     size = 2,
+#     color = "darkgray"
+#   ) +
+#   scale_fill_manual(values = PARTY_COLOURS) +
+#   scale_x_date(
+#     date_breaks = "1 year",
+#     date_minor_breaks = "1 month",
+#     date_labels = "%Y"
+#   ) +
+#   labs(
+#     x = NULL,
+#     y = "Monthly Donation Total (in millions of dollars)",
+#     fill = NULL
+#   ) +
+#   theme_classic() +
+#   theme(
+#     legend.position = "top",
+#     axis.title.y = element_text(face = "plain", size = 8),
+#     axis.text = element_text(size = 12),
+#     axis.text.x = element_text(size = 8),
+#     panel.grid.minor.x = element_line(color = "grey90", linewidth = 0.3),
+#     legend.text = element_text(size = 6),
+#     legend.key.size = grid::unit(5, "mm")
+#   )
 
 Figure_2_5_v2 <- Figure_2_5_data %>%
   ggplot(aes(x = month, y = total_donated / 1e6, color = political_party)) +
@@ -616,7 +609,8 @@ Figure_2_5_v2 <- Figure_2_5_data %>%
   scale_x_date(
     date_breaks = "1 year",
     date_minor_breaks = "1 month",
-    date_labels = "%Y"
+    date_labels = "%Y",
+    guide = guide_axis(minor.ticks = TRUE)
   ) +
   labs(
     x = NULL,
@@ -629,7 +623,7 @@ Figure_2_5_v2 <- Figure_2_5_data %>%
     axis.title.y = element_text(face = "plain", size = 8),
     axis.text = element_text(size = 12),
     axis.text.x = element_text(size = 8),
-    panel.grid.minor.x = element_line(color = "grey90", linewidth = 0.3),
+    axis.minor.ticks.length.x.bottom = rel(0.6),
     legend.text = element_text(size = 6),
     legend.key.size = grid::unit(5, "mm")
   )
@@ -639,44 +633,87 @@ Figure_2_5_v2 <- Figure_2_5_data %>%
 Table_2_1 <- donations_data %>%
   filter(political_entity %in% c("Candidates", "Registered associations")) %>%
   mutate(
-    entity_cycle = case_when(
-      political_entity == "Candidates" &
-        electoral_event_clean == "General Election" ~ "Candidates (in-cycle)",
-      political_entity == "Candidates" &
-        electoral_event_clean == "Non-Election" ~ "Candidates (out-of-cycle)",
-      political_entity == "Registered associations" &
-        electoral_event_clean == "General Election" ~ "EDAs (in-cycle)",
-      political_entity == "Registered associations" &
-        electoral_event_clean == "Non-Election" ~ "EDAs (out-of-cycle)"
-    ),
-    donation_year = lubridate::year(donation_date)
+    entity_cycle = factor(
+      case_when(
+        political_entity == "Candidates" &
+          general_election_period != "None" ~ "Candidates (in-cycle)",
+        political_entity == "Candidates" &
+          general_election_period == "None" ~ "Candidates (out-of-cycle)",
+        political_entity == "Registered associations" &
+          general_election_period != "None" ~ "EDAs (in-cycle)",
+        political_entity == "Registered associations" &
+          general_election_period == "None" ~ "EDAs (out-of-cycle)"
+      ),
+      levels = c(
+        "Candidates (in-cycle)",
+        "Candidates (out-of-cycle)",
+        "EDAs (in-cycle)",
+        "EDAs (out-of-cycle)"
+      )
+    )
   ) %>%
-  group_by(entity_cycle, donation_year) %>%
+  group_by(entity_cycle) %>%
   summarise(
-    yr_amt = sum(total_amount, na.rm = TRUE),
-    yr_cnt = n(),
-    yr_ood_amt = sum(total_amount[is_out_of_district], na.rm = TRUE),
-    yr_ood_cnt = sum(is_out_of_district, na.rm = TRUE),
-    .groups = "drop_last"
-  ) %>%
-  summarise(
-    `Mean Annual Sum` = round(mean(yr_amt)),
-    `Mean Annual Count` = round(mean(yr_cnt)),
-    `OOD % (Sum)` = round(mean(yr_ood_amt) / mean(yr_amt), 2),
-    `OOD % (Count)` = round(mean(yr_ood_cnt) / mean(yr_cnt), 2),
+    Amount = sum(total_amount, na.rm = TRUE),
+    `OOD %` = sum(total_amount[is_out_of_district], na.rm = TRUE) /
+      sum(total_amount, na.rm = TRUE),
     .groups = "drop"
   ) %>%
+  mutate(`% of Total` = Amount / sum(Amount)) %>%
+  mutate(
+    Amount = round(Amount),
+    `% of Total` = scales::percent(`% of Total`, accuracy = 0.1),
+    `OOD %` = scales::percent(`OOD %`, accuracy = 0.1)
+  ) %>%
   rename(Entity = entity_cycle) %>%
+  select(Entity, Amount, `% of Total`, `OOD %`) %>%
   arrange(Entity)
+
+Table_2_2 <- donations_data %>%
+  mutate(
+    general_election_period = factor(
+      general_election_period,
+      levels = c(
+        "42nd general election",
+        "43rd general election",
+        "44th general election",
+        "None"
+      )
+    )
+  ) %>%
+  group_by(general_election_period) %>%
+  summarise(
+    Amount = sum(total_amount),
+    `OOD% (only local entities)` = sum(
+      total_amount[is_out_of_district],
+      na.rm = TRUE
+    ) /
+      sum(total_amount[!is.na(is_out_of_district)]),
+    .groups = "drop"
+  ) %>%
+  mutate(`% of Total` = Amount / sum(Amount)) %>%
+  mutate(
+    Amount = round(Amount),
+    `% of Total` = scales::percent(`% of Total`, accuracy = 1),
+    `OOD% (only local entities)` = scales::percent(
+      `OOD% (only local entities)`,
+      accuracy = 0.1
+    )
+  ) %>%
+  rename(`General Election Period` = general_election_period) %>%
+  select(
+    `General Election Period`,
+    Amount,
+    `% of Total`,
+    `OOD% (only local entities)`
+  ) %>%
+  arrange(`General Election Period`)
 
 # ---- Write to File ------
 saveRDS(Figure_2_1, "other/figures/Figure_2_1.rds")
-saveRDS(Figure_2_2_v1, "other/figures/Figure_2_2_v1.rds")
 saveRDS(Figure_2_2_v2, "other/figures/Figure_2_2_v2.rds")
-saveRDS(Figure_2_3_v1, "other/figures/Figure_2_3_v1.rds")
 saveRDS(Figure_2_3_v2, "other/figures/Figure_2_3_v2.rds")
-saveRDS(Figure_2_4_v1, "other/figures/Figure_2_4_v1.rds")
 saveRDS(Figure_2_4_v2, "other/figures/Figure_2_4_v2.rds")
-saveRDS(Figure_2_5_v1, "other/figures/Figure_2_5_v1.rds")
 saveRDS(Figure_2_5_v2, "other/figures/Figure_2_5_v2.rds")
 write_csv(Table_2_1, "other/tables/Table_2_1.csv")
+write_csv(Table_2_2, "other/tables/Table_2_2.csv")
