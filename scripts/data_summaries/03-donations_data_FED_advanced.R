@@ -5,6 +5,7 @@
 # License: MIT
 
 # --------- Setup ----------
+set.seed(416)
 library(tidyverse)
 library(sf)
 library(arrow)
@@ -64,105 +65,8 @@ fed_to_region <- FED_shapefile %>%
 
 # ----- Figure Wrapper -----
 
-# Wrapper for Versions of Figure spatial_1
+# Figure Wrapper for Network Graph
 make_fed_graph <- function(
-  data,
-  edge_col,
-  directed = TRUE,
-  prune_quantile = 0.8,
-  node_prune_quantile = 0.05
-) {
-  # Build edge list: drop zero-weight edges
-  raw_edges <- data %>%
-    select(sending_district, receiving_district, weight = all_of(edge_col)) %>%
-    filter(weight > 0)
-
-  # If undirected, collapse each unordered pair into a single summed-flow edge
-  if (!directed) {
-    raw_edges <- raw_edges %>%
-      mutate(
-        a = pmin(sending_district, receiving_district),
-        b = pmax(sending_district, receiving_district)
-      ) %>%
-      group_by(sending_district = a, receiving_district = b) %>%
-      summarise(weight = sum(weight), .groups = "drop")
-  }
-
-  # Prune weakest edges
-  edges <- raw_edges %>%
-    filter(weight >= quantile(weight, prune_quantile))
-
-  # Node outflow strength
-  node_strength <- edges %>%
-    group_by(name = sending_district) %>%
-    summarise(outflow = sum(weight), .groups = "drop")
-
-  # Degree (in + out) for node pruning
-  node_degree <- data.frame(
-    name = c(edges$sending_district, edges$receiving_district)
-  ) %>%
-    count(name, name = "degree")
-
-  # Label threshold: top 10% by outflow
-  label_threshold <- quantile(node_strength$outflow, 0.90)
-
-  # Build node table
-  nodes <- data.frame(name = VALID_FED_NAMES) %>%
-    left_join(node_strength, by = "name") %>%
-    mutate(outflow = replace_na(outflow, 0)) %>%
-    mutate(outflow_scaled = outflow) %>%
-    left_join(node_degree, by = "name") %>%
-    mutate(degree = replace_na(degree, 0)) %>%
-    left_join(fed_to_region, by = "name") %>%
-    mutate(region = replace_na(region, "Other")) %>%
-    filter(degree > quantile(degree, node_prune_quantile))
-
-  # Re-filter edges to pruned node set
-  active_nodes <- nodes$name
-  edges <- edges %>%
-    filter(
-      sending_district %in% active_nodes,
-      receiving_district %in% active_nodes
-    )
-
-  g <- graph_from_data_frame(d = edges, directed = directed, vertices = nodes)
-  components <- igraph::components(g)
-  largest <- which.max(components$csize)
-  g <- igraph::induced_subgraph(
-    g,
-    vids = V(g)[components$membership == largest]
-  )
-
-  # Sparse-stress layout
-  layout_coords <- layout_with_sparse_stress(g, pivots = 50, weights = "weight")
-
-  # Directed edges get arrows; undirected edges don't
-  edge_layer <- if (directed) {
-    geom_edge_link(
-      aes(alpha = weight),
-      arrow = arrow(length = unit(2, "mm"), type = "closed"),
-      end_cap = circle(3, "mm"),
-      colour = "#AAAAAA"
-    )
-  } else {
-    geom_edge_link(aes(alpha = weight), colour = "#AAAAAA")
-  }
-
-  ggraph(g, layout = "manual", x = layout_coords[, 1], y = layout_coords[, 2]) +
-    edge_layer +
-    geom_node_point(aes(size = outflow_scaled, colour = region)) +
-    scale_colour_manual(values = REGION_COLOURS, name = "Region") +
-    scale_size_continuous(range = c(1, 12), name = "Outflow") +
-    geom_node_text(
-      aes(label = ifelse(outflow > label_threshold, name, "")),
-      size = 1.2,
-      repel = TRUE
-    ) +
-    scale_edge_alpha_continuous(range = c(0.05, 0.9), name = edge_col) +
-    theme_graph(base_family = "sans")
-}
-
-make_fed_graph_2 <- function(
   data,
   edge_col,
   directed = TRUE,
@@ -272,11 +176,17 @@ make_fed_graph_2 <- function(
       repel = TRUE
     ) +
     scale_edge_alpha_continuous(range = c(0.05, 0.9), name = edge_col) +
-    theme_graph(base_family = "sans")
+    theme_graph(base_family = "sans") +
+    theme(
+      legend.title = element_text(size = 8, face = "bold"),
+      legend.text = element_text(size = 7),
+      legend.key.size = unit(3, "mm"),
+      legend.spacing.y = unit(1, "mm"),
+      legend.box.spacing = unit(2, "mm")
+    )
 }
 
-
-# Wrapper for Version 2 of Figure Spatial 2
+# Wrapper for Interdistrict Flows Map
 make_province_map <- function(
   data,
   edge_col,
@@ -442,7 +352,7 @@ make_province_map <- function(
 
 # --------- Figures ---------
 
-Figure_spatial_1_v1 <- make_fed_graph_2(
+Figure_spatial_1_v1 <- make_fed_graph(
   FED_donations_data,
   edge_col = "donation_amount_EDA_all",
   directed = TRUE,
@@ -450,7 +360,7 @@ Figure_spatial_1_v1 <- make_fed_graph_2(
   prune_quantile = 0.4
 )
 
-Figure_spatial_1_v2 <- make_fed_graph_2(
+Figure_spatial_1_v2 <- make_fed_graph(
   FED_donations_data,
   edge_col = "donation_amount_cand_on",
   directed = TRUE,
