@@ -7,7 +7,33 @@
 # -------- Setup --------
 library(tidyverse)
 library(cancensus)
-CENSUS_DATAFILES <- c("CA21", "CA16")
-Sys.getenv("CM_API_KEY") # make sure the CensusMapper key is accessible
+WHICH_CENSUS <- "CA21"
+MINIMUM_SPATIAL_GRAIN <- "DA"
+if (Sys.getenv("CM_API_KEY") == "") {
+  message("Error: CensusMapper API key is unavailable.")
+}
+FED_shapefile <- readRDS("data/clean_data/clean_FED_shapefile.rds") # names: FED , geometry , PROVINCE (for validation)
+VARIABLES_OF_INTEREST <- c()
 
-# --- Save to Parquet ---
+# --- Get Census Data for All DAs ---
+
+province_region_ids <- list_census_regions(WHICH_CENSUS) %>%
+  filter(level == "PR") %>%
+  pull(region)
+
+
+the <- list_census_vectors(WHICH_CENSUS)
+thing <- list_census_regions("CA21")
+length(unique(list_census_regions("CA21")$level))
+
+
+toronto_dbs <- get_census(
+  dataset = WHICH_CENSUS,
+  regions = list(CMA = "35535"),
+  level = MINIMUM_SPATIAL_GRAIN, # <-- This is where you specify DA
+  geo_format = "sf" # Optional: returns spatial boundaries if needed
+)
+
+# ----- Save to File  -----
+
+# COLUMNS: DA, PR, FED, geometry, population,

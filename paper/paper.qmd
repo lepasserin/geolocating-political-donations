@@ -930,4 +930,29 @@ p_all
 
 * **Longitudinal Visualizations:** All types of donations occurred at much higher rates in December compared to other months, regardless of year, recipient type, party affiliation, etc. There are two likely causes for this; a clerical error at the source, or, the IJF frequently imputes the fiscal/election date in the absence of donation receipt date. This did not impact our analysis, however December donations in all Figures presented below were imputed using their neighboring November and January values, and their recorded monetary amounts were redistributed across their associated years so that nothing was lost. This served to reduce visual clutter from large, phantom peaks at the end of each year.
 
+# Creating Custom Spatial and Census Lookup Tables
+
+This section describes how we wrangled two custom lookup tables used throughout this report: one to convert between different levels of spatial hierarchy, and a second to search for national socio-demographic statistics at a fine spatial grain.
+
+The first is based on Statistics Canada's 2024 postal code conversion files (PCCF), modifed to resolve many-to-many spatial overlaps. The PCCF we used provides linkages between all registered Canadian postal codes (accurate as of June 2024) and various administrartive divisions [@statcan_pccf_2025]. In particular, these include the dissemination areas (DAs) of the 2021 Census, the federal electoral districts (FEDs) of the 2013 representational order, and the 13 provinces/territories. These sets of DAs and FEDs are the same versions we chose for our study. However, (1) one postal codes may straddle multiple dissemination areas, and (2) one disseminastion area may straddle multiple districts. To resolve the first issue, we used a single link indicator (SLI), used to establish a one-to-one relationship between posta codes and DAs, and avaliable in PCCF files by default [@statcan_pccf_2025]. Statistics Canada determines SLIs by estimating the population that resides in each DA within the postal code area (based on 2021 Census population counts) and assigns the code the one with a higher population [@statcan_pccf_2025]. To resolve the second issue,   This indicator A small proportion (**X~0.001%**) of postal codes in the PCCF used did not have recorded FEDs. [this was oslved by...]. The resulting table allowed us to map each postal code in our dataset to one DA, each DA to one FED, and each FED to one province, which were 
+
+
+
+
+. These protocols are implemented in `scripts/cleaning/03-clean_PCCF.R`  derived our desired lookup tables from Statistics Canada's postal code conversion file (PCCF) and the 2021 Canadian Census. Files in `data/cleaning` resulted in the following supplimentary datasets used in our analysis:
+
+- Many-to-one spatial relationships between available data: `clean_PCCF.parquet`. Variables are: PC (unique key), DA, FED, PR.
+- 2021 Census statistics for every DA : `clean_census_vars.parquet`. Variables are: DA (unique key), and variables used
+
+## Custom Spatial Lookup Table: `clean_PCCF.parquet`
+
+## Custom Census Lookup Table: `clean_census_vars.parquet`
+
+
+# Downloading Census Information
+
+We accessed scio-demographic data from the 2021 Canadian Census by querying the CensusMapper API in R through `cancensus`. We chose the 2021 Census over the 2016 Census since the midpoint of our time period (2019) region is closer to this. The Dissemination Area (DA) is the smallest spatial resolution where our desired census variables are tracked [CITATION], consisting of roughly 500-700 people [CITATION]. For the individual model, entities were assigned to DAs using Statistics Canada's PCCF, which maps postal codes onto 2021 census DAs [@statcan_pccf_2025]. The postal codes of the specific file we used are current as of June 2024. Access to this file was granted by the University of Toronto, through Borealis. For district-level models, census data at the DA level was grouped into FEDs by spatially joinining publically accessible FED shapefiles [CITATION] and geometries provided by the CensusMapper API.
+
+
+
 # References
