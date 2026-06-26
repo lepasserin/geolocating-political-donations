@@ -64,3 +64,7 @@ data/processed_data/donations_data_appendix.parquet
 data/raw_data/raw_PCFRF_2022.txt
 data/raw_data/raw_PCCF_2024.tab
 data/raw_data/raw_GAF_2021.csv
+data/raw_data/od_cntrbtn_de_e.csv
+data/clean_data/FED_lookup.rds
+data/clean_data/PCCF_lookup.parquet
+data/clean_data/DA_lookup.parquet

@@ -1,89 +1,194 @@
-# Purpose: Format Statistics Canada's Base PCCF TAB File into a hierarchical one-to-many spatial lookup table.
+# Purpose: Format Statistics Canada's Base PCCF TAB File into a hierarchical spatial lookup table.
 # Author: Benedict Cummins-Mburu
-# Last Updated: 24 June 2026
+# Last Updated: 25 Jun 2026
+# Status: COMPLETE
 # Contact: b.cumminsmburu@utoronto.ca
 # License: MIT
+# Notes:
+# - 35% of entries dropped during SLI step.
+# - 0.7% of postal codes dropped since did not refer to a valid DA or FED.
+# - 0.5% of postal codes dropped resolving the DA to FED issue. Wanted to avoid reassigning PCs, so dropped them instead.
 
 # ------- Setup --------
 library(tidyverse)
 library(data.table)
+library(arrow)
 PCCF_2024 <- data.table::fread("data/raw_data/raw_PCCF_2024.tab")
-GAF_2021 <- data.table::fread("data/raw_data/raw_GAF_2021.csv")
-FED_shapefile <- readRDS("data/clean_data/clean_FED_shapefile.rds")
+DA_lookup <- read_parquet("data/clean_data/DA_lookup.parquet")
+FED_lookup <- readRDS("data/clean_data/FED_lookup.rds")
+donations_data <- read_parquet(
+  # just for informal validation
+  "data/processed_data/donations_data_appendix.parquet"
+)
+donations_data_pc <- donations_data %>%
+  filter(!is.na(donor_postal_code))
 
-# ------ Cleaning -------
+# ----- Constants ------
 
-# 1. Establish PC to DA 1:1 mapping
+VALID_PRs <- c(
+  "10",
+  "11",
+  "12",
+  "13",
+  "24",
+  "35",
+  "46",
+  "47",
+  "48",
+  "59",
+  "60",
+  "61",
+  "62"
+)
+VALID_DAs <- as.character(DA_lookup$DAUID)
+VALID_FEDs <- as.character(FED_shapefile$FEDUID)
+DONATIONS_DATA_POSTAL_CODES <- unique(donations_data_pc$donor_postal_code)
+
+# ------ Helpers -------
+
+misalignment_exists <- function(df, from, to) {
+  counts <- df %>%
+    distinct(.data[[from]], .data[[to]]) %>%
+    count(.data[[from]], name = "n_targets")
+  return(any(counts$n_targets > 1))
+}
+
+modal_DA_to_FED_map <- function(df) {
+  df %>%
+    count(DAUID, FEDUID, name = "n") %>%
+    group_by(DAUID) %>%
+    arrange(desc(n), FEDUID, .by_group = TRUE) %>%
+    slice_head(n = 1) %>%
+    ungroup() %>%
+    select(DAUID, FEDUID_mode = FEDUID)
+}
+
+# ------ Cleaning ------
+
 clean_PCCF_01 <- PCCF_2024 %>%
-  filter(SLI == 1)
+  rename(
+    FEDUID = FED13uid,
+    DAUID = DAuid,
+    PRUID = PR
+  ) %>%
+  filter(SLI == 1) %>%
+  select(PC, DAUID, FEDUID, PRUID)
 
+clean_PCCF_02 <- clean_PCCF_01 %>%
+  filter(DAUID != 0)
+
+clean_PCCF_03 <- clean_PCCF_02 %>%
+  filter(FEDUID != 0)
+
+clean_PCCF_04 <- clean_PCCF_03 %>%
+  filter(DAUID %in% VALID_DAs)
+
+clean_PCCF_05 <- clean_PCCF_04 %>%
+  filter(FEDUID %in% VALID_FEDs)
+
+clean_PCCF_06 <- clean_PCCF_05 %>%
+  filter(PRUID %in% VALID_PRs)
+
+da_fed_mode <- modal_DA_to_FED_map(clean_PCCF_06)
+clean_PCCF_07 <- clean_PCCF_06 %>%
+  left_join(da_fed_mode, by = "DAUID") %>%
+  filter(FEDUID == FEDUID_mode) %>%
+  select(PC, DAUID, FEDUID, PRUID)
+
+clean_PCCF <- clean_PCCF_07
+
+# ------ Validation -----
+
+# 1. Validate the Integrity and Uniqueness of the PCs
 if (length(unique(clean_PCCF_01$PC)) == nrow(clean_PCCF_01)) {
   message("Validation Passed.")
 } else {
   stop("Validation Failed: Filtering by SLI = 1 did not result in unique PCs.")
 }
-
 if (length(unique(clean_PCCF_01$PC)) == length(unique(PCCF_2024$PC))) {
   message("Validation Passed.")
 } else {
   stop("Validation Failed: Filtering by SLI = 1 removed some PCs.")
 }
-
 if (all(str_detect(clean_PCCF_01$PC, "^[A-Z]\\d[A-Z]\\d[A-Z]\\d$"))) {
   message("Validation Passed.")
 } else {
   message("Validation Failed: Some PCs are malformatted.")
 }
 
-# 2. Establish DA to FED 1:1 mapping
-
-# ----- Constants ------
-
-# ------- Parse TXT and Establish 1:1 Mapping --------
-
-# Define the exact character positions for the columns
-col_positions <- fwf_positions(
-  start = c(1, 7, 12),
-  end = c(6, 11, 67),
-  col_names = c("postal_code", "fed_uid", "fed_name")
-)
-
-# Read TXT file
-fed_mapping <- read_fwf(
-  file = path_to_raw_PCFRF,
-  col_positions = col_positions,
-  col_types = cols(.default = col_character()),
-  trim_ws = TRUE
-)
-
-# Reduce to a  1:1 mapping
-final_mapping_df1 <- fed_mapping %>%
-  mutate(
-    FED = fed_name,
-    FEDUID = fed_uid,
-    PC = postal_code,
-    PROVINCE = PROVINCE_CODES[str_sub(FEDUID, 1, 2)]
-  ) %>%
-  select(FED, PC, FEDUID, PROVINCE) %>%
-  distinct(PC, .keep_all = TRUE)
-
-# Switch from Latin-1 to UTF-8
-
-final_mapping_df <- final_mapping_df1 %>%
-  mutate(FED = iconv(FED, from = "Windows-1252", to = "UTF-8"))
-
-# ------- Validation --------
-
-if (all(!is.na(final_mapping_df$PROVINCE))) {
+# 2. Assess the Loss of Missing DAs, FEDs, or PRs
+if (all(clean_PCCF_01$PRUID %in% VALID_PRs)) {
   message("Validation Passed.")
 } else {
-  stop("Validation Failed: Some FEDs could not be mapped to Provinces.")
+  message("Validation Failed: Some PRs are missing.")
+}
+if (
+  ((nrow(clean_PCCF_01) - nrow(clean_PCCF_03)) / nrow(clean_PCCF_01)) < 0.007
+) {
+  message("Validation Passed.")
+} else {
+  stop(
+    "Validation Failed: Post-SLI data rows are missing over 0.7% of DAs or FEDs."
+  )
 }
 
+# 3. Verify the Validity of the remaining PRs, DAs, and FEDs
+if (nrow(clean_PCCF_03) == nrow(clean_PCCF_06)) {
+  message("Validation Passed.")
+} else {
+  stop(
+    "Validation Failed: One of DAs, FEDs, or PRs in the lookup table is invalid."
+  )
+}
 
-# ------- Save as a CSV --------
+# 4. Assess the Loss from the Restrictive Mapping Steps
+if (!misalignment_exists(clean_PCCF_06, "PC", "PRUID")) {
+  message("Validation Passed.")
+} else {
+  stop("Validation Failed: Some PCs map to multiple provinces.")
+}
+if (!misalignment_exists(clean_PCCF_06, "DAUID", "PRUID")) {
+  message("Validation Passed.")
+} else {
+  stop("Validation Failed: Some DAs map to multiple provinces.")
+}
+if (!misalignment_exists(clean_PCCF_06, "FEDUID", "PRUID")) {
+  message("Validation Passed.")
+} else {
+  stop("Validation Failed: Some FEDs map to multiple provinces.")
+}
+if (
+  ((nrow(clean_PCCF_06) - nrow(clean_PCCF_07)) / nrow(clean_PCCF_01)) < 0.005
+) {
+  message("Validation Passed.")
+} else {
+  stop(
+    "Validation Failed: Post-SLI data rows are missing over 0.7% of DAs or FEDs."
+  )
+}
+if (!misalignment_exists(clean_PCCF_07, "DAUID", "FEDUID")) {
+  message("Validation Passed.")
+} else {
+  stop("Validation Failed: Some DAs still map to multiple FEDs.")
+}
+
+# 5. Contextualize Loss in `donations_data` (DIAGNOSTIC)
+
+# effectively_missing_codes_baseline <- dplyr::setdiff(DONATIONS_DATA_POSTAL_CODES, PCCF_2024$PC)
+# effectively_missing_codes_post_resolution <- dplyr::setdiff(DONATIONS_DATA_POSTAL_CODES, clean_PCCF$PC)
+# this <- donations_data_pc %>%
+#   filter(donor_postal_code %in% effectively_missing_codes_2)
+
+# -------- Save --------
+# END.
+rows_discarded_total <- nrow(clean_PCCF_01) - nrow(clean_PCCF)
+perc_rows_discarded <- round(
+  rows_discarded_total / nrow(clean_PCCF_01) * 100,
+  5
+) # 1.083% of postal codes were lost ; 35% were lost through SLI step.
 
 write_parquet(
-  final_mapping_df,
-  "data/clean_data/clean_PCFRF_2022.parquet"
+  clean_PCCF,
+  "data/clean_data/PCCF_lookup.parquet"
 )
+message("Parquet saved successfully --- END OF SCRIPT.")

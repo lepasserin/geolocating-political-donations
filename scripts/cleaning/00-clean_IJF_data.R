@@ -1,18 +1,18 @@
 # Purpose: General Ceaning Script for Raw IJF Data.
 # Author: Benedict Cummins-Mburu
-# Last Updated: 19 Jun 2026
+# Last Updated: 26 Jun 2026
+# Status: COMPLETE
 # Contact: b.cumminsmburu@utoronto.ca
 # License: MIT
 # Notes:
 # - `raw_data_IJF_fix2026-06-17.csv` is accurate as of June 17, 2026.
-# - First round of cleaning. More specialized tasks will draw on this dataset later in the pipeline.
-# - Script contain some validation code to justify the renoval of certain entries or columns.
+# - First round of cleaning. See `donations_data` for the data we actually use.
 # - Final dataframe represents all Individual contributions between 2004 and 2026.
 
 # --------- Setup ----------
-library(tidyverse) # for data cleaning
-library(data.table) # for speedy CSV reading
-library(arrow) # to save result as parquet
+library(tidyverse)
+library(data.table)
+library(arrow)
 raw_IJF_data <- fread(
   "data/raw_data/raw_data_IJF_fix2026-06-17.csv",
   data.table = FALSE
@@ -175,7 +175,7 @@ if ((nrow(clean_data_03) - nrow(clean_data_04)) == invalid_date_count_03) {
   stop("Validation Error: Cleaning Step 4 removed the wrong number of rows.")
 }
 
-# 5. Remove Invalid Donor Types (< 0.4% of the data at this stage ; vast majority are from 2006 - 2004 (NOT VALIDATED)).
+# 5. Remove Invalid Donor Types (< 0.4% of the data at this stage ; vast majority are from 2006 - 2004 (NOT SHOWN)).
 
 invalid_types_04 <- clean_data_04 %>%
   filter(donor_type != VALID_DONOR_TYPE)
@@ -377,8 +377,8 @@ if (nrow(clean_data_10) == (nrow(clean_data_09) - nrow(invalid_names_09))) {
 
 clean_data_11 <- clean_data_10 %>%
   mutate(is_aggregated = str_detect(donor_full_name, "^Contribut")) %>%
-  mutate(donor_location = ifelse(is_aggregated, NA, donor_location))
-filter(is_aggregated | (amount_monetary + amount_non_monetary <= 25000))
+  mutate(donor_location = ifelse(is_aggregated, NA, donor_location)) %>%
+  filter(is_aggregated | (amount_monetary + amount_non_monetary <= 25000))
 
 if (
   ((nrow(clean_data_10) - nrow(clean_data_11)) / nrow(clean_data_10)) < 0.00001
@@ -508,10 +508,14 @@ clean_data_13 <- clean_data_12 %>%
 
 # 14. Clean `donor_location` and extract donor postal code (0.36% confirmed had no location data ; 0.45% could not extract postal code. So, we are at most missing 0.09% postal codes.)
 
-if (all(!is.na(clean_data_13$donor_location))) {
+non_aggregated <- clean_data_13 %>% filter(!is_aggregated)
+
+if (all(!is.na(non_aggregated$donor_location))) {
   message("Validation Passed.")
 } else {
-  stop("Validation Failed: Some donor locations are entries are NA.")
+  stop(
+    "Validation Failed: Some non-aggregated donor locations are entries are NA."
+  )
 }
 
 clean_data_14 <- clean_data_13 %>%

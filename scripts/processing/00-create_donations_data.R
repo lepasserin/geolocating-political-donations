@@ -8,7 +8,7 @@
 library(tidyverse)
 library(arrow)
 IJF_data <- read_parquet("data/clean_data/clean_data_IJF.parquet")
-PCFRF_2022 <- read_parquet("data/clean_data/clean_PCFRF_2022.parquet")
+PCCF <- read_parquet("data/clean_data/clean_PCFRF_lookup.parquet")
 
 # ------- Constants --------
 VALID_DATE_RANGE <- c(
