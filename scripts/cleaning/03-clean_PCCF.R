@@ -14,7 +14,7 @@ library(tidyverse)
 library(data.table)
 library(arrow)
 PCCF_2024 <- data.table::fread("data/raw_data/raw_PCCF_2024.tab")
-DA_lookup <- read_parquet("data/clean_data/DA_lookup.parquet")
+DA_lookup <- readRDS("data/clean_data/DA_lookup.rds")
 FED_lookup <- readRDS("data/clean_data/FED_lookup.rds")
 donations_data <- read_parquet(
   # just for informal validation

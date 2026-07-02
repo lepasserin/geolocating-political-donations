@@ -79,6 +79,7 @@ if (all(FED_shapefile_clean$area > 0.0)) {
   stop("Validation Failed: Some FEDs have negative or zero areas.")
 }
 
+
 # ------- Write to RDS --------
 saveRDS(
   FED_shapefile_clean,

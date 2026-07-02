@@ -1,5 +1,5 @@
 ---
-title: "A Descriptive Analysis of Canadian Out-of-district Political Donations (2015 - 2024)"
+title: "Canadian Out-of-district Political Donations (2015 - 2024)"
 author:
   - name: Benedict Cummins-Mburu
     affiliations:
@@ -9,13 +9,18 @@ author:
       - name: University of Toronto
 thanks: "Code and data are available at: [https://github.com/bennypk1/geolocating-political-donations](https://github.com/bennypk1/geolocating-political-donations)."
 abstract: |
-  Federal political representation in Canada is geographical: one Member of Parliament (MP) represents one electoral district. Despite this representational structure, Canadians can legally donate to a host of political entities, regardless of proximity. Using an open-source political financing dataset compiled by Elections Canada, we analyze the extent, timing, and flow of out-of-district donations in Canada from 2015 to 2024. We find that roughly 40% of donor-sourced funding to candidates and district associations come from outside their district, both during and outside election periods, and that this proportion is consistent across party lines. Outside election cycles, ridings in a number of metropolitan districts send substantially more donations out of district than they receive. During election periods, ridings in Brampton Ontario dominate both the sending and receiving of out-of-district donations. On average, slightly over half of out-of-district donations to local political entities are from adjacent districts, while only 17% are from out of province. Interprovincial donations to candidates are dominated by donations from B.C. and Ontario to Alberta, while interprovincial donations to district associations are more evenly distributed across the provinces. \
+  Federal political representation in Canada is geographical: one Member of Parliament (MP) represents one electoral district. Despite this representational structure, Canadians can legally donate to a host of political entities, regardless of proximity. Using an open-source political financing dataset compiled by the Investigative Journalism Foundation based on records from Elections Canada, we analyze the extent, timing, and flow of out-of-district donations in Canada from 2015 to 2024. We find that 40% of donor-sourced funding to candidates and district associations come from outside their district, both during and outside election periods, and that this proportion is consistent across party lines. Outside election cycles, ridings in a number of metropolitan districts send substantially more donations out-of-district than they receive. During election periods, ridings in Brampton, Ontario exhibit particularly large rates of out-of-district donation. On average, slightly over half of out-of-district donations to local political entities are from adjacent districts, while only 17% are from out of province. Interprovincial donations to candidates are significantly more likely from donors in B.C. and Ontario to candidates in Alberta, while interprovincial donations to district associations are more evenly distributed across the provinces. \
 
   **Keywords:** Canadian politics; out-of-district donations; surrogate representation; political participation; political geography
 date: today
 date-format: long
-format: pdf
-linestretch: 1.3
+format: 
+  pdf:
+    header-includes:
+      - \usepackage[font=small,labelfont=bf]{caption}
+crossref:
+  chapters: true
+linestretch: 1.25
 number-sections: true
 bibliography: references.bib
 link-citations: true
@@ -40,17 +45,17 @@ library(pdftools)
 
 # Introduction {#sec-intro}
 
-In Canada, federal representation is structurally geographical; citizens are grouped into a few hundred electoral districts based on where they live, each represented by a single Member of Parliament (MP). Despite this, many citizens seek representation beyond their district's boundaries [@mansbridge_rethinking_2003], driven by a multitude of motivations (e.g. ideological alignment, partisan loyalty, etc.). This "surrogate" representation can manifest itself in many ways, but is primarily exercised through financial contributions (i.e. donations) to political entities outside their district. Out-of-district donations are not always representationally motivated, however. A citizen may donate as a favour to a friend, or to "fit in" with their social circles [@gimpel_political_2006; @garnett_lifeblood_2022]. Given that donations source the majority of funds to campaigns and district associations in North America [@gimpel_check_2008; @garnett_where_2024; @canada_understanding_2026], documenting donor patterns and motivations is important in understanding how political influence is distributed across the electorate. While Canadian research exists documenting the extent and patterns of donations in general [e.g. @besco_ethnic_2022; @tolley_who_2022; @garnett_where_2024], comparatively little attention has been given to the phenomenon of out-of-district donation.
+In Canada, federal representation is structurally geographical; citizens are grouped into a few hundred electoral districts based on where they live, each represented by a single Member of Parliament (MP). Despite this, many citizens seek representation beyond their district's boundaries [@mansbridge_rethinking_2003], driven by a multitude of motivations, including ideological alignment, partisan loyalty, etc. This "surrogate" representation can manifest itself in many ways, but is primarily exercised through financial contributions, i.e. donations, to political entities outside their district. Out-of-district donations are not always representationally motivated, however. A citizen may donate as a favour to a friend, or to "fit in" with their social circles [@gimpel_political_2006; @garnett_lifeblood_2022]. Given that donations source the majority of funds to campaigns and district associations in North America [@gimpel_check_2008; @garnett_where_2024; @canada_understanding_2026], documenting donor patterns and motivations is important in understanding how political influence is distributed across the electorate. While Canadian research exists documenting the extent and patterns of donations in general [e.g. @besco_ethnic_2022; @tolley_who_2022; @garnett_where_2024], comparatively little attention has been given to out-of-district donation.
 
-Existing research on out-of-district federal contributions in the U.S. (which also uses a geographically-based representational structure) has uncovered substantial rates of out-of-district donation. Both congressional and senatorial candidates recently source around 50-70% of their campaign funding from outside their district, a proportion that has been dramatically increasing over the 21st century [@gimpel_check_2008; @bednar_political_2011 ; @sievert_out_2023]. Incumbent representatives also receive around half of their donations from out-of-district, which has been shown to meaningfully influence their roll-call behaviour [@peoples_impact_2008; @canes_wrone_out_2022]. These donations are thought to be motivated primarily by partisan gain (e.g. donations to close races; @gimpel_check_2008; @jacobs_nationalization_2024) Both parties  primarily source local funding from a single small group of highly influential and socio-demographically similar districts [@gimpel_political_2006].
+Existing research on out-of-district federal contributions in the U.S., which also uses a geographically-based representational structure, has uncovered substantial rates of out-of-district donation. Both congressional and senatorial candidates presently source around 50-70% of their campaign funding from outside their district, a proportion that has been dramatically increasing over the 21st century [@gimpel_check_2008; @bednar_political_2011 ; @sievert_out_2023]. Incumbent representatives also receive around half of their donations from out-of-district, which has been shown to meaningfully influence their roll-call behaviour [@peoples_impact_2008; @canes_wrone_out_2022]. These donations are thought to be primarily motivated by partisan gain, evidenced by increased donations to districts with close races [@gimpel_check_2008; @jacobs_nationalization_2024]. Both parties primarily source local funding from a single small group of highly influential and socio-demographically similar districts [@gimpel_political_2006].
 
-In this paper, we describe trends in contributions across district lines in the Canadian context, using publicly-available data recording all registered contributions to federal entities from 2015 to 2024. District-level data was matched with socio-demographic data sourced from the 2021 Census, allowing us to better understand why certain districts send and receive as many contributions from others as they do. We find that the candidates and district associations of the average district receive around 40% of all donor-sourced funding from out-of-district, both within and outside election periods. It is our hope that these findings aid in further research on effective representation in Canada.
+In this paper, we describe trends in contributions across district lines in the Canadian context, using publicly-available data recording all registered contributions to federal entities from 2015 to 2024. District-level data was matched with socio-demographic data sourced from the 2021 Census, allowing us to better understand why certain districts send and receive as many contributions from others as they do. We find that the candidates and district associations of the average district receive around 40% of all donor-sourced funding from out-of-district, both within and outside election periods.  **FILL WITH 3 PRIMARY FINDINGS, ONCE MODEL HAS BEEN BUILT**. It is our hope that these findings inform further research on effective representation in Canada.
 
 # Literature Review {#sec-lit}
 
 ## Political Donation, Participation, and Representation {#sec-lit-1}
 
-In Canada and many other Western democratic nations, federal representation is fundamentally geographical: a Member of Parliament (MP) is a representative of everyone who lives within the boundaries of their riding. By voting during a general election, the citizens of a given electoral district increase the likelihood that their incumbent MP votes, acts, looks, and thinks how they want them to. Provided that (1) the division of people into ridings efficiently clusters like-minded Canadians, and (2) each Canadian participates equally (for example, through their one vote), we should expect a high degree of congruence between what a legislator does, and what their constituents want [@bednar_political_2011].
+In Canada and many other Western democratic nations, federal representation is fundamentally geographical: a Member of Parliament (MP) is a representative of everyone who lives within the boundaries of their riding. By voting during a general election, the citizens of a given electoral district increase the likelihood that their incumbent MP votes, acts, looks, and thinks how they want them to. Provided that (1) the division of people into ridings efficiently clusters like-minded Canadians, and (2) each Canadian participates equally (for example, through their one vote), we should expect a high degree of congruence between what a legislator does, and what their constituents want.
 
 Beyond voting, individual citizens can increase their local representation by volunteering at a local district association, advocating for their preferred party online, or financially supporting a candidate’s campaign [@bednar_political_2011; @baker_getting_2016; @garnett_where_2024]. Since these necessitate more resources (e.g. time, effort, or money), indicate greater political interest, and often have larger impacts on electoral outcomes relative to voting, these constitute “higher forms” of political participation [@milbrath_participation_1981].
 
@@ -82,23 +87,45 @@ To an even greater extent than in Canada, individual donors are the primary sour
 
 ## Data Overview {#sec-data-1}
 
-The data used in this paper was originally sourced from Election Canada's Open Data website [@canada_open_2025]. Since 2004, the *Canada Elections Act* has required that all contributions (monetary or otherwise) valued at over \$20 be recorded by the recipient and shared with the Government [@canada_understanding_2026]. The Elections Canada dataset on donations represents all donations made by individuals to registered federal political entities since that date [@canada_open_2025]. Additionally, donors who contributed over \$200 must have their full name and address (including their postal code) recorded [@canada_understanding_2026]. For all contributions, Elections Canada also records the recipient's name, district (if applicable), party (if applicable), type (e.g. national party, candiate, etc.), and the date the contribution was received. The dataset we used is a cleaned version of Elections Canada's, made available to us by the Investigative Journalism Foundation. Their cleaning process is described in @sec-source-to-IJF.
+The data used in this paper was originally sourced from the Elections Canada Open Data website [@canada_open_2025]. Since 2004, the *Canada Elections Act* has required that all contributions (monetary or otherwise) valued at over \$20 be recorded by the recipient and shared with the Government [@canada_understanding_2026]. The Elections Canada dataset on donations represents all donations made by individuals to registered federal political entities since that date [@canada_open_2025]. Additionally, donors who contributed over \$200 must have their full name and address (including their postal code) recorded [@canada_understanding_2026]. For all contributions, Elections Canada also records the recipient's name, district (if applicable), party (if applicable), entity (e.g. national party, candidate, etc.), and the date the contribution was received. The dataset used in this study is a cleaned version of Elections Canada's, made available to us by the Investigative Journalism Foundation. Their cleaning process is described in [Appendix -@sec-source-to-IJF].
 
-Every 10 years, federal electoral district (FED) boundaries are redrawn to account for population changes that occurred within the decade [@canada_redistribution_2025]. We restricted our scope to contributions made during the 2013 representational order, effective between Oct 2nd, 2015 and Apr 22nd, 2024 [@canada_redistribution_2025]. This is the largest such order present in the full dataset, capturing 61.2% of all recorded contributions since 2004, and spanning three general election periods (42nd, 43rd, and 44th). This decision allowed us to focus on a single, static set of FEDs, greatly simplifying our cleaning procedures and analysis. To assess whether or not a donation was out-of-district, donor postal codes were matched with their corresponding FED using Statistics Canada's Postal Codes by Federal Riding File for the 2013 representational order, made accessible by the University of Toronto [@statcan_pcfrf_2022]. For 22.8% of the full contribution sum[^1] during our study period, we were unable to identify the donor's FED. This was mainly since contributions less than \$200 represented 45% of this sum, and 48% of these were location-anonymized. Since donor location is integral to our study, these entries were discarded from further analysis [^2]. Conversely, recipient FEDs were always available for local political entities. Our dataset was further augmented with demographic statistics (i.e. average wage, dominant ethnicity, etc.) for each FED using data from the 2021 Canadian Census. A detailed account of our data cleaning and augmentation procedures can be found in @sec-IJF-to-donations-data.
+Every ten years, federal electoral district (FED) boundaries are redrawn to account for population changes that occurred within the decade [@canada_redistribution_2025]. We restricted our scope to contributions made during the 2013 representational order, effective between Oct 2nd, 2015 and Apr 22nd, 2024 [@canada_redistribution_2025]. This is the largest such order present in the full dataset, capturing 61.2% of all recorded contributions since 2004, and spanning three general election periods (42nd, 43rd, and 44th). This decision restricted our focus to a single, static set of FEDs, greatly simplifying our cleaning procedures and analysis. To assess whether or not a donation was out-of-district, donor postal codes were matched with their corresponding FED using Statistics Canada's Postal Code Conversion Files[^3] (PCCF), made accessible by the University of Toronto [@statcan_pccf_2025]. For 22.5% of the total contribution sum[^1] during our study period, we were unable to identify the donor's FED. The overwhelming majority (98%) of these unlocated contributions were aggregated sums of anonymized donations under $\200. Since donor location is integral to the study of out-of-district donation, these entries were discarded from further analysis[^2]. The FEDs of localized recipients (e.g. candidates and district associations) were always present in the dataset.
 
-[^1]: after filtering out a small number of problematic entries. See @sec-source-to-IJF and @sec-IJF-to-donations-data for an account of this data loss.
+Leveraging the availability of donor postal codes, donations were also situated within census dissemination areas (DA), allowing us to attribute socio-demographic characteristics to donation sources at a fine spatial grain. For each dissemination area, we identified it's population, population density, median household income, mean age, proportion of the population with a post-secondary education, and proportions of various visible minority ethnicities. A full list of the ethnicities we tracked is avaiable in [Appendix -@sec-data-supplements-census]. These variables were chosen since they are significantly associated with the propensity to donate during an election [@gimpel_political_2006 ; @gimpel_check_2008 ; @garnett_where_2024]. Further, ethnicities were disaggregated since previous Canadian research has found that some minority groups such as South Asians donate at much higher rates than others [@besco_ethnic_2022]. We again used the PCCF to match donor postal codes to the DAs of the 2021 Census, and to group DAs into FEDs[^3] to deduce the same socio-demographic information at the district level.
 
-[^2]: Unlocatable entries are similarly distributed to located ones across many variables (e.g. time, party of recipient, etc. ; see @sec-distribution-comparisons). Thus, their removal likely did not meaninfully bias our analysis.
+@tbl-1-1 provides an overview of the primary variables used throughout this study, and an example of each. Census-based variables, as well as geographic attributes such as distance between a donor and the centroid of their recipient's district were easily fetched when needed by relating the `donor_district`, `donor_dissemination_area`, or `recipient_district` variables in @tbl-1-1 with @tbl-1-2 or @tbl-1-3. A detailed walkthrough of the full data pipeline, from the files available for download on Canadian government websites to the core datasets used for analysis can be found in [Appendix -@sec-pipeline] and [Appendix -@sec-data-supplements].
+
+[^1]: after filtering out a small number of problematic entries. See [Appendix -@sec-source-to-IJF] and [Appendix -@sec-IJF-to-donations-data] for an account of these cleaning procedures.
+
+[^2]: [Appendix -@sec-missing-data] provides a characterization of this missing data, and attempts to assess the impact of these untractable entries on the analysis.
+
+[^3]: postal codes may straddle multiple dissemination areas and dissemination areas may straddle multiple electoral districts. For this study, we created a deterministic spatial lookup table that resolves these cases using reasonable criteria. Our methodology and assessment of impact is detailed further in [Appendix -@sec-data-supplements-spatial].
 
 ```{r}
 #| warning: false
 #| message: false
 #| echo: false
 #| label: tbl-1-1
-#| tbl-cap: "Variables used in our study, with examples and descriptions."
-read_csv(here::here("other/tables/Table_1_3.csv")) %>% 
-  tinytable::tt(width = c(0.2, 0.2, 0.6)) %>%
-  format_tt(escape = TRUE)
+#| tbl-cap: "Primary variables used in our study, with examples and descriptions. Although not explicitly shown, additional information used such as census variables or geographic attributes of districts are easily retrived by relating a donor's dissemination area or district to custom-made lookup tables."
+Table_1_1 <- tribble(
+  ~Variable,             ~Example,                        ~Description,
+  "donor_name",               "Alexandra Lulka",               "Donor full name.",
+  "donor_dissemination_area", "35202387",                 "Dissemination area (UID) associated with donor postal code.",
+  "donor_district",           "Eglinton--Lawrence",            "Electoral district associated with donor postal code.",
+  "donation_date",            "2015-10-18",                    "Date donation was received.",
+  "electoral_event",          "General Election",         "Electoral event (if any) occurring during donation.",
+  "total_amount",             "563.3",              "Summed monetary and non-monetary value of the donation, in CAD.",
+  "recipient_name",           "Joe Oliver",                    "Recipient full name.",
+  "recipient_district",       "Eglinton--Lawrence",            "District of the recipient (if applicable).",
+  "political_entity",         "Candidates",                    "Entity type of the recipient.",
+  "political_party",          "Conservative Party of Canada",  "Recipient party affiliation (if any).",
+  "is_out_of_district",      "FALSE",                  "Whether donor and recipient districts are different."
+)
+Table_1_1 %>% tinytable::tt(width = 1) %>%
+  format_tt(escape = TRUE) %>%
+  style_tt(j = 1:3, align = "lrr") %>%
+  style_tt(i = 0:nrow(.), fontsize = 0.85) %>%
+  style_tt(i = 0, bold = TRUE)
 ```
 
 ```{r}
@@ -106,17 +133,46 @@ read_csv(here::here("other/tables/Table_1_3.csv")) %>%
 #| message: false
 #| echo: false
 #| label: tbl-1-2
-#| tbl-cap: "First 4 Rows of Cleaned District Flows Data (Subset of Columns)"
-read_csv(here::here("other/tables/Table_1_2.csv")) %>% 
-  tinytable::tt() %>% 
-  format_tt(escape = TRUE)
+#| tbl-cap: "Custom spatial lookup table, modified from Statistics Canada's Postal Code Conversion File. This table unambiguously links each Canadian postal code to a 2021 census dissemination area, and each census dissemination area to a federal electoral district from the 2013 representational order. Only a sample of four entries are shown." 
+Table_1_2 <- tribble(
+  ~`Postal Code`, ~`Dissemination Area`, ~`Federal Electoral District`,
+  "M4P1E4",       "35202387",            "Eglinton--Lawrence",
+  "K1A0A6",       "35061205",            "Ottawa Centre",
+  "V6B1A1",       "59153201",            "Vancouver Centre",
+  "H3A0G4",       "24661048",            "Outremont"
+)
+Table_1_2 %>% tinytable::tt(width = 1) %>%
+  format_tt(escape = TRUE) %>%
+  style_tt(j = 1:3, align = "lrr") %>%
+  style_tt(i = 0:nrow(.), fontsize = 0.85) %>%
+  style_tt(i = 0, bold = TRUE)
 ```
 
-@tbl-1-1 provides a description of the variables used throughout this study, and an example of each. Most (84.6%) contributions included in our analyses were addressed to national-level political entities; either party leadership contestants, or parties themselves. Since these entities are not tied to local FEDs, contributions addressed to them cannot be declared as in or out of district. Longitudinal trends in these contributions are briefly discussed in @sec-data-2. To explicitly analyze large-scale flows between donors and local political entities (candidates, nomination contestants, and electoral district associations) outside their districts, we wrangled a secondary dataset representing aggregated flows between every pair of FEDs. Many flow measures were recorded (e.g. grand total amount sent, amount sent during an election cycle, etc.). The first few rows and columns of this dataset are shown in @tbl-1-2. All data cleaning, visualization, and analysis was conducted using the R statistical software [@r_citation].
+```{r}
+#| warning: false
+#| message: false
+#| echo: false
+#| label: tbl-1-3
+#| tbl-cap: "Custom census lookup table. This table provides desired socio-demographic information for every dissemination area in the 2021 Census. Only a sample of four entries are shown. Only population, density, and median household income are shown." 
+Table_1_3 <- tribble(
+  ~`Dissemination Area (UID)`, ~Population, ~`Density (per sqkm)`, ~`Median Household Income (CAD)`,
+  "35202387",                  612,         4381.2,                 "$98,500",
+  "35061205",                  548,         3920.7,                 "$87,200",
+  "59153201",                  701,         6210.5,                 "$76,300",
+  "24661048",                  489,         5104.9,                 "$92,100"
+)
+Table_1_3 %>% tinytable::tt(width = 1) %>%
+  format_tt(escape = TRUE) %>%
+  style_tt(j = 1:3, align = "lrr") %>%
+  style_tt(i = 0:nrow(.), fontsize = 0.85) %>%
+  style_tt(i = 0, bold = TRUE)
+```
 
-## General Trends in Federal Contributions {#sec-data-2}
+ Most (84.6%) contributions included in our study were addressed to national-level political entities; either party leadership contestants, or parties themselves. Since these entities are not tied to local FEDs, contributions addressed to them cannot be declared as in or out of district. Given their prevalence, however, general trends in these donations are briefly discussed in @sec-data-2, emphasizing how they mirror or differ from donations to local entities. All data cleaning, visualization, and analysis was conducted using the R statistical software [@r_citation].
 
-We start by briefly documenting summaries and trends in donations generally, to provide context for our analysis of out-of-district donations.
+## Situating Donations to Local Entities Among Donations in General  {#sec-data-2}
+
+We start by briefly documenting trends in donations generally, to provide context for our analysis of out-of-district donations.
 
 ```{r}
 #| warning: false
@@ -140,7 +196,7 @@ read_csv(here::here("other/tables/Table_2_2.csv")) %>%
   format_tt(escape = TRUE)
 ```
 
-@tbl-2-2 displays the breakdown of total contributed amount by general election period. As expected from @fig-2-1, the bulk of donations (86%) are received outside general election periods. Among election periods, the 42nd general election recived roughly twice as many donations as the others, likely due to it's abnormally long writ period. Over all periods, donations to local entities are out-of-district 40-46% of the time.
+@tbl-2-2 displays the breakdown of total contributed amount by general election period. As expected from @fig-2-1, the bulk of donations (86%) are received outside general election periods. Among election periods, the 42nd general election received roughly twice as many donations as the others, likely due to it's abnormally long writ period. Over all periods, donations to local entities are out-of-district 40-46% of the time.
 
 ```{r}
 #| warning: false
@@ -151,14 +207,14 @@ read_csv(here::here("other/tables/Table_2_2.csv")) %>%
 readRDS(here::here("other/figures/Figure_2_2_v2.rds"))
 ```
 
-@fig-2-2 displays the timeline of donations during our study period, separated by the party of the recipient. We briefly note that, for this visualization, donations dated in December of each year were redistributed across the other months of that year to address a clerical error in the original dataset (see @sec-viz-modifications for more details). The six main peaks in the graph clearly correspond to general election periods (peaks followed immediately by grey dashed lines) and Conservative party leadership campaigns (peaks in the blue trendline). Interestingly, elections and leadership contests result in relatively similar amounts of donations, with the notable exception of the 2022 Conservative leadership race, won by current Opposition Leader Pierre Poilievre. Overall, donations seem to have increased during the study period, following the increasing trend observed from 2004 to 2015 by @mcmahon_follow_2015, and particularly starting in 2022, driven primarily by increased donations to the Conservative and Liberal parties.
+@fig-2-2 displays the timeline of donations during our study period, separated by the party of the recipient. We briefly note that, for this visualization, donations dated in December of each year were redistributed across the other months of that year to address a clerical error in the original dataset (see @sec-viz-modifications for more details). The six main peaks in the graph clearly correspond to general election periods (peaks followed immediately by grey dashed lines) and Conservative party leadership campaigns (peaks in the blue trend line). Interestingly, elections and leadership contests result in relatively similar amounts of donations, with the notable exception of the 2022 Conservative leadership race, won by current Opposition Leader Pierre Poilievre. Overall, donations seem to have increased during the study period, following the increasing trend observed from 2004 to 2015 by @mcmahon_follow_2015, and particularly starting in 2022, driven primarily by increased donations to the Conservative and Liberal parties.
 
 ```{r}
 #| warning: false
 #| message: false
 #| echo: false
 #| label: fig-2-3
-#| fig-cap: "Time series of (A) in-district and (B) out-of-district contributions to local entities (combined candidates and district associations), from 2015 to 2024. Seperate trendlines indicate seperate political parties. Dashed vertical lines denote the dates of the 42nd, 43rd, and 44th general elections respectively."
+#| fig-cap: "Time series of (A) in-district and (B) out-of-district contributions to local entities (combined candidates and district associations), from 2015 to 2024. Separate trend lines indicate distinct political parties. Dashed vertical lines denote the dates of the 42nd, 43rd, and 44th general elections respectively."
 #| fig-height: 7
 
 panel_title <- theme(plot.title = element_text(face = "bold", hjust = 0.5, size = 10))
@@ -225,7 +281,7 @@ read_csv(here::here("other/tables/Table_3_2.csv")) %>%
 #| message: false
 #| echo: false
 #| label: fig-3-1
-#| fig-cap: "Distribution of districts by total amount (A) sent out-of-district and (B) received by donors in other districts, from 2015 to 2024. The top two subplots display these distributions for donations to district associations, while the bottom two  display the same distributions but for donations to electoral candidates."
+#| fig-cap: "Distribution of districts by total amount (A) sent out-of-district and (B) received by donors in other districts, from 2015 to 2024. The top two subplots display these distributions for donations to district associations, while the bottom two  display the same distributions but for donations to electoral candidates. Orange lines indicate the means of their respective distributions."
 #| fig-height: 7
 
 panel_title <- theme(plot.title = element_text(face = "bold", hjust = 0.5, size = 12))
@@ -240,14 +296,14 @@ p1 / p2 +
   theme(legend.position = "top")
 ```
 
-@fig-3-1 compares how districts are distributed in terms of the amount of contributions they receive vs. the amount of contributions they send to and from candidates and district associations. Since the total amount sent and received must be equal, the average district sends and receives the same amount of contributions, hence the shared mean in the top and bottom. subplots. The distribution of senders to district associatons is particularly skewed, indicating that there exists a smaller subset of districts that send much larger sums to these local entities than the rest. While the receiving distribution is also skewed, it is visibly less so, indicating that a larger number of districts receive near the average proportion of contributions from outside their district ot their district associations. Interestingly, this is not observed among out-of-disrict donatons to candidates; distributions of senders and receivers are expectedly skewed, however the extent of the skew is very similar for senders and receivers.
+@fig-3-1 compares how districts are distributed in terms of the amount of contributions they receive vs. the amount of contributions they send to and from candidates and district associations. Since the total amount sent and received must be equal, the average district sends and receives the same amount of contributions, hence the shared mean in the top and bottom. subplots. The distribution of senders to district associations is particularly skewed, indicating that there exists a smaller subset of districts that send much larger sums to these local entities than the rest. While the receiving distribution is also skewed, it is visibly less so, indicating that a larger number of districts receive near the average proportion of contributions from outside their district ot their district associations. Interestingly, this is not observed among out-of-district donations to candidates; distributions of senders and receivers are expectedly skewed, however the extent of the skew is very similar for senders and receivers.
 
 ```{r}
 #| warning: false
 #| message: false
 #| echo: false
 #| label: fig-3-3
-#| fig-cap: "Relationship between the contribution amount a district sends and receives to/from other districts, for each district during the 2013 representational order (effective from 2015 - 2024). First subplot (A) shows this for donations to EDAs, and second (B) shows this for donations to candidates. Grey dotted line is 1:1, meaning that points on this line receive and send the same amount of donations. Top 3 sender and receiver FEDs are labelled with their names."
+#| fig-cap: "Relationship between the contribution amount a district sends and receives to/from other districts, for each district during the 2013 representational order (effective from 2015 - 2024). First subplot (A) shows this for donations to EDAs, and second (B) shows this for donations to candidates. Grey dotted line is 1:1, meaning that points on this line receive and send the same amount of donations. Top three sender and receiver FEDs are labelled with their names."
 #| fig-width: 6
 #| fig-height: 5
 subplot1 <- readRDS(here::here("other/figures/Figure_3_3_v1.rds"))
@@ -281,7 +337,7 @@ subplot2 <- readRDS(here::here("other/figures/Figure_3_4_v2.rds"))
 #| message: false
 #| echo: false
 #| label: tbl-3-3
-#| tbl-cap: "Geographical Breakdown of out-of-district donations (OODs) to District Associations (EDAs)."
+#| tbl-cap: "Geographic Breakdown of out-of-district donations (OODs) to District Associations (EDAs)."
 read_csv(here::here("other/tables/Table_3_3.csv")) %>% 
   tinytable::tt() %>% 
   format_tt(escape = TRUE)
@@ -292,7 +348,7 @@ read_csv(here::here("other/tables/Table_3_3.csv")) %>%
 #| message: false
 #| echo: false
 #| label: tbl-3-4
-#| tbl-cap: "Geographical Breakdown of out-of-district donations (OODs) to electoral candidates during the 2015, 2019, and 2021 writ periods."
+#| tbl-cap: "Geographic Breakdown of out-of-district donations (OODs) to electoral candidates during the 2015, 2019, and 2021 writ periods."
 read_csv(here::here("other/tables/Table_3_4.csv")) %>% 
   tinytable::tt() %>% 
   format_tt(escape = TRUE)
@@ -303,7 +359,7 @@ read_csv(here::here("other/tables/Table_3_4.csv")) %>%
 ```{r}
 #| echo: false
 #| label: fig-spatial-2-1
-#| fig-cap: "Network of out-of-district contributions to (A) local district associations from 2015 to 2024 and (B) electoral candidates during the 2015, 2019, and 2021 writ periods. Red nodes indicate provinces that received more contributions than they gave (vice-versa for blue nodes). Node size indicates the comined total amount of contributions sent and received by a province. Donations flows are colored on a gradient from blue (the sender) to red (the recipient), sized according to the amount flowing from one province to another."
+#| fig-cap: "Network of out-of-district contributions to (A) local district associations from 2015 to 2024 and (B) electoral candidates during the 2015, 2019, and 2021 writ periods. Red nodes indicate provinces that received more contributions than they gave (vice-versa for blue nodes). Node size indicates the combined total amount of contributions sent and received by a province. Donations flows are colored on a gradient from blue (the sender) to red (the recipient), sized according to the amount flowing from one province to another."
 #| fig-width: 6
 #| fig-height: 7
 
@@ -348,7 +404,7 @@ Regardless of party affiliation, or whether an election is officially underway, 
 
 Our analysis of interprovincial donations reveals yet another dimension of Canadian donor behaviour. In contrast to the increasing nationalization of out-of-district donations in the U.S. [@jacobs_nationalization_2024], the majority (~80%) of out-of-district donations in Canada are contained within provincial boundaries, regardless of the recipient's party, and especially during election cycles. However, those that breach these boundaries exhibit drastically different patterns depending on recipient type. Donations to EDAs in separate provinces follow similar patterns as their superset; sources, sinks, and flow magnitudes are largely explained by differences in wealth and population size. However, while out-of-district donations to electoral candidates are primarily motivated by ethnic affinity, the small subset of these that are out-of-province is better explained by partisan motivations. Out-of-province donations to candidates are dominated by donations from Ontario and B.C. districts to Albertan candidates, over all three election periods. Taken together, our results suggest that out-of-district political giving in Canada is not a singular phenomenon. Donations to EDAs are concentrated among a relatively small number of affluent source districts and follow broad population and wealth gradients, whereas candidate-directed donations exhibit stronger signatures of ethnic, spatial, and partisan motivations.
 
-Our findings are accompanied by some notable limitations. First, a non-negligible proportion (22%) of the total contributed amount addressed to candidates and district associations during our study period was either location-anonymized or malformatted, meaning that these could not be assessed as out-of-district. However, a comparison of located and unlocated contributions (@sec-distribution-comparisons) revealed that these missing donor sums had similar distributions to the study data across multiple variables, suggesting that their exclusion introduced no systematic bias into our summaries or model estimates. Previous North American studies using similar datasets chose to omit contributions under \$200 entirely  [@garnett_where_2024; @gimpel_check_2008]. By retaining these smaller donations in our study and demonstrating that unlocated records do not introduce systematic bias, our approach offers a more complete picture of the Canadian local funding landscape.
+Our findings are accompanied by some notable limitations. First, a non-negligible proportion (22%) of the total contributed amount addressed to candidates and district associations during our study period was either location-anonymized or malformatted, meaning that these could not be assessed as out-of-district. However, a comparison of located and unlocated contributions [see Appendix -@sec-missing-data] revealed that these missing donor sums had similar distributions to the study data across multiple variables, suggesting that their exclusion introduced no systematic bias into our summaries or model estimates. Previous North American studies using similar datasets chose to omit contributions under \$200 entirely [@garnett_where_2024; @gimpel_check_2008]. By retaining these smaller donations in our study and demonstrating that unlocated records do not introduce systematic bias, our approach offers a more complete picture of the Canadian local funding landscape.
 
 Second, our focus on analyzing out-of-district contributions meant excluding donations addressed to national entities (parties and leadership contestants). As shown in @sec-data-2, contributions of this type represented a large majority (86%) of total contributions during our study period. Although necessary given our study topic, these exclusions limit the generalizability of our study; the average Canadian donor cannot actually be assessed as an out-of-district or in-district giver.
 
@@ -359,13 +415,12 @@ Third, our chosen study period (October 2025 to April 2024) awkwardly truncates 
 \newpage
 \part*{Appendix}
 \appendix
-\renewcommand{\thetable}{A\arabic{table}}
-\setcounter{table}{0}
-\setcounter{section}{0}
 
-# Background on Individual Contribution Limits {#sec-limit-info}
+# Background on Relevant Canadian Electoral Regulations {#sec-info}
 
-The *Canadian Elections Act* imposes individual contribution limits on donors seeking to contribute to one of the following registered, federal political entities: political parties, electoral district associations (EDAs), candidates, party nomination contestants, and party leadership contestants [@canada_annual_2026]. These limits are shown in @tbl-limit-info-1^[Contribution limits presented here are only for 2026. They increase by \$25 every year on January 1st.] and @tbl-limit-info-2. A full definition for each of these is available at @canada_political_2026. Regulated expenses for any of the entities themselves cannot exceed specific values, which are determined on an annual basis, and are different for each riding [see @canada_expenses_2026]. Leadership contestants are a notable exception, with no campaign spending limits [@canada_expenses_2026]. Individual contributions to registered third-party organizations are not regulated by the *Act*, and were not included in this study [@canada_understanding_2026].
+## Individual Contribution Limits {#sec-info-limits}
+
+The *Canadian Elections Act* imposes individual contribution limits on donors seeking to contribute to one of the following registered, federal political entities: political parties, electoral district associations (EDAs), candidates, party nomination contestants, and party leadership contestants [@canada_annual_2026]. These limits are shown in @tbl-info-limits-1 and @tbl-info-limits-2^[Contribution limits presented here are only for 2026. They increase by \$25 every year on January 1st.]. A full definition for each of these is available at @canada_political_2026. Regulated expenses for any of the entities themselves cannot exceed specific values, which are determined on an annual basis, and are different for each riding [see @canada_expenses_2026]. Leadership contestants are a notable exception, with no campaign spending limits [@canada_expenses_2026]. Individual contributions to registered third-party organizations are not regulated by the *Act*, and were not included in this study [@canada_understanding_2026].
 
 Only Canadian citizens or permanent residents can make contributions [@canada_understanding_2026]. Any donor who contributed \$20 or more to any of the five federal political entities listed above must have their name recorded (but not reported to Elections Canada). Donors with contributions exceeding \$200 must also have their names and addresses recorded and reported to Elections Canada. Cash donations above \$20 are prohibited [@canada_understanding_2026].
 
@@ -373,7 +428,7 @@ Only Canadian citizens or permanent residents can make contributions [@canada_un
 #| warning: false
 #| message: false
 #| echo: false
-#| label: tbl-limit-info-1
+#| label: tbl-info-limits-1
 #| tbl-cap: "2026 Annual Limits on Individual Contributions, Loans, and Loan Guarantees (adapted from Elections Canada website)."
 #| tbl-pos: H
 t1_data <- data.frame(
@@ -395,7 +450,7 @@ tt(t1_data, width = 1) %>%
 #| warning: false
 #| message: false
 #| echo: false
-#| label: tbl-limit-info-2
+#| label: tbl-info-limits-2
 #| tbl-cap: "2026 Limits on Individual Contributions, Loans, and Loan Guarantees, for Politicians Contributing to Their Own Campaigns."
 t2_data <- data.frame(
   `Politician` = c("Nomination Contestant", "Candidate", "Leadership Contestant"),
@@ -408,67 +463,56 @@ tt(t2_data, width = 1) %>%
   style_tt(j = 2, align = "r")
 ```
 
-Electoral district boundaries are subject to change every 10 years, as required by the *Constitution of Canada* [@canada_redistribution_2025]. The 2013 representational order consisted of 338 districts, and the 2023 representational order consisted of 343 districts. The boundaries of existing districts are subject to change as well. The 2013 representational order was decidedly in effect between the calling of the 42nd general election on October 2, 2015, and the first dissolution of Parliament occurring after April 22, 2024 [@canada_redistribution_effect_2023].
-
-# Background on the Financial Reporting Requirements of Federal Political Entities {#sec-reporting-info}
+## Financial Reporting Requirements of Federal Political Entities {#sec-info-reporting}
 
 All of the information presented in this section can be found on the "Political Financing" page of the Elections Canada website [@canada_financing_2026]. Financial returns represent an account of an entity's inflow (i.e. contributions, loans or transfers) and outflow (expenses). At minimum, all entities must submit financial returns annually (for parties and EDAs), or within 4 to 8 months after an electoral event (for parties, candidates, third parties, leadership contestants, and nomination contestants exceeding \$1000 in contributions or expenses). Returns with large transaction amounts must be accompanied by an external audit Entities such as parties and EDAs may be required to file reports on a quarterly basis. Some (but not all) returns are reviewed by Elections Canada auditors. Risk-based auditing is used to determine which files will be audited and what level of audit will be performed [@canada_audit_2026].
 
-# Pre-Cleaning by the Investigative Journalism Foundation {#sec-source-to-IJF}
+## Electoral Redistricting {#sec-info-redistricting}
 
-The original contributions datasets used in this study can be found on Elections Canada's "Open data on contributions" page, under the heading "Data sets updated" [accessible here: @canada_open_2025]. Two products are offered. The first is a dataset of contribution reports filed by all Canadian registered federal political entities [see list of these in @sec-limit-info] from January 2004 to present [@canada_open_2025]. The second is an audited version of the first. We note the, due to pre-screening policies and administrative lag, only some of the first dataset is audited. In our case, the audited version of the dataset has only 61.7% as many rows as the full un-audited data (n = 10095198 ; both accessed on May 5, 2026). Both datasets are updated on a weekly basis by Elections Canada [@canada_open_2025], as new audits and financial reports are filed.
+Electoral district boundaries are subject to change every 10 years, as required by the *Constitution of Canada* [@canada_redistribution_2025]. The 2013 representational order consisted of 338 districts, and the 2023 representational order consisted of 343 districts. The boundaries of existing districts are subject to change as well. The 2013 representational order was decidedly in effect between the calling of the 42nd general election on October 2, 2015, and the first dissolution of Parliament occurring after April 22, 2024 [@canada_redistribution_effect_2023].
 
-Staff at the Investigative Journalism Foundation (IJF) created a data pipeline that aggregates, de-duplicates, and cleans these datasets. The result of this process is what was used for our analysis. Both audited and un-audited versions of the same record were available for most records. To avoid duplicates related to this, audited and un-audited versions of the same record were linked by assuming that rows that shared the same `recipient`, `political_party`, `donation_date`, and `electoral_event` referred to the same entry. This linking approach carries the small risk that two distinct donations to the same recipient on the same date are incorrectly treated as duplicates. The pipeline then preferentially keeps audited records when they are available. The datasets were further de-duplicated differently based on the type of contribution being recorded. For loans, sums reported during an Annual filing might appear in a Quarterly report filed in the same year. When this was the case, Annual records were preserved and Quarterly records were discarded. For all other types of contributions, only true duplicates (i.e. rows with identical entries identical in every field) were discarded. In addition to this, some entries were aggregate sums of contributions from anonymous donors. For these, Elections Canada reports a cumulative total per recipient Annually and Quarterly, meaning the same aggregate sum could appear twice in the same year. To avoid double-counting these, only the largest reported aggregate sum per recipient per year was retained. Finally, a few cleaning procedures were applied to the variables themselves; @tbl-source-to-IJF-1 shows where each of the columns present in the IJF data were drawn from columns at the source, and any notable procedures applied to them. Together, these changes reduced the dataset to 7479577 rows (current as of June 17, 2026).
+# Donations Data Pipeline {#sec-pipeline}
+
+```{r}
+#| warning: false
+#| message: false
+#| echo: false
+#| label: fig-data-pipeline
+#| out-width: "100%"
+#| fig-cap: "Flow diagram illustrating the full data pipeline used throughout this analysis. All scripts referenced in this figure can be accessed at [https://github.com/bennypk1/geolocating-political-donations](https://github.com/bennypk1/geolocating-political-donations). Diagram made using the Canva graphic design software."
+knitr::include_graphics(here::here("other/appendix_figures/data_pipeline.png"))
+```
+
+In this section we provide a plain-language walkthrough of the three major cleaning and validation scripts used to transform contributions data from Elections Canada into the dataset used throughout our analysis. These scripts rely on other datasets, cleaned separately, which are documented in [Appendix -@sec-data-supplements]. The full pipeline, including the steps described in [Appendix -@sec-data-supplements], is illustrated in @fig-data-pipeline.
+
+## Investigative Journalism Foundation Pre-Cleaning {#sec-source-to-IJF}
+
+The original contribution datasets used in this study can be found on Elections Canada's "Open data on contributions" page, under the heading "Data sets updated" [@canada_open_2025]. Two products are offered. The first is a dataset of contribution reports filed by all Canadian registered federal political entities [see list of these in Appendix -@sec-info-limits] from January 2004 to present [@canada_open_2025]. The second is an audited version of the first. Due to pre-screening policies and administrative lag, only some of the first dataset is audited. In our case, the audited version of the dataset has only 61.7% as many rows as the full un-audited data (n = 10095198 ; both accessed on May 5, 2026). Both datasets are updated on a weekly basis by Elections Canada [@canada_open_2025], as new audits and financial reports are filed.
+
+Staff at the Investigative Journalism Foundation created a data pipeline to aggregate, de-duplicate, and clean these datasets. Both audited and un-audited versions of the same record were available for most records. To avoid duplicating these, audited and un-audited versions of the same record were linked by assuming that rows sharing the same donation date, electoral event, recipient, and recipient political party referred to the same entry. We note that this linkage approach carries the small risk that two distinct donations to the same recipient on the same date are incorrectly treated as duplicates. The pipeline preferentially keeps audited records when they are available.
+
+Further de-duplication was effectuated differently based on the type of contribution being recorded. For loans, sums reported during an Annual filing might appear in a Quarterly report filed in the same year. In such cases, Annual records were preserved and Quarterly records were discarded. For all other types of contributions, only true duplicates (i.e. rows with identical entries identical in every field) were discarded. Additionally, some entries represented aggregated sums of contributions from anonymous donors. For these, Elections Canada reports a cumulative total per recipient Annually and Quarterly, meaning that the same aggregate sum could appear twice in the same year. To avoid double-counting these, only the largest reported aggregate sum per recipient per year was retained. Finally, a few smaller cleaning procedures were applied to the columns themselves; @tbl-source-to-IJF-1 shows where each of the columns present in the IJF data were drawn from columns at the source, and any notable procedures applied to them. Together, these changes reduced the dataset from 10095198 to 7479577 rows (as of June 17, 2026).
 
 ```{r}
 #| warning: false
 #| message: false
 #| echo: false
 #| label: tbl-source-to-IJF-1
-#| tbl-cap: "Description of where the columns in IJF data were derived from the source, and any cleaning procedures applied. Variables added for internal database consistency (e.g. processing dates) and redundant variables (e.g. donation year) are not shown."
-t3_data <- data.frame(
-  `IJF Column` = c(
-    "donor_full_name",
-    "donor_type",
-    "donor_location",
-    "donation_date",
-    "electoral_event",
-    "amount_monetary",
-    "amount_non_monetary",
-    "recipient",
-    "electoral_district",
-    "political_entity",
-    "political_party"
-  ),
-  `EC Source Column(s)` = c(
-    "Contributor name ; Contributor last name ; Contributor first name ; Contributor middle initial",
-    "Contributor type",
-    "Contributor City ; Contributor Province ; Contributor Postal code",
-    "Contribution Received date ; Fiscal/Election date",
-    "Electoral event",
-    "Monetary amount",
-    "Non-Monetary amount",
-    "Recipient ; Recipient last name ; Recipient first name ; Recipient middle initial",
-    "Electoral District",
-    "Political Entity",
-    "Political Party of Recipient"
-  ),
-  `Notes` = c(
-    "Concatenated source columns, delimited by commas.",
-    "No changes from source.",
-    "Concatenated source columns, delimited by commas.",
-    "Used `Contribution Received date` when available, filled with Fiscal/Election date otherwise. Removed invalid dates.",
-    "Leadership and Nomination contestant were blank, nothing else was. Unclear why. Otherwise, no changes from source.",
-    "No changes from source.",
-    "No changes from source.",
-    "Concatenated source columns, delimited by commas.",
-    "No changes from source.",
-    "No changes from source.",
-    "No changes from source."
-  ),
-  check.names = FALSE
+#| tbl-cap: "Description of where the columns in the IJF data were derived from the source, and any cleaning procedures applied. Variables added for internal database consistency (e.g. processing dates) and redundant variables (e.g. donation year) are not shown here."
+t3_data <- tribble(
+  ~`IJF Column`, ~`EC Source Column(s)`, ~Notes,
+  "donor_full_name", "Contributor name ; Contributor last name ; Contributor first name ; Contributor middle initial", "Concatenated source columns, delimited by commas.",
+  "donor_type", "Contributor type", "No changes from source.",
+  "donor_location", "Contributor City ; Contributor Province ; Contributor Postal code", "Concatenated source columns, delimited by commas.",
+  "donation_date", "Contribution Received date ; Fiscal/Election date", "Used `Contribution Received date` when available, filled with Fiscal/Election date otherwise. Removed invalid dates.",
+  "electoral_event", "Electoral event", "Leadership and Nomination contestant were blank, nothing else was. Unclear why. Otherwise, no changes from source.",
+  "amount_monetary", "Monetary amount", "No changes from source.",
+  "amount_non_monetary", "Non-Monetary amount", "No changes from source.",
+  "recipient", "Recipient ; Recipient last name ; Recipient first name ; Recipient middle initial", "Concatenated source columns, delimited by commas.",
+  "electoral_district", "Electoral District", "No changes from source.",
+  "political_entity", "Political Entity", "No changes from source.",
+  "political_party", "Political Party of Recipient", "No changes from source."
 )
-
 
 tt(t3_data, width = 1) %>%
   format_tt(escape = TRUE) %>%
@@ -476,25 +520,21 @@ tt(t3_data, width = 1) %>%
   style_tt(j = 2, align = "r")
 ```
 
-# Initial Cleaning of IJF Data {#sec-cleaning-IJF}
+##  Initial Cleaning of IJF Data {#sec-cleaning-IJF}
 
-Here we describe further cleaning that we performed on the IJF data. The steps described in this section were implemented in `scripts/cleaning/00-clean_IJF_data.R`. At each step, validation logic was executed to ensure that we understood exactly what was being altered, added, or removed.
+We applied further cleaning and filtering steps to the data supplied by the Investigative Journalism Foundation. First, we removed redundant columns (e.g. data had columns `year` and `donation_year` which were identical for every entry) and columns used for internal consistency (e.g. the date the entry was added by the organization). Next, we removed entries with malformatted dates, or disagreements between the year and date columns. Less than 0.001% of entries were discarded at this step, all corresponding to donations dated in later months of 2026. We then filtered for only donations stated to have been made by individuals. Less than 0.4% of the data was removed at this step, the overwhelming majority of which were records dated before 2006, outside the scope of our study. Next, we filtered for donations where the sum of monetary and non-monetary contributions was present and positive. Less than 0.02% of the data was removed at this step. We then removed entries where the donor or recipient name was either missing or shorter than 4 characters (after trimming whitespaces). Less than 0.001% of data was removed at this step, most of which also had missing donor locations. Finally, we removed individual donations with amounts larger than \$25000. Here we were careful to exclude entries that represented aggregated sums of anonymous contributions, which were flagged by searching for entries where `donor_full_name` started with "Contribut". Less than 0.001% of the data was removed at this step. In total, 0.4% of entries (n ~ 30,000) were discarded in this section.
 
-First, we removed redundant columns (e.g. data had columns `year` and `donation_year` which were identical for every entry) and columns used for internal consistency (e.g. the date the entry was added by the organization). Next, we checked for invalid dates, malformatted dates, and disagreement between the year and date columns. Less than 0.001% of dates were discarded at this step, all corresponding to donations dated in later months of 2026. We then filtered for only donations stated to have been made by individuals. Less than 0.4% of the data was removed at this step, the overwhelming majority of which were records dated before 2006, outside the scope of our study. Next, we filtered for donations where the sum of monetary and non-monetary contributions was present and positive. Less than 0.02% of the data was removed at this step. We then removed entries where the donor or recipient name was missing or shorter than 4 characters (after trimming whitespaces). Less than 0.001% of data was removed at this step, most of which also had missing donor locations. Finally, we also removed entries with contributed amounts larger than \$25000. Here we were careful to exclude entries that represented aggregated sums of anonymous contributions, which were flagged by searching for entries where `donor_full_name` started with "Contribut". Less than 0.001% of the data was removed at this step.
-
-Donor postal codes were extracted from the `donor_location` column. Canadian postal codes always follow the format A0A0A0, where 0 is some digit and A is a letter (excluding I, O, D, F, Q, or U). Additionally, they may not start with W or Z [@canada_post_guidelines_2026]. These facts were used to verify the structure extracted postal codes, and apply the following imputations:
+Donor postal codes were extracted from the `donor_location` column. Canadian postal codes always follow the format A0A0A0, where 0 is a digit and A is a letter (excluding I, O, D, F, Q, or U). Also, they may not start with W or Z [@canada_post_guidelines_2026]. These facts were used to verify the structure of extracted postal codes, and apply the following imputations:
 
   - "O"s in a number slot were taken to mean "0"
   - "I"s in a number slot were taken to mean "1"
   - "!" in a number slot were taken to mean "1"
 
-Using this method we were able to recover around 99.89% of individual donor postal codes. The remaining 0.11% of entries were assigned NA (these accounted for less than 0.22% of the sum of all un-aggregated contributions). We note that while our extracted postal codes are guaranteed to be structurally correct, we did not validate whether the codes matched their associated provinces, cities, or were actually used. This is addressed at a later stage of cleaning. Such discrepancies are likely quite rare. 0.35% of entries (n $\approx$ 26,000) represent aggregated sums of anonymous contributions, and therefore did not have associated postal codes. Despite their scarcity, these entries amounted to 24.1% of the total contributed amount in the dataset, and were therefore kept for further analysis.
+After imputations we were able to recover 99.89% of individual donor postal codes. The remaining 0.11% were kept, with their postal codes set to `NA`. We note that while these postal codes are guaranteed to be structurally correct, we did not validate whether the codes matched their associated provinces, cities, or were actually used. The effective validity of these postal codes is verified in [Appendix -@sec-IJF-to-donations-data]. 0.35% of entries (n ~ 26,000) represented aggregated sums of anonymous contributions, and therefore did not have associated postal codes. Despite their scarcity, these amounted to 24.1% of the total contributed amount in the dataset. These were kept at this stage, and their potential impacts on the study are discussed in [Appendix -@sec-missing-data].
 
-We also performed simple string cleaning procedures such as whitespace stripping and entity matching (e.g. United Party of Canada (UP) and United Party of Canada clearly refer to the same political party). Leadership and nomination contestants were always missing `electoral_event`, and so these were imputed as "unknown leadership contest" and "unknown nomination contest" respectively. We note that, although all recipients had associated electoral districts (apart from leadership contestants and registered parties of course) and political parties, we were not able to guarantee that these were correctly attributed. Spot checking revealed no district nor party attribution errors among a small set of recipients, and error rates for similar issues were very low, but this is a fundamental uncertainty in the data.
+We also performed simple string cleaning procedures such as whitespace stripping and entity matching (e.g. United Party of Canada (UP) and United Party of Canada clearly refer to the same political party). Notably all donation recipients in the datset had associated electoral districts (apart from leadership contestants and registered parties, since these are non-local entities) and political parties. Spot checking revealed no district or party attribution errors among a small set of recipients, however we could not completely confirm that recipient districts or parties were correct.
 
-In total, 0.4% of entries (n = 30,049) were discarded at this stage.
-
-# Clean IJF to `donations_data` {#sec-IJF-to-donations-data}
+## Clean IJF to `donations_data` {#sec-IJF-to-donations-data}
 
 ```{r}
 #| warning: false
@@ -502,38 +542,20 @@ In total, 0.4% of entries (n = 30,049) were discarded at this stage.
 #| echo: false
 donations_data_appendix <- arrow::read_parquet(here::here("data/processed_data/donations_data_appendix.parquet"))
 donations_data <- arrow::read_parquet(here::here("data/processed_data/donations_data.parquet"))
+census_lookup <- arrow::read_parquet(here::here("data/clean_data/census_lookup.parquet"))
 ```
 
-Here we describe how our main dataset (`donations_data`) was derived from the cleaned IJF data. The steps described in this section were implemented in `scripts/cleaning/00-clean_IJF_data.R` and `scripts/cleaning/01-clean_PCFRF.R`.
+In this section we describe how our primary analytical dataset (`donations_data` in the GitHub repository) was derived from the cleaned IJF data, and augmented (to include the donor's district) using a custom postal code conversion file (PCCF) described in [Appendix -@sec-data-supplements-spatial].
 
-First, we kept only those entries with donation dates between October 4, 2015, and April 22, 2024, capturing  the effective period of the 2013 representational order (see @sec-limit-info). This date range captures 61.2% of the entire contributions dataset. Next, we removed entries where the recipient's district was not one of the 338 possible districts in the 2013 representational order. Less than 0.002% of the data was removed at this step. Next, we removed entries where `electoral_event` was attributed to an event that did not happen within our date range (e.g. 39th general election was in 2006). Although it is possible that these were retroactively added for past events, less than 0.001% of the data had this issue, so their removal was inconsequential. We also searched for electoral events that did happen within the date range, but had posted dates outside the range. There were only around 100 such entries, and so they remained unhandled. Next, we removed donations addressed to leadership contestants for parties where no such contest occurred during our study period. Less than 0.0001% of the data was removed at this step. Nomination contests had relatively tiny contribution amounts (0.08% by count and 0.3% of total contributed amount at this stage), and were therefore not validated in this way. 3% of donations (7% of summed total) stated to have been received during general election periods had receipt dates outside the stated periods (usually dated after the writ period had ended, not before it started). These were not removed due to their non-trivial abundance, however many analyses and visualizations split the data into donations received during vs. outside writ periods. In those cases these data are considered to have been received outside a writ period. All such anomalies originated from financial reports filed by electoral candidates.
+First, we restricted the dataset to only those entries with donation dates between October 4, 2015, and April 22, 2024, capturing  the effective period of the 2013 representational order [see Appendix -@sec-info-limits]. This period captures 61.2% of the entire contributions dataset. Next, we removed entries where the recipient's district was not one of the 338 possible districts in the 2013 representational order, referencing our modified PCCF (0.002% of cases). Next, we removed entries where the reported electoral event did not happen within our date range (e.g. 39th general election was in 2006). Although it is possible that these were retroactively added for past events, less than 0.001% of the data had this issue, so their removal did not impact our analysis. Next, we removed donations addressed to leadership contestants for parties where no such contest occurred during our study period (0.0001% of cases). Nomination contests had relatively tiny contribution amounts (0.08% by count and 0.3% of total contributed amount at this stage), and were therefore not validated in this way. 3% of donations (7% of summed total) received during general election periods had receipt dates outside the stated period (usually dated after the writ period had ended, not before it started). These were not removed due to their non-trivial abundance, however many analyses and visualizations split the data into donations received during vs. outside writ periods. In those cases, these data are considered to have been received outside a writ period. All such anomalies originated from financial reports filed by electoral candidates.
 
-Donor postal codes were matched to districts using Statistics Canada's 2022 PCFRF (Postal Codes by Federal Ridings File). This file was made during the 2013 representational order and so only maps to districts suitable for our study. However, the set of postal codes reflects Canada Post's 2016 registry. For postal codes that could potentially be located in two districts, Statistics Canada estimates the population that resides in each district (based on 2016 Census population counts) and assigns the code to the one with a higher population. Using this file, 1.11% of donor postal codes derived in @sec-cleaning-IJF could not successfully be matched to a district, representing 1.33% of the total amount contributed by entries with valid postal codes. These were not removed at this stage. @fig-IJF-to-donations-data displays what proportion of the total contributed amount was successfully geolocated.
+Donor postal codes were matched to their corresponding census dissemination areas (DAs) and federal electoral districts (FEDs) using our modified PCCF file. Using this file, 1.11% of donor postal codes could not be identified, representing 1.33% of the total amount contributed by entries with structurally valid postal codes. Since matching donors to districts is necessary to assess whether a donation is out-of-district, these unmatched codes, along with entries missing postal codes entirely were removed from the study dataset. Overall, 22.5% of the total contributed amount could not be donor-geolocated (26% for donations addressed to local entities). @fig-IJF-to-donations-data illustrates what proportion of the total amount donated during our study period was successfully geolocated, broken down by cause of missingness. Unlocated data is discussed further in [Appendix -@sec-missing-data]. In total, 38.78% of data was discarded by date filtering, 0.00237% of entries were discarded for general cleaning, 0.1671% of entries were discarded for missing donor location entirely, and 1.04% of entries were discarded for having invalid postal codes(0.09% due to malformation, and 0.95% due to invalidity).
 
-```{r}
-#| warning: false
-#| message: false
-#| echo: false
-#| label: tbl-IJF-to-donations-data-1
-#| tbl-cap: "Breakdown of total contributed amount by type (monetary vs. non-monetary) during the study period. This table only includes donations whose donors were successfully geolocated."
-grand_total <- sum(donations_data$total_amount, na.rm = TRUE)
-tibble(
-  Source = c("Monetary", "Non-monetary", "Total"),
-  Amount = c(
-    sum(donations_data$amount_monetary, na.rm = TRUE),
-    sum(donations_data$amount_non_monetary, na.rm = TRUE),
-    grand_total
-  )
-) %>%
-  mutate(
-    Proportion = scales::percent(Amount / grand_total, accuracy = 0.1),
-    Amount = scales::dollar(Amount, accuracy = 1)
-  ) %>%
-  tinytable::tt(width = 1) %>%
-  format_tt(escape = TRUE) %>%
-  style_tt(j = 1, align = "l") %>%
-  style_tt(j = 2:3, align = "r")
-```
+Finally, columns were renamed, merged, and variables were joined to improve the dataset's usability. The resulting schema is shown in part in @sec-data-1. We provide a list of notable operations here below:
+
+- Monetary (99.8%) and non-monetary (0.2%) contributions were joined, and analysis was carried out on the total.
+- Specific electoral events were grouped into the categories: Leadership contest, Nomination contest, General election, By-election, and Non-electoral (i.e. annual or quarterly filings).
+- We added a variable to indicate during which writ period (if any) a donation was received, based on `donation_date`. Writ periods were taken to be August 2 to October 19 (2015), September 11 to October 21 (2019) and August 15 to September 20 (2021). By-elections are excluded from election vs. non-election analyses, however these account for less than 0.1% of the total contributed amount during the study period (@tbl-IJF-to-donations-data-2).
 
 ```{r}
 #| warning: false
@@ -681,21 +703,26 @@ level_summary %>%
   style_tt(j = 1:4, align = "lrrr")
 ```
 
-
 ```{r}
 #| warning: false
 #| message: false
 #| echo: false
 #| label: fig-IJF-to-donations-data
-#| fig-cap: "Geolocation success for contributions received during the study period."
+#| fig-cap: "Geolocation success for all contributions to federal political entities received from 2015 to 2024."
 
 GEO_COLOURS <- c(
-  "Disclosed (>= $200)"      = "#0072B2",
-  "Disclosed (< $200)"           = "#56B4E9",
-  "Anonymized (< $200)"          = "#E69F00",
-  "Postal code unretrievable"      = "#999999",
-  "Potal code not matched to district" = "#D55E00"
+  "Complete census data"                = "#0072B2",
+  "Incomplete census data"              = "#56B4E9",
+  "Anonymized (< $200)"                 = "#D55E00",
+  "Postal code unretrievable"           = "#999999",
+  "Postal code not matched to district" = "#E69F00"
 )
+
+# Map each DA to whether its census record is fully complete.
+complete_DAs <- census_lookup %>%
+  filter(missing_stage == "complete") %>%
+  pull(DAUID)
+
 geo_data <- donations_data_appendix %>%
   mutate(
     identified = !is.na(donor_district),
@@ -704,17 +731,19 @@ geo_data <- donations_data_appendix %>%
       levels = c("Donor district identified", "Donor district not identified")
     ),
     segment = case_when(
-      identified &  total_amount >= 200 ~ "Disclosed (>= $200)",
-      identified &  total_amount <  200 ~ "Disclosed (< $200)",
+      identified &  (donor_dissemination_area %in% complete_DAs) ~ "Complete census data",
+      identified & !(donor_dissemination_area %in% complete_DAs) ~ "Incomplete census data",
       is_aggregated                     ~ "Anonymized (< $200)",
       !is_aggregated &  is.na(donor_postal_code) ~ "Postal code unretrievable",
-      !is_aggregated & !is.na(donor_postal_code) & is.na(donor_district) ~ "Potal code not matched to district"
+      !is_aggregated & !is.na(donor_postal_code) & is.na(donor_district) ~ "Postal code not matched to district"
     ),
     segment = factor(segment, levels = names(GEO_COLOURS))
   ) %>%
   group_by(bar, segment) %>%
   summarise(amount = sum(total_amount, na.rm = TRUE), .groups = "drop") %>%
-  mutate(pct = 100 * amount / sum(amount))
+  mutate(pct = 100 * amount / sum(amount)) %>%
+  mutate(segment = fct_reorder(segment, amount, .desc = FALSE))
+
 ggplot(geo_data, aes(x = bar, y = pct, fill = segment)) +
   geom_col(position = position_stack()) +
   scale_y_continuous(labels = scales::label_percent(scale = 1)) +
@@ -731,19 +760,95 @@ ggplot(geo_data, aes(x = bar, y = pct, fill = segment)) +
   )
 ```
 
-At this stage, columns were renamed, merged, and variables were joined to improve the dataset's usability. We renamed `electoral_district` to `recipient_district`, `donor_full_name` to `donor_name`, and `recipient` to `recipient_name`. We also joined `amount_monetary` and `amount_non_monetary` into `total_amount` (see @tbl-IJF-to-donations-data-1 for a breakdown). We also grouped specific events in `electoral_event` into the categories: Leadership contest, Nomination contest, General election, By-election, and Non-electoral (i.e. annual or quarterly filings). We added the variable `is_out_of_district` to indicate whether or not a donation was sent to a recipient out-of-district. We added a variable `general_election_period` to indicate during which writ period (if any) a donation was received, based on `donation_date`. Writ periods were taken to be August 2 to October 19 (2015), September 11 to October 21 (2019) and August 15 to September 20 (2021). By-elections are excluded from election vs. non-election analyses, however these account for less than 0.1% of the total contributed amount during the study period (@tbl-IJF-to-donations-data-2).
+# Creating Supplementary Datasets {#sec-data-supplements}
 
-In total, 39% of data was discarded by restricting dates, less than 0.001% of entries (n $\approx$ 100) were discarded for general cleaning, and 1.35% of entries (n $\approx$ 60,000 ; representing 22.7% of the total contributed amount) were discarded since we were unable to geolocate them (> 98% of this amount are contributions from anonymous donors, and so were necessarily unlocatable).
+In this section we describe how we created two custom lookup tables that the cleaning scripts in [Appendix -@sec-pipeline] rely on; one to convert between different levels of spatial hierarchy, and a second to retrieve specific socio-demographic statistics at the census dissemination area. Their place in the full pipeline is illustrated in @fig-data-pipeline.
 
-# Comparing Distributions of Geolocated and Non-geolocated Contributions {#sec-distribution-comparisons}
+## Spatial Lookup Table (`PCCF_lookup` on GitHub) {#sec-data-supplements-spatial}
 
-Here we systematically compare the distributions of successfully donor-geolocated data and data that we were unable to geolocate. We restrict this comparison to donations addressed to candidates and district associations, since these are the only ones that could have been analyzed as out-of-district. Distributional comparisons across five variables are shown in @fig-distribution-comparisons-1. We find that donations that were unsuccessfully geolocated were very similarly distributed to those that were, across most chosen lines of comparison. One notable exception is that non-geolocatable donations to local entities occurred much more often outside vs. during election periods, where geolocated ones occurred at similar rates outside vs. during election periods.
+The purpose of the table constructed in this section is to provide unambiguous links between any administrative area of interest and another at a larger scale (e.g. postal code to district, dissemination area to province, etc.). This custom table is a version of Statistics Canada's 2024 postal code conversion files (PCCF), modified to resolve many-to-many spatial overlaps between postal codes, dissemination areas (DAs), and electoral districts (FEDs). The PCCF we used provides linkages between all registered Canadian postal codes (accurate as of June 2024) and various administrative divisions, including the dissemination areas (DAs) of the 2021 Census, and the federal electoral districts (FEDs) of the 2013 representational order [@statcan_pccf_2025]. These sets of DAs and FEDs are the same versions we chose for our study. Access to this PCCF was granted to us by the University of Toronto.
+
+To resolve cases where one postal code straddled multiple dissemination areas, we used a single link indicator (SLI) to establish a one-to-one relationship between postal codes and DAs, avaliable in PCCF files by default [@statcan_pccf_2025]. Statistics Canada determines SLIs by estimating the population that resides in each DA within the postal code area (based on 2021 Census population counts) and assigns the code to the one with a higher population [@statcan_pccf_2025]. This procedure removed 35% of links present in the original PCCF, however no single postal code was removed from the file entirely. A small number of postal codes (0.7%) were removed for missing either an associated DA or FED. All postal codes had associated provinces. In addition, 1.6% of dissemination areas in the dataset straddled multiple district boundaries. To resolve this, for each overlap case, we (1) counted how many postal codes within the dissemination area linked to each candidate FED, and (2) assigned the entire DA, and all of its postal codes to the FED holding the plurality of those postal codes, discarding the postal codes that mapped to any minority FED. Ties between FEDs were broken deterministically by FED UID. This resolution step resulted in the loss of roughly 0.5% of postal codes. Applied to the contributions dataset used in this study, these resolutions increased the share of entries whose donor postal codes could not be matched to the PCCF from 0.46% (n = 20,800) to 0.95% (n = 43,059).
+
+As a final step, we ran a suite of tests, primarily to confirm that the resolved table formed a strictly nested hierarchy: each postal code mapped to a single DA, each DA or postal code to a single FED, and each FED, DA, or postal code to a single province. We also verified that every postal code appeared exactly once, and that they were correctly formatted following Canada Post's guidelines [@canada_post_guidelines_2026]. We also confirmed that all DA and FED UIDs could be cross-referenced with Statistics Canada's 2021 DA and 2013 FED shapefiles [@statcan_boundary_2021], and that all 338 districts and 13 provinces remained represented. Because of these tests, this spatial lookup table was treated as an authoritative list of valid postal codes, dissemination areas, districts, and provinces, which greatly simplified our analysis.
+
+## Census Lookup Table (`census_lookup` on GitHub) {#sec-data-supplements-census}
+
+The purpose of the table constructed in this section is to provide specific socio-demographic variables (listed in @tbl-data-supplements-census) for every dissemination area (DA) present in the spatial lookup table (described in @sec-data-supplements-spatial). Socio-demographic information at this spatial scale was sourced from the 2021 Census, and specifically from the "Canada, provinces, territories, census divisions (CDs), census subdivisions (CSDs) and dissemination areas (DAs)" available for download online [@statcan_census_zip_2022]. We chose the 2021 Census over the 2016 Census since the midpoint of our time period (2019) is closer to 2021 than 2016. We chose the dissemination area, an administrative region that houses roughly 400 to 700 people, since it is the smallest spatial scale where each of our desired statistics are recorded [@statcan_da_2021]. All DAs listed in our spatial lookup file (see @sec-data-suppliments-spatial) were present in the Census dataset we used. Since these DAs are the only ones we would ever use for analysis, the other 15.1% of DAs were dropped.
 
 ```{r}
 #| warning: false
 #| message: false
 #| echo: false
-#| label: fig-distribution-comparisons-1
+#| label: tbl-data-supplements-census
+#| tbl-cap: "Census IDs, descriptions, and sample sizes for each census variable used in this study. Varaibles with 25% sample size means that only 25% of the, to preserve privacy."
+Table_census <- tribble(
+  ~`Characteristic ID`, ~`Description`,                                       ~`Sample Size`,
+     1L,                "Population, 2021",                                    "100%",
+     6L,                "Population density (per square kilometres)",          "100%",
+     7L,                "Land area (square kilometres)",                       "100%",
+    39L,                "Average (mean) age",                                  "100%",
+   243L,                "Median household income (total, in 2020)",            "100%",
+  1683L,                "Total population in private households",              "25%",
+  1684L,                "Total visible minority population",                   "25%",
+  1685L,                "Total South Asian population",                        "25%",
+  1686L,                "Total Chinese population",                            "25%",
+  1687L,                "Total Black population",                              "25%",
+  1688L,                "Total Filipino population",                           "25%",
+  1689L,                "Total Arab population",                               "25%",
+  1690L,                "Total Latin American population",                     "25%",
+  1691L,                "Total Southeast Asian population",                    "25%",
+  1692L,                "Total West Asian population",                         "25%",
+  1693L,                "Total Korean population",                             "25%",
+  1694L,                "Total Japanese population",                           "25%",
+  1998L,                "Total population aged 15+",                           "25%",
+  2001L,                "Total population with a postsecondary certificate",   "25%"
+)
+
+Table_census %>% tinytable::tt(width = 1) %>%
+  format_tt(escape = TRUE) %>%
+  style_tt(j = 1:3, align = "lrr")
+```
+
+3.2% of remaining DAs were missing at least one census variable: 0.05% were missing all demographic, 0.43% only had population, area, and density, 0.12% were only missing the 25% sampled variables (i.e. ethnicity and education level), and 2.62% had all variables recorded except household income. Notably, all entries' missingness could be grouped into five strictly hierarchical stages, summarized in @tbl-census-missingness. Entries with missing variables were not dropped, but were instead flagged so that they could be easily identified during analysis. We also converted ethnicity and education counts to proportions.
+
+```{r}
+#| warning: false
+#| message: false
+#| echo: false
+#| label: tbl-census-missingness
+#| tbl-cap: "Structure of missing census data."
+clean_census <- read_parquet(here::here("data/clean_data/census_lookup.parquet"))
+
+Table_census_missing <- clean_census %>%
+  group_by(missing_stage) %>%
+  summarize(n = n()) %>%
+  mutate(proportion = scales::percent(n / sum(n), accuracy = 0.01)) %>%
+  rename(
+    `Missing Stage` = missing_stage,
+    `Count` = n,
+    `% of Total` = proportion
+  )
+Table_census_missing %>%
+  tinytable::tt(width = 1) %>%
+  format_tt(escape = TRUE) %>%
+  style_tt(j = 1:3, align = "lrr")
+```
+
+# Comparing Distributions of Geolocated and Non-geolocated Contributions {#sec-missing-data}
+
+22.5% of the total contributed amount (and 26% of total contributions to local political entities) during our study period could not be donor-geolocated. For 95.8% (93.4% for local entities) of this amount, donor locations were intentionally left anonymous. The remaining entries (0.94% overall and 1.7% for local entities, accross the entire dataset) could not be donor-geolocated due to malformatted locations or unmatched postal codes. This includes cases where postal codes were sacrificed to resolve the many-to-many relationship between dissemination areas and electoral districts [see Appendix -@sec-data-supplements-spatial]. We document the intentional and unintentional missing data seperately.
+
+In our analysis the donation date is used to separate donations received during and outside election periods. This i s it's only use case.
+
+
+Here we systematically compare the distributions of successfully donor-geolocated data and data that we were unable to geolocate. We restrict this comparison to donations addressed to candidates and district associations, since these are the only ones that could have been analyzed as out-of-district. Distributional comparisons across five variables are shown in @fig-missing-data-1. We find that donations that were unsuccessfully geolocated were very similarly distributed to those that were, across most chosen lines of comparison. One notable exception is that non-geolocatable donations to local entities occurred much more often outside vs. during election periods, where geolocated ones occurred at similar rates outside vs. during election periods.
+
+```{r}
+#| warning: false
+#| message: false
+#| echo: false
+#| label: fig-missing-data-1
 #| fig-cap: "Comparing the distributions of successfully geolocated donations (blue) vs. unsuccessfully geolocated donations (red) across multiple factors (labelled in bold inthe subplots themselved). Only donations to candidates and district associations (EDAs) are considered. The breakdown of the total amount contributed across each factor is plotted on the y-axis. In each sub-plot, blue bars heights sum to 100%, and red bars heights separately sum to 100%."
 #| fig-height: 6
 
@@ -932,26 +1037,5 @@ p_all
 # Modifications to Data for Figures & Alternate Visualizations {#sec-viz-modifications}
 
 * **Longitudinal Visualizations:** All types of donations occurred at much higher rates in December compared to other months, regardless of year, recipient type, party affiliation, etc. There are two likely causes for this; a clerical error at the source, or, the IJF frequently imputes the fiscal/election date in the absence of donation receipt date. This did not impact our analysis, however December donations in all Figures presented below were imputed using their neighboring November and January values, and their recorded monetary amounts were redistributed across their associated years so that nothing was lost. This served to reduce visual clutter from large, phantom peaks at the end of each year.
-
-# Creating Supplimentary Datasets {#sec-data-suppliments}
-
-This section describes how we created two custom lookup tables used throughout this report; one to convert between different levels of spatial hierarchy, and a second to search for relevant socio-demographic statistics at the census dissemination area.
-
-## Spatial Lookup Table: `data/clean_data/PCCF_lookup.parquet` {#sec-data-suppliments-spatial}
-
-The goal of this process was to create a table where any one administrative area of interest could be linked unambiguously to another administrative area at a larger scale (e.g. postal code mapped to district, dissemination area mapped to province, etc.). This custom table is a modified version of Statistics Canada's 2024 postal code conversion files (PCCF), modifed to resolve many-to-many spatial overlaps between postal codes, dissemination areas (DAs), and electoral districts (FEDs). The PCCF we used provides linkages between all registered Canadian postal codes (accurate as of June 2024) and various administrartive divisions, including the dissemination areas (DAs) of the 2021 Census, and the federal electoral districts (FEDs) of the 2013 representational order [@statcan_pccf_2025]. These sets of DAs and FEDs are the same versions we chose for our study. Access to this PCCF was granted to us by the University of Toronto.
-
-To resolve cases where one postal codes may straddle multiple dissemination areas, we used a single link indicator (SLI), used to establish a one-to-one relationship between posta codes and DAs, and avaliable in PCCF files by default [@statcan_pccf_2025]. Statistics Canada determines SLIs by estimating the population that resides in each DA within the postal code area (based on 2021 Census population counts) and assigns the code the one with a higher population [@statcan_pccf_2025]. This resulted in a loss of 35% of links in the original PCCF, however no single postal code was removed from the file entirely. A small numer of postal codes (0.7%) did not have either an associated DA or FED, and were removed. All postal codes had associated provinces. In addition, 1.6% of dissemination areas in the dataset straddled multiple district boundaries. To resolve this, for each overlap case, we (1) counted how many postal codes within the dissemination area linked to each candidate FED, and (2) assigned the entire DA, and all of its postal codes to the FED holding the plurality of those postal codes, discarding the postal codes that mapped to any minority FED. Ties between FEDs were broken deterministically by FED UID. This resolution resulted in losing roughly 0.5% of postal codes.
-
-As a final step, we ran a suite of tests, primarily to confirm that the resolved table formed a strictly nested hierarchy: each postal code mapped to a single DA, each DA or postal code to a single FED, and each FED, DA, or postal code to a single province. We also verified that every postal code appeared exactly once, and that they were correcty formatted following Canada Post's guidelines [@canada_post_guidelines_2026]. We also confirmed that all DA and FED UIDs could be cross-referenced with Statisitcs Canada's 2022 Geographic Attribute File and FED shapefile [@statcan_boundary_2021], and that all 338 districts and 13 provinces remained represented. Contextualized within the cleaned dataset, the resolution steps presented above increased the number of entries whose donor postal codes could not be found in the PCCF from 20800 (0.46%) to 43059 (0.95%).
-
-## Census Lookup Table: `data/processed_data/census_lookup.parquet` {#sec-data-suppliments-census}
-
-We accessed scio-demographic data from the 2021 Canadian Census by querying the CensusMapper API through the `cancensus` R package [@cancensus]. We chose the 2021 Census over the 2016 Census since the midpoint of our time period (2019) region is closer to 2021 than 2016. Our variables of interest were the following:
-- **[...]** .
-
-The smallest spatial scale where each of these are available is the dissemination area (DA), administrative regions that each house roughly 400 to 700 people [@statcan_da_2021]. To avoid triggering API usage limits in our scripts, we collected these variables for each province separately. We then verified that all the DAs were queried by manually comparing the count returned by the API against a Statistics Canada page [@statcan_t1_1_2022], and by cross-referencing DAUIDs against our cleaned spatial lookup table [described in @sec-data-suppliments-spatial]. Null return values were handled upstream. 
-
-
 
 # References

@@ -51,20 +51,27 @@ rsconnect/
 # Mac data storage temp files
 .DS_Store
 
-# Large Files
+# Raw Files
 data/raw_data/lfed000b21a_e
-data/raw_data/OpenData-ElectionsCanada-asSubmitted.csv
+data/raw_data/lda000b21a_e
 data/raw_data/od_cntrbtn_audt_e.csv
-data/raw_data/raw_data_IJF.csv
+data/raw_data/od_cntrbtn_de_e.csv
+data/raw_data/raw_PCCF_2024.tab
+data/raw_data/raw_GAF_2021.csv
 data/raw_data/raw_data_IJF_fix2026-06-17.csv
+data/raw_data/98-401-X2021.zip
+data/raw_data/census_uncompressed_2021.parquet
+
 data/clean_data/clean_data_IJF.parquet
 data/processed_data/donations_data.parquet
 data/clean_data/clean_FED_shapefile.rds
 data/processed_data/donations_data_appendix.parquet
-data/raw_data/raw_PCFRF_2022.txt
-data/raw_data/raw_PCCF_2024.tab
-data/raw_data/raw_GAF_2021.csv
-data/raw_data/od_cntrbtn_de_e.csv
+
+
 data/clean_data/FED_lookup.rds
 data/clean_data/PCCF_lookup.parquet
 data/clean_data/DA_lookup.parquet
+.vscode/settings.json
+data/clean_data/DA_lookup.rds
+.gitignore
+data/clean_data/census_lookup.parquet

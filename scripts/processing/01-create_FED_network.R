@@ -1,3 +1,73 @@
+# Purpose: Build District-Level Donations Flow Network Datasets.
+# Author: Benedict Cummins-Mburu
+# Last Updated: 30 Jun 2026
+# Status: TODO
+# Contact: b.cumminsmburu@utoronto.ca
+# License: MIT
+# Notes:
+# - `donations_data` is necessarily restricted to only donations addressed to local entities (Registered associations, Candidates, ignoring Nomination contestants) at this stage.
+
+# ----- Setup -------
+library(tidyverse)
+library(arrow)
+donations_data <- read_parquet("data/processed_data/donations_data.parquet")
+FED_lookup <- readRDS("data/clean_data/FED_lookup.rds")
+PCCF_lookup <- read_parquet("data/clean_data/PCCF_lookup.parquet")
+census_lookup <- read_parquet("data/clean_data/census_lookup.parquet")
+
+# ---- Constants ----
+LOCAL_POLITICAL_ENTITIES <- c("Registered associations", "Candidates")
+VALID_FED_NAMES <- FED_lookup$name
+
+# -- Pre-Cleaning ---
+
+# 1. Restrict to donations addressed to local entities (excluding Nomination contestants)
+local_donations_data <- donations_data %>%
+  filter(political_entity %in% LOCAL_POLITICAL_ENTITIES)
+
+if (all(!is.na(local_donations_data$recipient_district))) {
+  message("Validation Passed.")
+} else {
+  stop("Validation Error: Some Local Political Entity FEDs are Missing.")
+}
+if (all(!is.na(local_donations_data$donor_district))) {
+  message("Validation Passed.")
+} else {
+  stop("Validation Error: Some Donor FEDs are Missing.")
+}
+if (all(unique(local_donations_data$recipient_district) %in% VALID_FED_NAMES)) {
+  message("Validation Passed.")
+} else {
+  stop("Validation Error: Some Recipient FEDs are Invalid.")
+}
+if (all(unique(local_donations_data$donor_district) %in% VALID_FED_NAMES)) {
+  message("Validation Passed.")
+} else {
+  stop("Validation Error: Some Donor FEDs are Invalid.")
+}
+
+
+# ----- Create Node Attributes Dataset -------
+
+FED_attributes <- donations_data %>%
+  group_by(donor_district) %>%
+  summarise(
+    n_donors = n(),
+    sum = sum(total_amount),
+    prop_ood = (sum(total_amount) * is_out_of_district) / sum(total_amount)
+  )
+
+# 2. Join
+#  PRUID, name, area
+
+# ----- Create Edge Attributes Dataset ------
+
+# ------ Save ------
+message("Parquet saved successfully --- END OF SCRIPT.")
+
+
+# STUFF FROM FED_donations_data LEGACY file:
+
 # Purpose: Build District-Level Donations Flow Network Dataset.
 # Author: Benedict Cummins-Mburu
 # Last Updated: 21 Jun 2026

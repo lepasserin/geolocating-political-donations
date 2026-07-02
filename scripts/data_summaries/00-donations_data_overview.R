@@ -44,52 +44,6 @@ Table_2 <- FED_donations_data %>%
   ) %>%
   head(4)
 
-Table_3 <- data.frame(
-  variable = c(
-    "donor_name",
-    "donor_district",
-    "donation_date",
-    "electoral_event",
-    "amount_monetary",
-    "recipient_name",
-    "recipient_district",
-    "political_entity",
-    "political_party"
-  )
-) %>%
-  mutate(
-    example = c(
-      "Alexandra Lulka",
-      "Eglinton--Lawrence",
-      "2015-10-18",
-      "42nd general election",
-      "563.3",
-      "Joe Oliver",
-      "Eglinton--Lawrence",
-      "Candidates",
-      "Conservative Party of Canada"
-    )
-  ) %>%
-  mutate(
-    description = c(
-      "Donor full name.",
-      "District associated with donor postal code.",
-      "Date donation was received.",
-      "Electoral event (if any) occuring during donation.",
-      "The value of the donation, in CAD (summed monetary and non-monetary).",
-      "Recipient full name.",
-      "District of the recipient (if applicable).",
-      "Entity type of the recipient.",
-      "Recipient party affiliation (if any)."
-    )
-  ) %>%
-  rename(
-    Variable = variable,
-    Example = example,
-    Description = description
-  )
-
 # -------- Save ---------
 write_csv(Table_1, "other/tables/Table_1_1.csv")
 write_csv(Table_2, "other/tables/Table_1_2.csv")
-write_csv(Table_3, "other/tables/Table_1_3.csv")

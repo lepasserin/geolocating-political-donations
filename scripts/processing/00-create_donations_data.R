@@ -1,21 +1,31 @@
-# Purpose: Restrict cleaned IJF data to the range encompassing all donations that occured while the 2013 representational order was in effect.
+# Purpose: Process `clean_data_IJF` into a dataset suitable for analysis. Saves resulting dataset to file.
 # Author: Benedict Cummins-Mburu
-# Last Updated: 19 Jun 2026
+# Last Updated: 29 Jun 2026
+# Status: COMPLETE
 # Contact: b.cumminsmburu@utoronto.ca
 # License: MIT
+# Notes:
+# - Range restricted to donations dated within the 2013 representational order.
+# - Donations where the donor could not be tied to a postal code present in `PCCF_lookup` were discarded in `donations_data`, and the impact of their loss is assessed using `donations_data_appendix`.
+# - ~ 25% (very roughly) of the donation amount could not be geolocated, and were dropped.
 
 # --------- Setup ----------
 library(tidyverse)
 library(arrow)
+library(sf)
 IJF_data <- read_parquet("data/clean_data/clean_data_IJF.parquet")
-PCCF <- read_parquet("data/clean_data/clean_PCFRF_lookup.parquet")
+PCCF_lookup <- read_parquet("data/clean_data/PCCF_lookup.parquet") # to validate postal codes and recipient FED names
+FED_lookup <- readRDS("data/clean_data/FED_lookup.rds") # to fetch valid FED names
+FED_lookup <- FED_lookup %>%
+  st_drop_geometry() %>%
+  select(FEDUID, name)
 
 # ------- Constants --------
 VALID_DATE_RANGE <- c(
   lubridate::ymd("2015-08-02"),
   lubridate::ymd("2024-04-22")
 )
-VALID_FEDS <- unique(PCFRF_2022$FED)
+VALID_FEDS <- unique(FED_lookup$name)
 VALID_FED_ENTRIES <- c(VALID_FEDS, NA)
 VALID_EVENTS <- c(
   "Unknown leadership contest",
@@ -47,6 +57,38 @@ VALID_LC_PARTY <- c(
   "Maverick Party",
   "New Democratic Party"
 )
+PR_LOOKUP <- data.frame(
+  PRUID = c(
+    "10",
+    "11",
+    "12",
+    "13",
+    "24",
+    "35",
+    "46",
+    "47",
+    "48",
+    "59",
+    "60",
+    "61",
+    "62"
+  ),
+  province = c(
+    "Newfoundland and Labrador",
+    "Prince Edward Island",
+    "Nova Scotia",
+    "New Brunswick",
+    "Quebec",
+    "Ontario",
+    "Manitoba",
+    "Saskatchewan",
+    "Alberta",
+    "British Columbia",
+    "Yukon",
+    "Northwest Territories",
+    "Nunavut"
+  )
+)
 
 if (length(VALID_FEDS) == 338) {
   message("Validation Passed.")
@@ -61,8 +103,8 @@ if (length(VALID_FEDS) == 338) {
 # 1. Subsetting and Column Renaming
 created_donations_data_01 <- IJF_data %>%
   filter(
-    donation_date >= as.Date("2015-08-02"), # calling of the 2015 general election
-    donation_date <= as.Date("2024-04-22") # earliest possible date of effective change of FEDs
+    donation_date >= VALID_DATE_RANGE[1],
+    donation_date <= VALID_DATE_RANGE[2]
   ) %>%
   rename(
     recipient_district = electoral_district,
@@ -142,21 +184,21 @@ if (
 }
 
 # DIAGNOSTICS:
-valid_entries_outside_daterange <- IJF_data %>%
-  filter(
-    donation_date < as.Date("2015-08-02") |
-      donation_date > as.Date("2024-04-22")
-  ) %>%
-  filter((electoral_event %in% VALID_EVENTS)) %>%
-  filter(
-    !(electoral_event %in%
-      c(
-        "Annual",
-        "Quarterly",
-        "Unknown leadership contest",
-        "Unknown nomination contest"
-      ))
-  )
+# valid_entries_outside_daterange <- IJF_data %>%
+#   filter(
+#     donation_date < as.Date("2015-08-02") |
+#       donation_date > as.Date("2024-04-22")
+#   ) %>%
+#   filter((electoral_event %in% VALID_EVENTS)) %>%
+#   filter(
+#     !(electoral_event %in%
+#       c(
+#         "Annual",
+#         "Quarterly",
+#         "Unknown leadership contest",
+#         "Unknown nomination contest"
+#       ))
+#   )
 
 # 5. Remove Invalid Leadership Events (n = 3 liberal events)
 
@@ -251,12 +293,23 @@ created_donations_data_06 <- created_donations_data_06 %>%
   ) %>%
   mutate(is_general_election_period = general_election_period != "None")
 
-# 7. Derive Donor Ridings from Postal Code (END OF CLEANING FOR APPENDIX)
+# 7. Derive Entire Spatial Stack (DA, FED, and PR) from Postal Code using PCCF_lookup.
+# NOTE: also used FED_lookup and PR_LOOKUP to match IDs to names (more usable)
 
 created_donations_data_07 <- created_donations_data_06 %>%
-  left_join(PCFRF_2022, by = c("donor_postal_code" = "PC")) %>%
-  rename(donor_district = FED) %>%
-  select(-c(FEDUID, PROVINCE))
+  left_join(PCCF_lookup, by = c("donor_postal_code" = "PC")) %>%
+  mutate(
+    FEDUID = as.character(FEDUID),
+    PRUID = as.character(PRUID)
+  ) %>%
+  left_join(FED_lookup, by = "FEDUID") %>%
+  left_join(PR_LOOKUP, by = "PRUID") %>%
+  rename(
+    donor_dissemination_area = DAUID,
+    donor_district = name,
+    donor_province = province
+  ) %>%
+  select(-c(PRUID, FEDUID))
 
 if (
   all(
@@ -270,17 +323,22 @@ if (
   )
 }
 
-# DIAGNOSTICS:
-# unmatched_prop <- created_donations_data_07 %>%
-#   filter(!is.na(donor_postal_code)) %>%
-#   group_by(is.na(donor_district)) %>%
-#   summarize(n = n(), sum = sum(total_amount))
+DA_exists <- created_donations_data_07 %>%
+  filter(!is.na(donor_dissemination_area)) %>%
+  select(donor_dissemination_area, donor_district, donor_province)
+if (all(complete.cases(DA_exists))) {
+  message("Validation Passed.")
+} else {
+  stop(
+    "Validation Failed: some rows with a DA have missing district or province."
+  )
+}
 
-# 8. Filter out Missing Donor Districts (END OF CLEANING FOR MAIN ANALYSIS)
+# 8. Filter out Entries with Missing Donor Districts (ONLY FOR donations_data, NOT FOR donations_data_appendix)
+# NOTE: this step also removes unnecessary column names in `donations_data`
 
 created_donations_data_08 <- created_donations_data_07 %>%
   filter(!is.na(donor_district)) %>%
-  select(-c(electoral_event_OG)) %>%
   mutate(
     is_out_of_district = case_when(
       is.na(recipient_district) ~ NA,
@@ -294,13 +352,23 @@ if (all(!created_donations_data_08$is_aggregated)) {
   stop("Validation Failed: `is_aggregated` is non-constant somehow.")
 }
 created_donations_data_08 <- created_donations_data_08 %>%
-  select(-c(is_aggregated, amount_monetary, amount_non_monetary, rid))
+  select(
+    -c(
+      is_aggregated,
+      amount_monetary,
+      amount_non_monetary,
+      rid,
+      electoral_event_OG,
+      donor_location,
+      donation_year,
+      donor_postal_code
+    )
+  )
 prop_ood_na <- mean(is.na(created_donations_data_08$is_out_of_district))
 prop_national_entity <- mean(
   created_donations_data_08$political_entity %in%
     c("Leadership contestants", "Registered parties")
 )
-
 
 if (prop_ood_na == prop_national_entity) {
   message("Validation Passed.")
@@ -310,14 +378,54 @@ if (prop_ood_na == prop_national_entity) {
   )
 }
 
-# DIAGNOSTICS:
-# missing_donor_FEDs <- created_donations_data_07 %>%
-#   group_by(is.na(donor_district)) %>%
-#   summarize(n = n(), sum = sum(total_amount))
-
 # END.
 created_donations_data_appendix <- created_donations_data_07
 created_donations_data <- created_donations_data_08
+
+# FINAL DIAGNOSTIC.
+perc_lost_dates <- (nrow(IJF_data) - nrow(created_donations_data_01)) /
+  nrow(IJF_data) *
+  100
+
+perc_lost_cleaning <- (nrow(created_donations_data_01) -
+  nrow(created_donations_data_07)) /
+  nrow(created_donations_data_01) *
+  100
+
+perc_lost_location_truly_missing <- created_donations_data_07 %>%
+  summarise(p = mean(is.na(donor_location)) * 100) %>%
+  pull(p)
+
+perc_lost_invalid_postal_code_structure <- created_donations_data_07 %>%
+  filter(!is.na(donor_location)) %>%
+  summarise(p = mean(is.na(donor_postal_code)) * 100) %>%
+  pull(p)
+
+perc_lost_postal_code_not_in_PCCF <- created_donations_data_07 %>%
+  filter(!is.na(donor_postal_code)) %>%
+  summarise(p = mean(is.na(donor_district)) * 100) %>%
+  pull(p)
+
+message(sprintf(
+  "Lost to date range filter:             %.2f%%",
+  perc_lost_dates
+))
+message(sprintf(
+  "Lost to cleaning (steps 2-6):          %.5f%%",
+  perc_lost_cleaning
+))
+message(sprintf(
+  "Missing donor location entirely:       %.4f%%",
+  perc_lost_location_truly_missing
+))
+message(sprintf(
+  "Invalid postal code structure:         %.2f%%",
+  perc_lost_invalid_postal_code_structure
+))
+message(sprintf(
+  "Postal code not found in PCCF:         %.2f%%",
+  perc_lost_postal_code_not_in_PCCF
+))
 
 # ----- Write to Parquet -----
 

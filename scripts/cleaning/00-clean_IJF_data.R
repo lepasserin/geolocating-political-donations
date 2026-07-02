@@ -377,7 +377,7 @@ if (nrow(clean_data_10) == (nrow(clean_data_09) - nrow(invalid_names_09))) {
 
 clean_data_11 <- clean_data_10 %>%
   mutate(is_aggregated = str_detect(donor_full_name, "^Contribut")) %>%
-  mutate(donor_location = ifelse(is_aggregated, NA, donor_location)) %>%
+  mutate(donor_location = ifelse(is_aggregated, NA, donor_location)) %>% # can do this because checked that `donor_location` was always missing anyways
   filter(is_aggregated | (amount_monetary + amount_non_monetary <= 25000))
 
 if (
@@ -534,8 +534,7 @@ clean_data_14 <- clean_data_13 %>%
       NA,
       donor_postal_code
     )
-  ) %>%
-  select(-donor_location)
+  )
 
 
 # DIAGNOSTICS:
