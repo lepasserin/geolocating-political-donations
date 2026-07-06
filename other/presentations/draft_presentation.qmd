@@ -255,7 +255,8 @@ readRDS(here::here("other/figures/Figure_3_4_v1.rds"))
 
 ## Truly Out-of-District Donors {.smaller}
 
-- <p style="text-align: justify;">Within election cycles, out-of-district donation rates are noticeably smaller, indicating more localized interest (or, more localized campaigning).</p>
+- <p style="text-align: justify;">Within election cycles, out-of-district donation rates are noticeably smaller for most districts.</p>
+- <p style="text-align: justify;">The set of districts with the highest in and out-of-district contribution rates is completely different.</p>
 
 ```{r}
 readRDS(here::here("other/figures/Figure_3_4_v2.rds"))
@@ -435,7 +436,7 @@ readRDS(here::here("other/figures/Figure_3_3_v2.rds"))
 <div style="height: 15px;"></div>
 . . .
 
-- <p style="text-align: justify;">Out-of-district donation patterns at the district level are qualitatively different within versus outside election cycles, across an entire decade. This emphasizes the need for future research on Canadian donations to look beyond candidate-bound giving during election periods, and to also consider district associations and non-election giving.</p>
+- <p style="text-align: justify;">Out-of-district donation patterns at the district level are qualitatively different within versus outside election cycles, and for associations vs. candidates. This emphasizes the need for future research on Canadian donations to look beyond candidate-bound giving during election periods, and to also consider district associations and non-election giving.</p>
 
 ## Some Notable Limitations {.smaller}
 
