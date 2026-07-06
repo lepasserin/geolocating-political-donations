@@ -431,7 +431,7 @@ readRDS(here::here("other/figures/Figure_3_3_v2.rds"))
 <div style="height: 15px;"></div>
 . . .
 
-- <p style="text-align: justify;">Despite its consistency through time (e.g. across recipient party affiliation), rates of out-of-district donation differ greatly, and somewhat predictably, in space.</p>
+- <p style="text-align: justify;">Despite its consistency through time, rates of out-of-district donation differ greatly, and somewhat predictably, in space.</p>
 
 <div style="height: 15px;"></div>
 . . .
