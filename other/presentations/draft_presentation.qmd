@@ -21,42 +21,51 @@ library(tidyverse)
 library(tinytable)
 ```
 
-## Representation is Geographical {.smaller}
+## Donations and Representation {.smaller}
 
 - <p style="text-align: justify;">In Canada, federal representation is structurally **geographical**: citizens are grouped into a few hundred **electoral districts** based on where they live, each represented by a single **Member of Parliament**.</p>
 
 <div style="height: 15px;"></div>
+. . .
 
-- <p style="text-align: justify;">Yet many citizens seek representation **beyond their district's boundaries** [@mansbridge_rethinking_2003] — a form of "**surrogate**" representation, exercised primarily through **out-of-district donations** to political entities.</p>
-
-## Why Study Donations? {.smaller}
-
-- <p style="text-align: justify;">Donations are the **primary source of funding** for campaigns and district associations in North America [@gimpel_check_2008; @garnett_where_2024; @canada_understanding_2026], making them central to how political influence is distributed.</p>
+- <p style="text-align: justify;">Yet many citizens seek representation **beyond their district's boundaries**, termed "**surrogate**" representation by @mansbridge_rethinking_2003. In practice, this type of representation is exercised primarily through donations to political entities outside one's own district; **unlike voting, donations are not constrained by time or space.**</p>
 
 <div style="height: 15px;"></div>
+. . .
 
-- <p style="text-align: justify;">Out-of-district giving is not always representationally motivated. Donors may act out of **ideological alignment**, **partisan loyalty**, or simply as a **favour** or to "fit in" socially [@gimpel_political_2006; @garnett_lifeblood_2022].</p>
+- <p style="text-align: justify;"> Donations are the **primary source of funding** for campaigns and district associations in North America [@gimpel_check_2008; @garnett_where_2024; @canada_understanding_2026], making them central to how political influence is distributed.</p>
 
-## U.S. Research on Out-of-District Donation {.smaller}
+## Out-of-District Donations in the U.S. {.smaller}
 
 - <p style="text-align: justify;">The U.S. shares Canada's geographic representational structure, and is where most North Amercan out-of-district donation research has been done.</p>
-- <p style="text-align: justify;">Candidates there source **50–70%** of campaign funding from out-of-district, a share that has **risen sharply** this century [@gimpel_check_2008; @bednar_political_2011; @sievert_out_2023].</p>
+- <p style="text-align: justify;">On average, candidates and incumbent House representatives source **50–70%** of their funding from out-of-district, a share that has increased over the 21st century [@gimpel_check_2008; @bednar_political_2011; @sievert_out_2023].</p>
 
 <div style="height: 15px;"></div>
+. . .
 
 - <p style="text-align: justify;">This giving is thought to be **partisan-motivated** (more donations to close races), and largely originates from a small set of wealthy, educated, urban "**donor districts**" [@gimpel_political_2006; @gimpel_check_2008; @jacobs_nationalization_2024].</p>
 
+<div style="height: 15px;"></div>
+. . .
+
+- <p style="text-align: justify;">Follow-up research has found that out-of-district contributions directly affect the voting behaviour of House representatives, both in office, and during campaigns, warping the supposedly-dyadic relationship between a representative and their district [@@gimpel_check_2008; @canes_wrone_out_2022; @nathan_donor_2025] </p>
+
+
+
 ## Donations in the Canadian Context {.smaller}
 
-- <p style="text-align: justify;">Canadian donors tend to come from **older, wealthier, and better-educated** districts [@carmichael_political_2014; @garnett_where_2024], and often give to candidates they **share an identity with** — e.g. women to women [@tolley_who_2022], and high rates of **co-ethnic** giving, especially among South Asians [@besco_ethnic_2022].</p>
+- <p style="text-align: justify;"> Similar to the U.S., Canadian donors tend to come from **older, wealthier, and better-educated** districts [@carmichael_political_2014; @garnett_where_2024].</p>
+- <p style="text-align: justify;">Canadian donors tend to donate to candidates they **share an identity with**. 
+    - Women donors are more likely to donate to women candidates [@tolley_who_2022]
+    - High rates of co-ethnic donations, especially among South Asians [@besco_ethnic_2022]</p>
 
-<div style="height: 15px;"></div>
+. . .
 
-- <p style="text-align: justify;">@garnett_lifeblood_2022 distinguish **political** (representational) from **transactional** (social) motivations — political giving dominates, especially among older, affluent donors, while transactional giving is more local.</p>
+- <p style="text-align: justify;">@garnett_lifeblood_2022 suggests that **political** (i.e. representational) donations are more common among older, affluent donors, while **transactional** (i.e. social) donations are more common at the local level.</p>
 
-<div style="height: 15px;"></div>
+. . .
 
-- <p style="text-align: justify;">Unlike the U.S., party loyalty is **weak** (~2% are party members, vs. ~40% in the U.S.), favouring more ephemeral, identity- or policy-based loyalties [@garnett_lifeblood_2022; @carty_politics_2002; @usafacts_how_2026].</p>
+- <p style="text-align: justify;">From 2004 to 2015, overall federal donation amounts have increased [@mcmahon_follow_2015]. However, contribution rates to candidates during the following three general elections (2015, 2019, 2021) have since decreased [@garnett_where_2024].</p>
 
 ## Our Contribution {.smaller}
 
@@ -64,14 +73,23 @@ library(tinytable)
 - @besco_ethnic_2022 found that out-of-district donation rates were higher among ethnic minorities (50-70%) compared to donors of European origin (33%). However, these proportions only describe candidate-bound donations, and only during the 2015 general election period.
 
 <div style="height: 15px;"></div>
+. . .
 
 - More generally, **existing Canadian political donations research has focused almost exclusively on donations to candidates during election periods**.
 - By considering (1) donations to **district associations** and (2) donations **outside election cycles**, we contribute a more holistic view of donation patterns and political financing.
 
 ## Primary Study Goals
 
+<div style="height: 15px;"></div>
+
 1. <p style="text-align: justify;">To provide data summaries describing the prevalence of out-of-district donations throughout our study period.</p>
+
+<div style="height: 15px;"></div>
+
 2. <p style="text-align: justify;">To describe the features of districts where donors have a higher propensity to give outside their district.</p>
+
+<div style="height: 15px;"></div>
+
 3. <p style="text-align: justify;">To identify general patterns in the network of interdistrict funding formed by out-of-district donations.</p>
 
 
@@ -85,7 +103,9 @@ library(tinytable)
 ## Open Data on Contributions {.smaller}
 
 - <p style="text-align: justify;">The *Canada Elections Act* requires that all financial contributions to **federal political entities** over \$200 must have the donor's name and **location** recorded and shared with *Elections Canada*.</p>
-- Since 2004, only **individuals** are permitted to contribute, subject to specific caps.
+- <p style="text-align: justify;">Since 2004, only **individuals** are permitted to contribute, subject to specific caps.</p>
+
+. . .
 
 :::: {.columns}
 
@@ -94,7 +114,7 @@ library(tinytable)
 :::
 
 ::: {.column width="50%"}
-![Figure 1: Political entities considered in this study, situated among all regulated fedeal political entities.](entity_scoping.png){width="100%"}
+![Political entities considered in this study, situated among all regulated federal political entities.](entity_scoping.png){width="100%"}
 :::
 
 ::::
@@ -107,10 +127,12 @@ Information on political financing and representational orders presented here is
 
 - <p style="text-align: justify;">Donors were situated in space by matching their **postal codes** to **Census[^2] dissemination areas** (DAs), which were subsequently attributed to **electoral districts** (FEDs). Spatial assignments were made using a Postal Code Conversion File[^3] along with shapefiles for DAs and FEDs.</p>
 
+. . .
+
 :::: {.columns}
 
 ::: {.column width="60%"}
-- <p style="text-align: justify;">Candidates and district assication districts were extracted directly from the contributions dataset introduced previously.</p>
+- <p style="text-align: justify;">Candidate and district-association districts were extracted directly from the contributions dataset introduced previously.</p>
 - <p style="text-align: justify;">**Together, these steps allowed us to identify out-of-district donations, and calculate roughly how far they travelled.**</p>
 :::
 
@@ -121,11 +143,13 @@ Information on political financing and representational orders presented here is
 ::::
 
 [^2]: We chose the dissemination areas of the 2021 Census (see next slide).
-[^3]: Postal codes, DAs, and electoral districts do not form a strict spatial hierarchy. Cases where a postal code straddled mutiple DAs, or where a DA straddled multiple districts were statistically resolved with the aim of minimizing individual geolocation errors.
+[^3]: Postal codes, DAs, and electoral districts do not form a strict spatial hierarchy. Cases where a postal code straddled multiple DAs, or where a DA straddled multiple districts were statistically resolved with the aim of minimizing individual geolocation errors.
 
 ## Augmenting with Census Information {.smaller}
 
-- Once resolved, donor dissemination areas were augmented with socio-demographic characteristics (e.g. age, income, visible minority proportion, etc.) from the 2021 Canadian Census. The full data pipeline is illustrated below:
+- <p style="text-align: justify;">Once resolved, donor dissemination areas were augmented with socio-demographic characteristics (e.g. age, income, visible minority proportion, etc.) from the 2021 Canadian Census. The full data pipeline is illustrated below:</p>
+
+. . .
 
 ![](data_pipeline.png){width="100%" fig-align="center"}
 
@@ -144,8 +168,8 @@ Information on political financing and representational orders presented here is
 
 ## Donations to All Entities {.smaller}
 
-- Contributions to **local entities[^1]** make up nearly half of all donations during general election periods, but only ~ 10% of  donations otherwise.
-- Donations to candidates were restricted to election cycles, while district associations received donations throughout our study period.
+- <p style="text-align: justify;">Contributions to **local entities[^1]** make up nearly half of all donations during general election periods, but only ~10% of donations otherwise.</p>
+- <p style="text-align: justify;">Donations to candidates were restricted to election cycles, while district associations received donations throughout our study period.</p>
 
 ```{r}
 #| warning: false
@@ -189,7 +213,7 @@ readRDS(here::here("other/figures/Figure_2_4_v2.rds"))
 
 ## Donations to Local Entities {.smaller}
 
-- <p style="text-align: justify;">**Out-of-district** donations are distributed similarly to in-district donations, both during and outside election periods, and accross (major) parties and entities. In each case, **between 30% and 50%** of donor-sourced funding received by local entities originated from out-of-district.</p>
+- <p style="text-align: justify;">**Out-of-district** donations are distributed similarly to in-district donations, both during and outside election periods, and across (major) parties and entities. In each case, **between 30% and 50%** of donor-sourced funding received by local entities originated from out-of-district.</p>
 - <p style="text-align: justify;">Unlike in the U.S., shares of out-of-district funding **do not** seem to increase over time.</p>
 ```{r}
 #| warning: false
@@ -211,18 +235,19 @@ readRDS(here::here("other/figures/Figure_2_5_v2.rds"))
 
 ## District Level Means {.smaller}
 
-- The constituents of the average district send around **40%** of their total contributions to non-local candidates and EDAs.
-- Equivalently, the candidates and district associations of the average district receive around **40%** of their funding from their total contributions to other districts.
-- This proportion was relatively constant both during and outside election periods, and accross (major) parties and entities, expectedly mirroring the proportions observed at the individual level.
+- <p style="text-align: justify;">The constituents of the average district send around **40%** of their total contributions to non-local candidates and EDAs.</p>
+- <p style="text-align: justify;">Equivalently, the candidates and district associations of the average district receive around **40%** of their funding from other districts.</p>
+- <p style="text-align: justify;">This proportion was relatively constant both during and outside election periods, and across (major) parties and entities, expectedly mirroring the proportions observed at the individual level.</p>
 
 <div style="height: 15px;"></div>
+. . .
 
--  **However, we observed considerable variation in this proportion from district to district, both during and outside of election cycles.**
+- <p style="text-align: justify;">**However, we observed considerable variation in this proportion from district to district, both during and outside of election cycles.**</p>
 
 ## Truly Out-of-District Donors {.smaller}
 
-- Outside of election cycles, the constituents of some districts (e.g. Toronto St. Paul) consistently sent up to 80% of their funding to district associations outside their district.
-- Donations to district associations during election cycles followed similar patterns.
+- <p style="text-align: justify;">Outside of election cycles, the constituents of some districts (e.g. Toronto St. Paul) consistently sent up to 80% of their funding to district associations outside their district.</p>
+- <p style="text-align: justify;">Donations to district associations during election cycles followed similar patterns.</p>
 
 ```{r}
 readRDS(here::here("other/figures/Figure_3_4_v1.rds"))
@@ -230,7 +255,7 @@ readRDS(here::here("other/figures/Figure_3_4_v1.rds"))
 
 ## Truly Out-of-District Donors {.smaller}
 
-- Within election cycles, out-of-district donation rates are noticeably smaller, indicating more localized interest (or, more localized campaigning).
+- <p style="text-align: justify;">Within election cycles, out-of-district donation rates are noticeably smaller, indicating more localized interest (or, more localized campaigning).</p>
 
 ```{r}
 readRDS(here::here("other/figures/Figure_3_4_v2.rds"))
@@ -238,13 +263,23 @@ readRDS(here::here("other/figures/Figure_3_4_v2.rds"))
 
 ## Truly Out-of-District Donors {.smaller}
 
-- **These observed rates of out-of-district donation were compared against a null model that captures the effect of geography alone.**
-- The model holds the observed distribution of donation distances fixed but randomizes each donation's direction. The model then reclassifies it as in or out-of-district using actual district boundaries. From this, we get the out-of-district rate expected purely from the spatial arrangement of districts.
-- **Observed rates in most districts either fall short of, or far exceed purely distance-based expectations**, demonstrating that out-of-district donation rates vary beyond what would be reasonably expected from the spatial arrangement of districts alone.
+- <p style="text-align: justify;">**These observed rates of out-of-district donation were compared against a null model that captures the effect of geography alone.**</p>
+
+<div style="height: 15px;"></div>
+. . .
+
+- <p style="text-align: justify;">The model holds the observed distribution of donation distances fixed but randomizes each donation's direction, then reclassifies it as in- or out-of-district using actual district boundaries. From this, we get the out-of-district rate expected purely from the spatial arrangement of districts.</p>
+
+<div style="height: 15px;"></div>
+. . .
+
+- <p style="text-align: justify;">**Observed rates in most districts either fall short of, or far exceed purely distance-based expectations**, demonstrating that out-of-district donation rates vary beyond what would be reasonably expected from the spatial arrangement of districts alone.</p>
 
 ## Modelling Out-of-District Propensity {.smaller}
 
-- Given the observed variation in out-of-district giving unexplained by spatial heterogeneity,  **we fit a statistical model to characterize what features of a district are associated with higher rates of out-of-district donation.**
+- <p style="text-align: justify;">Given the observed variation in out-of-district giving unexplained by spatial heterogeneity, **we fit a statistical model to characterize what features of a district are associated with higher rates of out-of-district donation.**</p>
+
+. . .
 
 $$
 \begin{aligned}
@@ -259,16 +294,18 @@ $$
 \end{aligned}
 $$
 
-- where $p_i$ is the share of contributions sent out-of-district by district $i$.
+- <p style="text-align: justify;">where $p_i$ is the share of contributions sent out-of-district by district $i$.</p>
 
-- Variables were chosen based on (1) prior work by @garnett_where_2024, @gimpel_check_2008, and @besco_ethnic_2022. 
-- Population density is included partly to control for the spatial clustering effect mentioned previously.
+. . .
+
+- <p style="text-align: justify;">Variables were chosen based on prior work by @garnett_where_2024, @gimpel_check_2008, and @besco_ethnic_2022.</p>
+- <p style="text-align: justify;">Population density is included partly to control for the spatial clustering effect mentioned previously.</p>
 
 ## Modelling Out-of-District Propensity {.smaller}
 
-- As expected, most fitted coefficients were positive, all with high significance.
-- While out-of-district donations in the U.S. are more common in predominantly white districts, this trend was not observed in the Canadian context.[^1]
-- This finding is consistent with the individual-based results of @besco_ethnic_2022.
+- <p style="text-align: justify;">As expected, most fitted coefficients were positive, all with high significance.</p>
+- <p style="text-align: justify;">While out-of-district donations in the U.S. are more common in predominantly white districts, this trend was not observed in the Canadian context.[^1]</p>
+- <p style="text-align: justify;">This finding is consistent with the individual-based results of @besco_ethnic_2022.</p>
 
 ```{r}
 #| warning: false
@@ -323,8 +360,8 @@ tinytable::tt(model_results, width = 1) %>%
 
 ## Senders and Receivers {.smaller}
 
-- **The amount sent to vs. the amount received by district associations was not equivalent for districts receiving and sending large sums**.
-- Outside of election periods, districts fall cleanly into two groups: net-senders or net-receivers.
+- <p style="text-align: justify;">**The amount sent to vs. the amount received by district associations was not equivalent for districts receiving and sending large sums**.</p>
+- <p style="text-align: justify;">Outside of election periods, districts fall cleanly into two groups: net-senders or net-receivers.</p>
 
 ```{r}
 readRDS(here::here("other/figures/Figure_3_3_v1.rds"))
@@ -332,33 +369,33 @@ readRDS(here::here("other/figures/Figure_3_3_v1.rds"))
 
 ## Senders and Receivers {.smaller}
 
-- During elections, donations to candidates also separate into these groups at the district level, however it is less clear for big donor districts. For example, Brampton East is both among the top three sending and receiving districts.
-- This provides some evidence for the existence of "donor districts" described in American literature. However, sending districts are **out-of-district donations (and donations in general) are more evenly distributed in space in Canada than in the U.S.**
+- <p style="text-align: justify;">During elections, donations to candidates also separate into these groups at the district level, however it is less clear for big donor districts. For example, Brampton East is among both the top three sending and receiving districts.</p>
+- <p style="text-align: justify;">This provides some evidence for the existence of "donor districts" described in American literature. However, **out-of-district donations (and donations in general) are more evenly distributed in space in Canada than in the U.S.**</p>
 
 ```{r}
 readRDS(here::here("other/figures/Figure_3_3_v2.rds"))
 ```
 
-## Donations are Spatially Contstrained {.smaller}
+## Donations are Spatially Constrained {.smaller}
 
-- Outside of election periods, **over 50%** of out-of-district donations addressed to district associations are sent to associatons in adjascent districts. Only around 15% even leave their donor's province.
+- <p style="text-align: justify;">Outside of election periods, **over 50%** of out-of-district donations addressed to district associations are sent to associations in adjacent districts. Only around 15% even leave their donor's province.</p>
 
 ![](EDA_network.png)
 
-## Donations are Spatially Contstrained {.smaller}
+## Donations are Spatially Constrained {.smaller}
 
-- During election periods, donations to candidates and district associations are similarly localized, and even less likely to be sent out-of-province (10%).
+- <p style="text-align: justify;">During election periods, donations to candidates and district associations are similarly localized, and even less likely to be sent out-of-province (10%).</p>
 
 ![](candidate_networks.png)
 
 ## Interprovincial Fluxes {.smaller}
 
-- Although out-of-district donations are largely compartmentalized within their provinces, **we also documented inter-provincial flow patterns.**
+- <p style="text-align: justify;">Although out-of-district donations are largely compartmentalized within their provinces, **we also documented inter-provincial flow patterns.**</p>
 
 :::: {.columns}
 ::: {.column width="40%"}
-- With the excpetion of Québéc, **flows from one province to another are roughly reciprocated.**
-- Ontario and British Columbia are net-donor provinces, while other provinces tend to receive more donations than they give.
+- <p style="text-align: justify;">With the exception of Québec, **flows from one province to another are roughly reciprocated.**</p>
+- <p style="text-align: justify;">Ontario and British Columbia are net-donor provinces, while other provinces tend to receive more donations than they give.</p>
 :::
 
 ::: {.column width="60%"}
@@ -368,13 +405,13 @@ readRDS(here::here("other/figures/Figure_3_3_v2.rds"))
 
 ## Interprovincial Fluxes {.smaller}
 
-- These patterns drastically change during election cycles[^1]. Donations to candidates and district associations are dominated by completely different links.
+- <p style="text-align: justify;">These patterns drastically change during election cycles[^1]. Donations to candidates and district associations are dominated by completely different links.</p>
 
 :::: {.columns}
 ::: {.column width="40%"}
-- Ontario and British Columbia remain the primary net-givers, however their contributions target the prairies.
-- These patterns may be explained by partisan differences between the three provinces.
-- Notably, these fluxes are not reciprocated to the same extent.
+- <p style="text-align: justify;">Ontario and British Columbia remain the primary net-givers, however their contributions target the prairies.</p>
+- <p style="text-align: justify;">These patterns may be explained by partisan differences between the three provinces.</p>
+- <p style="text-align: justify;">Notably, these fluxes are not reciprocated to the same extent.</p>
 :::
 
 ::: {.column width="60%"}
@@ -384,26 +421,47 @@ readRDS(here::here("other/figures/Figure_3_3_v2.rds"))
 
 [^1]: Individual election cycles exhibited similar patterns to the aggregated fluxes presented here.
 
-# Discussion
+# Conclusion
 
 ## Main Takeaways {.smaller}
 
-- Out-of-district donation is a consistent ...
+- <p style="text-align: justify;">Out-of-district donation is a **consistent and substantial** feature of Canadian political financing: both the candidates and district associations of the average district receive around **40%** of their donor-sourced funding from other districts, both within and outside election periods.</p>
 
-- Despite it's consistentency through time (e.g. recipient party affilation), rates of out-of-district donation differ greatly, and somewhat predictably in space.
+<div style="height: 15px;"></div>
+. . .
 
-- Out-of-district donation patterns at the district level are qualitatively different when considering donations out of election cycles and within election cycles, accross an entire decade. This emphasizes the need for future research on Canadian donations to
+- <p style="text-align: justify;">Despite its consistency through time (e.g. across recipient party affiliation), rates of out-of-district donation differ greatly, and somewhat predictably, in space.</p>
+
+<div style="height: 15px;"></div>
+. . .
+
+- <p style="text-align: justify;">Out-of-district donation patterns at the district level are qualitatively different within versus outside election cycles, across an entire decade. This emphasizes the need for future research on Canadian donations to look beyond candidate-bound giving during election periods, and to also consider district associations and non-election giving.</p>
 
 ## Some Notable Limitations {.smaller}
 
-1. <p style="text-align: justify;">24% of the total amount contributed to local entities during our study period was donor-anonymized, and therefore could not be accounted for in our analyses.</p>
-- However, a comparison of marginal ... showed that ...
+1. <p style="text-align: justify;">**24% of the total amount contributed to local entities during our study period was donor-anonymized**, and therefore could not be accounted for in our analyses.</p>
 
+. . .
+
+:::: {.columns}
+::: {.column width="40%"}
+- <p style="text-align: justify;">However, a comparison of the marginal distributions of located and anonymized contributions showed that they were similarly distributed across factors such as recipient party, entity, and district, **suggesting that their exclusion introduced little systematic bias.**</p>
+:::
+
+::: {.column width="60%"}
 ```{r}
 readRDS(here::here("other/appendix_figures/distribution_comparison_aggregated.rds"))
 ```
 
-2. <p style="text-align: justify;">Our focus on out-of-district contributions meant excluding contributions addressed to national entities (parties and leadership contestants). As shown previously, contributions of this type represented a large majority (86%) of total contributions during our study period. This limits the generalizability of our study: the average Canadian donation cannot be conidered out-of-district or in-district.</p>
+:::
+::::
+
+## Some Notable Limitations {.smaller}
+
+2. <p style="text-align: justify;">Our focus on out-of-district contributions meant excluding contributions addressed to national entities (parties and leadership contestants). As shown previously, contributions of this type represented a large majority (86%) of total contributions during our study period. This limits the generalizability of our study: the average Canadian donation cannot be considered out-of-district or in-district.</p>
+
+<div style="height: 15px;"></div>
+. . .
 
 3. <p style="text-align: justify;">Our chosen study period awkwardly truncates the available data in the middle of the period between the 44th and 45th general elections. This was done in an attempt to restrict our analysis to a single, static set of electoral districts (FEDs). While we succeeded in excluding non-2013-order FEDs, we cannot guarantee that all valid 2013-order FED entries were captured, since the adoption of new FEDs is a multi-year project and timelines can differ drastically between locations.</p>
 
