@@ -26,6 +26,16 @@ bibliography: references.bib
 link-citations: true
 ---
 
+<!-- new model on the individual level dontions (logistic regression)-->
+<!-- put simulation in Appendix-->
+<!-- explain that spatial autocorrelation was not necessary in FED-level model -->
+<!-- put histogram of how far a donation travels-->
+<!-- area for furute work: doing the network model-->
+<!-- add coefficient interpretation to both models-->
+<!-- state in the paragraph for the first data figure section that, obviously, there are more donations out of election cycles, but (1) it's interesting that the rate of national donations, and EDAs match local ones, and (2) conservative leadership contests match general election periods. -->
+<!-- ask Rohan about adding "descriptive analysis" in the title.-->
+<!-- Oscar said that: in the end, the paper should clearly specify (1) what the interesting findings are, and (2) why they're intersting. -->
+
 ```{r}
 #| include: false
 #| warning: false
@@ -42,6 +52,7 @@ library(here)
 library(grid)
 library(pdftools)
 library(sf)
+library(modelsummary)
 ```
 
 # Introduction {#sec-intro}
@@ -399,22 +410,123 @@ p2 <- magick::image_read_pdf(here::here("other/figures/Figure_spatial_1_v2.pdf")
 p1 / p2
 ```
 
-## Modelling Out-of-District Propensity {#sec-model}
+## Modelling Out-of-District Propensity at the Individual Level {#sec-model-individual}
 
-### Model Specification {#sec-model-specification}
+### Model Specification {#sec-model-individual-specification}
 
-Inspired by the large variation in out-of-district giving observed in @fig-3-4, we fit a linear regression model to characterize what features of a district are associated with higher rates of out-of-district donation. Our outcome variable is the share of all contributions that were sent out-of-district during our entire study period[^1], for each district, which was logit-transformed to remove its boundedness[^2]. Since there are 338 districts in the 2013 representational order, our model was fit on that number of observations.
+We used a logistic regression model to explore how the likelihood of out-of-district donation varies across different transaction characteristics and donor socio-demographic environments. This model is the standard choice when the target outcome is binary, such as whether or not a donation was sent out-of-district. Our unit of analysis was a single recorded donation[^1].
+
+The transction characteristics included in the model were: the type of recipient (EDA or candidate), the recipient's political party, the monetary value of the donation, and whether or not it was sent during an election period[^2]. These were included based on patterns observed in the data. Following @garnett_where_2024, we also considered the following characteristics of the donor's environment: province, mean age, median household income, the proportion of the population with a post-secondary degree, and the proportion of the population that is a visible minority. These variables have been found to be associated with out-of-district donation in the U.S. [@gimpel_political_2006; @gimpel_check_2008]. Each of these environmental characteristics were assigned to donations based on their donor's dissemination area.
+
+We also included the population density of the donor's district, for two reasons. First, out-of-district donors are more likely to come from urban (and therefore more densely populated) districts in the U.S. [@gimpel_check_2008]. Second, population density serves as a relatively good proxy for how spatially clustered a district is, since Canadian districts are designed to have similar population sizes [@canada_redistribution_2025]. Out-of-district donation rates are likely naturally higher in smaller districts, since donors are more likely to interact with individuals, buisinesses, or politicians closeby that happen to reside in a different dstrict. Population density was transformed in the model by applying a square root, allowing us to interpret the metric as the inverse of the average distance between people, which captures this distance effect more faithfully[^3]. No other variable transformations were performed. Whether the variation in out-of-district propensity can entirely be explained by this phenomenon is tested explicitly in [Appendix -@sec-distance-simulation].
+
+The resuling model is denoted as follows:
+$$
+\begin{aligned}
+\text{logit}(p_i) &= \beta_0 + \beta_1 \text{Election}_i + \beta_2 \text{Candidate}_{i} + \sum_{j=1}^{3} \beta_j \text{Party}_{ji} + \beta_3 \text{Amount}_i \\
+&\quad + \sum_{k=1}^{5} \beta_m \text{Region}_{ki} + \beta_4 \text{Age}_i + \beta_5 \text{Income}_i + \beta_6 \text{Education}_i + \beta_7 \text{VisMin}_i \\
+&\quad + \beta_4 \sqrt{\text{Density}_i} \\
+\end{aligned}
+$$
+
+where:
+
+- $p_i$ is the probability that donation $i$ was an out-of-district donation.
+- $\text{Election}_i$ indicates whether donation $i$ occurred during a general election period.
+- $\text{Candidate}_{i}$ indicates whether donation $i$ was addressed to a Candidate (baseline is EDA).
+- $\text{Party}_{ji}$ indicates which party (among Liberal, N.D.P, or Other, with baseline being Conservative) the recipient is associated with.
+- $\text{Amount}_i$ is the monitary value of donation $i$.
+- $\text{Region}_{mi}$ indicates within region (among Atlantic Canada, B.C., Prairies, Québéc, Territories, with baseline being Ontario) the donor is located.
+- $\text{Age}_i$ is the average age of residents in the donor's dissemination area.
+- $\text{Income}_i$ is the median household income in the donor's dissemination area.
+- $\text{PostSec}_i$ is the proportion of residents in the donor's home district holding a post-secondary qualification.
+- $\text{VisMin}_i$ is the proportion of residents in the donor's home district who identify as a visible minority.
+- $\text{Density}_i$ is the population density (persons per $km^2$) of the donor's home district.
+
+[^1]: Some donations may have been sent by the same individual, which poses a threat to the independence of this unit. Given our inclusion of recipient details as predictors in our model, this could not be accounted for.
+[^2]: When considering each of the three general election periods separately, results did not change, although the 43rd general election no longer showed significance.
+[^3]: Leaving the density untransformed resulted in a worse fit, and no statistical significance for that metric, but otherwise left the rest of the model essentially unchanged.
+
+### Model Results {#sec-model-individual-results}
+
+The fitted coefficients of our model are presented in @tbl-model-individual-results. All covariates considered had statisticaly significant effects on the likelihood of out-of-district donation. Exponentiating the coefficients yields a more interpretable value, the odds ratio. An odds ratio above one for a cateogrical variable  (e.g. recipient belonging to the liberal party) indicates that, holding all else constant, that donations of that category have increased odds of being out-of-district, relative to the baseline category (e.g. recipient belonging to the Conservative party). Odds ratios less than one and continuous variables (e.g. median household income) are interpreted accordingly.
+
+As alluded-to in our data summaries, candidate-bound donations are less likely to reach out-of-district as compared to donations to registered associations (EDAs). However, donations to EDAs are more likely to reach out-of-district during election cycles. Larger donations were also more likely to leave the district compared to smaller ones, helping to explain why 26% of donations are out-of-district, compared to 45% of the contributed amount. Donations originating from all regions were less likely to reach out-of-district, with the striking excpetion of donations from Québécois donors, which have nearly double the relative odds. As expected from out-of-district donations research in the U.S., increased population density, increased post-secondary education rates, and increased median household income were all associated with a higher propensity for donations originating from these environments to travel out-of-district. Unlike in the U.S., however, donations are more likely to be out-of-district when sent from regions where a higher proportion of the poppulation identifies as a visible minority[^4], and when sent from regions with younger average ages.
+
+More broadly, the majority of our coefficients align with the agreed-upon features of U.S. out-of-district donors, and North American donors in general; out-of-district donations in Canada are more likely to originate from wealthy, affluent, well-educated environments, and from donors willing to contribute larger sums of money to their chosen political entity. However, we also observe that these types of donations are also more likely in young regions with high visible minority proportions, among Québécois donors, and to district associations over candidates.
+
+[^4]: This effect was observed even when donations from the four Brampton constituencies were removed, since the data summaries showed that these clearly had very high influence on the model fit.
+
+
+
+```{r}
+#| warning: false
+#| message: false
+#| echo: false
+#| label: tbl-individual-model-results
+#| tbl-cap: "Coefficients and significance levels for the fitted individual-level out-of-district donation propensity model."
+individual_model <- readRDS(here::here("other/fitted_models/individual_model_base.rds"))
+
+coef_tbl <- summary(individual_model)$coefficients
+
+term_labels <- c(
+  "(Intercept)" = "Intercept",
+  "is_general_election_periodTRUE" = "Election",
+  "relevel(factor(political_entity), ref = \"Registered associations\")Candidates" = "Candidate",
+  "relevel(factor(political_party_cat), ref = \"Conservative\")Liberal" = "Party: Liberal",
+  "relevel(factor(political_party_cat), ref = \"Conservative\")N.D.P" = "Party: N.D.P.",
+  "relevel(factor(political_party_cat), ref = \"Conservative\")Other" = "Party: Other",
+  "total_amount" = "Amount",
+  "relevel(factor(donor_region), ref = \"Ontario\")Atlantic Canada" = "Region: Atlantic Canada",
+  "relevel(factor(donor_region), ref = \"Ontario\")British Columbia" = "Region: B.C.",
+  "relevel(factor(donor_region), ref = \"Ontario\")Prairies" = "Region: Prairies",
+  "relevel(factor(donor_region), ref = \"Ontario\")Quebec" = "Region: Québéc",
+  "relevel(factor(donor_region), ref = \"Ontario\")Territories" = "Region: Territories",
+  "avg_age" = "Age",
+  "median_hh_income" = "Income",
+  "postsec_prop" = "PostSec",
+  "vismin_total" = "VisMin",
+  "density_per_sqkm" = "Density"
+)
+
+format_sig <- function(p) {
+  ifelse(
+    p < 2e-16,
+    "<2e-16",
+    formatC(p, format = "g", digits = 3)
+  )
+}
+
+model_results <- tibble(
+  Term = term_labels[rownames(coef_tbl)],
+  Coefficient = formatC(coef_tbl[, "Estimate"], format = "f", digits = 3),
+  `Odds Ratio` = formatC(exp(coef_tbl[, "Estimate"]), format = "f", digits = 3),
+  `P-Value` = format_sig(coef_tbl[, "Pr(>|z|)"])
+)
+
+tinytable::tt(model_results, width = 1) %>%
+  format_tt(j = 1, escape = FALSE) %>%
+  format_tt(j = 2:3, escape = TRUE) %>%
+  style_tt(j = 1, align = "l") %>%
+  style_tt(j = 2:3, align = "r")
+```
+
+## Modelling Out-of-District Propensity at the District Level {#sec-model-district}
+
+### Model Specification {#sec-model-district-specification}
+
+Inspired by the large variation in out-of-district giving between districts observed in @fig-3-4, we fit a linear regression model to explore which socio-demographic features of a district were associated with higher rates of out-of-district donation among its contituents. Our outcome variable in this case is the share of all contributions that were sent out-of-district during our entire study period[^1], for each district. This share was was logit-transformed to make it compatable with the output type requirements of linear regression. Although a beta regression model would have been more distributionally correct given that our ouput variable is a proportion, linear regression is sufficient when homoskedasticity is not violated, and the log-transformed proportions are marginally normal.
 
 We considered the following set of covariates: population density, median household income, mean age, the proportion of the population with a post-secondary degree, total contribution amount, and the proportion of the population that is a visible minority. Population density was considered for two reasons. First, we suspected that districts clustered together in space (for example, the districts of downtown Toronto) would have higher rates of out vs. in-district donation than the average district, simply due to spatial proximity. Since districts are constructed to have relatively similar population sizes [@canada_redistribution_2025], population density serves as a suitable proxy for how spatially clustered a district is. Second, densely populated districts are much more likely to be in affluent areas, which have increased out-of-district giving rates in the U.S. [@gimpel_check_2008]. Total contribution amount was also included for this latter reason. Median household income, mean age, the proportion of the population with a post-secondary degree were also included for this reason, but also since Canadian research has shown that these are significant predictors of donation rates in general [@garnett_where_2024]. Finally, visible minority proportion was included since, U.S. scholars have found that this decreases out-of-district donor propensity [@gimpel_political_2006 ; @gimpel_check_2008], while Canadian scholars have found that it increases it [@besco_ethnic_2022]. Due to moderate levels of multicollinearity between these socio-demographic variables, we were careful about our choice of parameters to definitively include, to avoid diluting individual variables' significance. Also, certain variables were transformed to improve linearity, while still preserving interpretability.
 
-Our final fitted model is presented in @sec-model-results, and a full discussion of variable selection and assumption verification is presented in **Appendix X**.
+Our final fitted model is presented in @sec-model-district-results, and a full discussion of variable selection and assumption verification is presented in **Appendix X**.
 
 [^1]: Although we observed that the out-of-district contribution rates varied greatly depending on whether or not the donation was received during an election cycle, we did not split each district into contributions sent during vs. outside election cycles. We did not consider further splits in time since our summaries also showed that metrics were relatively constant within either period.
 [^2]: beta regression is also commonly used to handle outcomes bounded between 0 and 1, and in some cases provides a better fit due to the Beta distribution's handling of heteroskedasticity. Since we observed no heteroskedasticity in our fitted model's residuals, and observed logit-transformed proportions were normally distributed (verified by QQ plot), we thought it fit to use linear regression, for the sake of model simplicity.
 <!-- TODO: Not yet accounting for spatial autocorrelation. Won't change much, but definitely should.-->
 <!-- TODO: Should use a mixed effects model, where observations are grouped in politically relevant time slices.-->
  
-### Model Results {#sec-model-results}
+### Model Results {#sec-model-district-results}
 
  Our chosen model structure is presented here (with coefficients shown in @tbl-model-results):
 $$
@@ -441,7 +553,7 @@ where:
 - $\text{PostSec}_i$ is the proportion of residents in district $i$ who hold a post-secondary qualification.
 - $\epsilon_i$ is the error term for district $i$.
 
-Residual analyses showed that our model clearly satisfies the four core assumptions of linear regression (see @fig-model-diagnostics). VIF-analysis confirmed that multicollinearity among predictors still exists, but no scores were over 5, so this was not considered to be a major issue. All covariates considered had significant effects on the logit-transformed of out-of-district donation propensity. All effects were expectedly positive, apart from the total amount donated.
+Residual analyses showed that our model clearly satisfies the four core assumptions of linear regression (see @fig-model-district-diagnostics). VIF-analysis confirmed that multicollinearity among predictors still exists, but no scores were over 5, so this was not considered to be a major issue. All covariates considered had significant effects on the logit-transformed of out-of-district donation propensity. All effects were expectedly positive, apart from the total amount donated.
 
 ```{r}
 #| warning: false
@@ -490,7 +602,7 @@ tinytable::tt(model_results, width = 1) %>%
 #| warning: false
 #| message: false
 #| echo: false
-#| label: fig-model-diagnostics
+#| label: fig-model-individual-diagnostics
 #| fig-cap: "Diagnostic plots for the fitted out-of-district donation propensity model. (a) plots residuals against fitted values. (b) shows a Normal Q-Q plot of the model residuals, with the dashed line indicating the theoretical normal quantiles."
 #| fig-width: 7
 #| fig-height: 4
@@ -1000,5 +1112,86 @@ readRDS(here::here("other/appendix_figures/distribution_comparison_unlocated.rds
 # Modifications to Data for Figures & Alternate Visualizations {#sec-viz-modifications}
 
 * **Longitudinal Visualizations:** All types of donations occurred at much higher rates in December compared to other months, regardless of year, recipient type, party affiliation, etc. There are two likely causes for this; a clerical error at the source, or, the IJF frequently imputes the fiscal/election date in the absence of donation receipt date. This did not impact our analysis, however December donations in all Figures presented below were imputed using their neighboring November and January values, and their recorded monetary amounts were redistributed across their associated years so that nothing was lost. This served to reduce visual clutter from large, phantom peaks at the end of each year.
+
+# Testing Whether District-Level Out-of-District Rates can be Explained by Distance Alone {#sec-distance-simulation}
+
+## Simulation Setup
+
+@fig-3-4 showcases how varaible out-of-district donation rates are at the district level. However, this may simply be a byproduct of the spatial arrangement of electoral districts. Districts vary enormoulsy in size, from the 13 square kilometres that make up Toronto--St. Paul, to the entire province of Nunavut. Assuming that social influence decays as a function of distance, we should expect a donor residing in a district in downtown Toronto to (1) be more aware of or (2) perceive to have a greater stake in district associations and candidates outside their own district, simply by virtue of their spatial proximity.  A donor in Nunavut however, may be expected to place less importance on political entites in the neighboring Northwest Territories, whose population centre is nearly one thousand kilometres away. In this section we design and execute a simulation to test the null hypothesis that the observed variance in district-level out-of-district donation rates can be adequately explained by differences in spatial clustering.
+
+ - Assign a random donation distance to each donation.
+ - If the distance is < 1km, immediately declare the donation as having been received in-district. Otherwise, continue.
+ - Assign a random direction for that donation.
+ - Determine if it landed within Canada. If it didn't choose a different direction. Otherwise, continue.
+ - Determine which district it landed in.
+ - Declare in-district vs. out-of-district.
+
+Distances were assigned by sampling from the true distance distribution of the observed donations dataset, shown in @fig-distance-distribution (we note that this figure only shows out-of-district donations; the majority of donations were in-district, and therefore travelled zero kilometres). The distance a donation travelled was defined to be zero if the donation was in-district, and otherwise set to be the spatial distance between the centroid of the donor's dissemination area, and the centroid of the recipient's district. Shapefiles were used to determine which district a randomly travelling donation landed in.
+
+For each district, 30 replicate simulations were run to estimate the sample distribution of the simluation. Using these distributions, the observed out-of-district proportions were compared with the simulated out-of-district proportions, for each district. Only results for the count of out-of-district donors (not the amount of donations sent out-of-district) was considered, however results were very similar for amounts, just with systematically wider sampling distributions.
+
+```{r}
+#| warning: false
+#| message: false
+#| echo: false
+#| label: fig-distance-distribution
+#| fig-cap: "Distribution of donation distances for out-of-district donations from 2015 to 2026. Both donations to candidates and district associations are shown. Distance is measured as the distance from the donor dissemination area's centroid to the recipient district's centroid."
+donation_distances_dataset <- arrow::read_parquet(here::here("donation_distances.parquet"))
+
+donation_distances_dataset %>% 
+  filter(is_out_of_district) %>%
+  ggplot(aes(x = donation_distance)) +
+  geom_histogram(aes(y = after_stat(count / sum(count)))) +
+  scale_y_continuous(labels = scales::percent) +
+  labs(x = "Distance Travelled", y = NULL) +
+  theme_classic()
+```
+
+## Simulation Results
+
+When considering donations addressed to candidates (aggregated over all three election periods), only 6.5% of districts fell within the expected proportion of out-of-district donations.
+
+```{r}
+#| warning: false
+#| message: false
+#| echo: false
+#| label: fig-distance-distribution-comparison
+#| fig-cap: "Distribution of donation distances for out-of-district donations from 2015 to 2026. Both donations to candidates and district associations are shown. Distance is measured as the distance from the donor dissemination area's centroid to the recipient district's centroid."
+readRDS(here::here("density_plot_candidates_count.rds"))
+```
+
+```{r}
+#| warning: false
+#| message: false
+#| echo: false
+#| label: fig-distance-deviations
+#| fig-height: 4
+#| fig-cap: "Deviation of each district's observed proportion of out-of-district donations from its simulated proportion under the null hypothesis. Results are shown for donations to candidates only. Districts are sorted from those with out-of-district proportions smaller than expected (left) to larger than expected (right). The dashed red line indicates no deviation, and the shaded red band gives the simulated 95% confidence interval. Points outside the band deviate more than spatial clustering alone can explain."
+readRDS(here::here("deviation_plot_candidates_count.rds"))
+```
+
+```{r}
+#| warning: false
+#| message: false
+#| echo: false
+#| label: fig-deviation-by-count
+#| fig-height: 4
+#| fig-cap: "Deviation of each district's observed proportion of out-of-district donations from its simulated proportion under the null hypothesis. The dashed red line indicates no deviation."
+readRDS(here::here("deviation_scatter_candidates_count.rds"))
+```
+
+```{r}
+#| warning: false
+#| message: false
+#| echo: false
+#| label: fig-deviation-by-amount
+#| fig-height: 4
+#| fig-cap: "Deviation of each district's observed out-of-district donation rate from its null expectation (amount-weighted) plotted against the number of donations the district received. The dashed red line marks zero deviation."
+readRDS(here::here("deviation_scatter_candidates_amount.rds"))
+```
+
+These results reveal two notable facts about our data. First, spatial clustering cannot account for the differences in out-of-district proportions between districts, seen clearly in @fig-distance-distribution-comparison and @fig-distance-deviations. Indeed, over one-third of observed out-of-district donation propirtions fell completely outside the range of expected proportions for any district.
+
+Second, deviations in out-of-district proportions were biased towards being understimates. Most districts overshot their expected distances. Further, @fig-deviation-by-count shows that amount deviated does not depend on donation count, showing that deviations are not merely an artifact of low-donor-count districts.
 
 # References
