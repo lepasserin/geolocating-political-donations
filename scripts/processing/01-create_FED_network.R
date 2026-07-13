@@ -13,7 +13,6 @@ library(arrow)
 donations_data <- read_parquet("data/processed_data/donations_data.parquet")
 FED_lookup <- readRDS("data/clean_data/FED_lookup.rds")
 PCCF_lookup <- read_parquet("data/clean_data/PCCF_lookup.parquet")
-census_lookup <- read_parquet("data/clean_data/census_lookup.parquet")
 
 # ---- Constants ----
 LOCAL_POLITICAL_ENTITIES <- c("Registered associations", "Candidates")

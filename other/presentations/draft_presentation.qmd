@@ -1,5 +1,6 @@
 ---
 title: "Canadian Out-of-district Political Donations (2015 - 2024)"
+date: today
 author: "Benedict Cummins-Mburu"
 format: 
     revealjs:
@@ -147,9 +148,9 @@ Information on political financing and representational orders presented here is
 
 ## Augmenting with Census Information {.smaller}
 
-- <p style="text-align: justify;">Once resolved, donor dissemination areas were augmented with socio-demographic characteristics (e.g. age, income, visible minority proportion, etc.) from the 2021 Canadian Census. The full data pipeline is illustrated below:</p>
+- <p style="text-align: justify;">Once resolved, donor dissemination areas were augmented with socio-demographic characteristics (e.g. age, income, visible minority proportion, etc.) from the 2021 Canadian Census.</p>
 
-. . .
+---
 
 ![](data_pipeline.png){width="100%" fig-align="center"}
 
@@ -467,3 +468,7 @@ readRDS(here::here("other/appendix_figures/distribution_comparison_aggregated.rd
 3. <p style="text-align: justify;">Our chosen study period awkwardly truncates the available data in the middle of the period between the 44th and 45th general elections. This was done in an attempt to restrict our analysis to a single, static set of electoral districts (FEDs). While we succeeded in excluding non-2013-order FEDs, we cannot guarantee that all valid 2013-order FED entries were captured, since the adoption of new FEDs is a multi-year project and timelines can differ drastically between locations.</p>
 
 ## References
+
+<!-- For the data overview, only have two slides: Elections Canada Dats + workflow.-->
+<!-- Add Rohan as author.-->
+<!-- Add speaker notes.-->

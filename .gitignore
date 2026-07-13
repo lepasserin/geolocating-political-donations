@@ -73,5 +73,9 @@ data/clean_data/PCCF_lookup.parquet
 data/clean_data/DA_lookup.parquet
 .vscode/settings.json
 data/clean_data/DA_lookup.rds
-.gitignore
 data/clean_data/census_lookup.parquet
+data/other/distance_hyp_test_results.parquet
+data/other/localized_donations_data_neighbours.parquet
+data/other/province_shapes.rds
+data/other/localized_donations_data_distances.parquet
+data/other/FED_neighbour_edges.rds

@@ -1,13 +1,18 @@
 # Purpose: Process `clean_data_IJF` into a dataset suitable for analysis. Saves resulting dataset to file.
 # Author: Benedict Cummins-Mburu
-# Last Updated: 29 Jun 2026
+# Last Updated: 9 July 2026
 # Status: COMPLETE
 # Contact: b.cumminsmburu@utoronto.ca
 # License: MIT
 # Notes:
 # - Range restricted to donations dated within the 2013 representational order.
-# - Donations where the donor could not be tied to a postal code present in `PCCF_lookup` were discarded in `donations_data`, and the impact of their loss is assessed using `donations_data_appendix`.
-# - ~ 25% (very roughly) of the donation amount could not be geolocated, and were dropped.
+# - `donations_data_appendix` is full cleaned version.
+# - `donations_data` is a subset of `donations_data_appendix`, where:
+#         - donation is over \$200
+#         - donor could be geolocated (location missing OR unmatched postal code)
+#         - nomination contestants & by-elections are discarded
+
+# Note: `donations_data` needs to be further subsetted in specific analysis files using `is_local` to get the study data.
 
 # --------- Setup ----------
 library(tidyverse)
@@ -259,7 +264,7 @@ created_donations_data_06 <- created_donations_data_05 %>%
         c("Unknown leadership contest") ~ "Leadership contest",
       electoral_event_OG %in%
         c("Unknown nomination contest") ~ "Nomination contest",
-      str_detect(electoral_event_OG, "general election") ~ "General election",
+      str_detect(electoral_event_OG, "general election") ~ electoral_event_OG,
       str_detect(electoral_event_OG, "By-election") ~ "By-election",
       TRUE ~ NA
     )
@@ -294,7 +299,9 @@ created_donations_data_06 <- created_donations_data_06 %>%
   mutate(is_general_election_period = general_election_period != "None")
 
 # 7. Derive Entire Spatial Stack (DA, FED, and PR) from Postal Code using PCCF_lookup.
-# NOTE: also used FED_lookup and PR_LOOKUP to match IDs to names (more usable)
+# NOTE: also used FED_lookup and PR_LOOKUP to match IDs to names (more usable).
+# NOTE: also flags donations under \$200.
+# NOTE: also flags donations to nomination contestants.
 
 created_donations_data_07 <- created_donations_data_06 %>%
   left_join(PCCF_lookup, by = c("donor_postal_code" = "PC")) %>%
@@ -310,6 +317,18 @@ created_donations_data_07 <- created_donations_data_06 %>%
     donor_province = province
   ) %>%
   select(-c(PRUID, FEDUID))
+
+# Flagging.
+created_donations_data_07 <- created_donations_data_07 %>%
+  mutate(
+    is_under_two_hundred = ifelse(is_aggregated, NA, total_amount < 200)
+  ) %>%
+  mutate(
+    is_nomination_contestant = political_entity == "Nomination contestants"
+  ) %>%
+  mutate(
+    is_by_election = electoral_event == "By-election"
+  )
 
 if (
   all(
@@ -334,11 +353,21 @@ if (all(complete.cases(DA_exists))) {
   )
 }
 
-# 8. Filter out Entries with Missing Donor Districts (ONLY FOR donations_data, NOT FOR donations_data_appendix)
-# NOTE: this step also removes unnecessary column names in `donations_data`
+# 8. Subsetting `donations_data_appendix` to Create `donations_data`.
+#     - 8.1: remove entries under $200.
+#     - 8.2: remove donations where donor could not be geolocated.
+#     - 8.3: remove donations to nomination contestants.
+#     - 8.3: select for only necessary columns.
+#     - 8.4: add `is_local` and `is_out_of_district` flags.
+#     - 8.5: remove `is_local` cases where `total_amount` > 5000 (candidiates), or > 3450 (EDAs).
+#     - 8.6: remove By-elections and donations to Candidates sent outside of general elections.
 
+# Main Filtering Step
 created_donations_data_08 <- created_donations_data_07 %>%
   filter(!is.na(donor_district)) %>%
+  filter(!is_under_two_hundred) %>%
+  filter(!is_nomination_contestant) %>%
+  filter(!is_by_election) %>%
   mutate(
     is_out_of_district = case_when(
       is.na(recipient_district) ~ NA,
@@ -346,14 +375,44 @@ created_donations_data_08 <- created_donations_data_07 %>%
     )
   )
 
+# Additional Amount Filtering for Localized Entities (removes n = 8 entries)
+created_donations_data_08 <- created_donations_data_08 %>%
+  mutate(
+    is_local = political_entity %in% c("Registered associations", "Candidates")
+  ) %>%
+  filter(
+    !(is_local &
+      (political_entity == "Registered associations") &
+      (total_amount > 3450))
+  ) %>% # removes ~3 entries only
+  filter(
+    !(is_local &
+      (political_entity == "Candidates") &
+      (total_amount > 5000))
+  ) # removes ~5 entries only
+
+
 if (all(!created_donations_data_08$is_aggregated)) {
   message("Validation Passed.")
 } else {
   stop("Validation Failed: `is_aggregated` is non-constant somehow.")
 }
+if (all(!created_donations_data_08$is_under_two_hundred)) {
+  message("Validation Passed.")
+} else {
+  stop("Validation Failed: `is_under_two_hundred` is non-constant somehow.")
+}
+if (all(!created_donations_data_08$is_nomination_contestant)) {
+  message("Validation Passed.")
+} else {
+  stop("Validation Failed: `is_under_two_hundred` is non-constant somehow.")
+}
 created_donations_data_08 <- created_donations_data_08 %>%
   select(
     -c(
+      is_by_election,
+      is_nomination_contestant,
+      is_under_two_hundred,
       is_aggregated,
       amount_monetary,
       amount_non_monetary,
@@ -369,7 +428,6 @@ prop_national_entity <- mean(
   created_donations_data_08$political_entity %in%
     c("Leadership contestants", "Registered parties")
 )
-
 if (prop_ood_na == prop_national_entity) {
   message("Validation Passed.")
 } else {
@@ -381,51 +439,6 @@ if (prop_ood_na == prop_national_entity) {
 # END.
 created_donations_data_appendix <- created_donations_data_07
 created_donations_data <- created_donations_data_08
-
-# FINAL DIAGNOSTIC.
-perc_lost_dates <- (nrow(IJF_data) - nrow(created_donations_data_01)) /
-  nrow(IJF_data) *
-  100
-
-perc_lost_cleaning <- (nrow(created_donations_data_01) -
-  nrow(created_donations_data_07)) /
-  nrow(created_donations_data_01) *
-  100
-
-perc_lost_location_truly_missing <- created_donations_data_07 %>%
-  summarise(p = mean(is.na(donor_location)) * 100) %>%
-  pull(p)
-
-perc_lost_invalid_postal_code_structure <- created_donations_data_07 %>%
-  filter(!is.na(donor_location)) %>%
-  summarise(p = mean(is.na(donor_postal_code)) * 100) %>%
-  pull(p)
-
-perc_lost_postal_code_not_in_PCCF <- created_donations_data_07 %>%
-  filter(!is.na(donor_postal_code)) %>%
-  summarise(p = mean(is.na(donor_district)) * 100) %>%
-  pull(p)
-
-message(sprintf(
-  "Lost to date range filter:             %.2f%%",
-  perc_lost_dates
-))
-message(sprintf(
-  "Lost to cleaning (steps 2-6):          %.5f%%",
-  perc_lost_cleaning
-))
-message(sprintf(
-  "Missing donor location entirely:       %.4f%%",
-  perc_lost_location_truly_missing
-))
-message(sprintf(
-  "Invalid postal code structure:         %.2f%%",
-  perc_lost_invalid_postal_code_structure
-))
-message(sprintf(
-  "Postal code not found in PCCF:         %.2f%%",
-  perc_lost_postal_code_not_in_PCCF
-))
 
 # ----- Write to Parquet -----
 
