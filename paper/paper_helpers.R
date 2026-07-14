@@ -279,6 +279,8 @@ census_lookup_FED <- census_lookup %>%
 FED_model_data <- localized_donations_data %>%
   group_by(donor_district) %>%
   summarise(
+    n = n(),
+    n_eff = sum(total_amount)**2 / sum(total_amount**2),
     prop_ood = sum(total_amount * is_out_of_district) / sum(total_amount),
     total_amount = sum(total_amount),
     donor_province = first(donor_province),
@@ -314,5 +316,9 @@ FED_model_data <- localized_donations_data %>%
     avg_age,
     median_hh_income,
     postsec_prop,
+    n,
+    n_eff,
     starts_with("vismin_")
   )
+
+plot(y = FED_model_data$n_eff, x = FED_model_data$n)

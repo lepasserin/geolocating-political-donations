@@ -67,7 +67,6 @@ data/processed_data/donations_data.parquet
 data/clean_data/clean_FED_shapefile.rds
 data/processed_data/donations_data_appendix.parquet
 
-
 data/clean_data/FED_lookup.rds
 data/clean_data/PCCF_lookup.parquet
 data/clean_data/DA_lookup.parquet
@@ -79,3 +78,6 @@ data/other/localized_donations_data_neighbours.parquet
 data/other/province_shapes.rds
 data/other/localized_donations_data_distances.parquet
 data/other/FED_neighbour_edges.rds
+
+paper/paper_base.qmd
+paper/paper_base.pdf

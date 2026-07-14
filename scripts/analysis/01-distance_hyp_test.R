@@ -4,6 +4,8 @@
 # Status: COMPLETE
 # Contact: b.cumminsmburu@utoronto.ca
 # License: MIT
+# Note:
+#   - This analysis is separated from the main script because it takes too long to run.
 
 # ----- Setup -------
 set.seed(416)
