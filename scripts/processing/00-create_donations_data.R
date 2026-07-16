@@ -321,7 +321,7 @@ created_donations_data_07 <- created_donations_data_06 %>%
 # Flagging.
 created_donations_data_07 <- created_donations_data_07 %>%
   mutate(
-    is_under_two_hundred = ifelse(is_aggregated, NA, total_amount < 200)
+    is_under_two_hundred = ifelse(is_aggregated, TRUE, total_amount < 200)
   ) %>%
   mutate(
     is_nomination_contestant = political_entity == "Nomination contestants"
