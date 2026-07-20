@@ -65,7 +65,14 @@
 	urldate      = {2026-06-07},
 	organization = {USAFacts}
 }
-
+@misc{statcan_pcfrf_2022,
+  author       = {{Statistics Canada}},
+  title        = {Postal Code Federal Ridings File ({PCFRF}): 2021 Census Geography, December 2022},
+  year         = {2022},
+  publisher    = {University of Toronto Map and Data Library},
+  url          = {https://mdl.library.utoronto.ca/collections/numeric-data/census-canada/postal-code-conversion-file/2021},
+  note         = {Restricted access dataset}
+}
 @article{mcmahon_covid_2023,
 	title        = {Political donations and the gender gap during {COVID}-19},
 	author       = {McMahon, Nicole and Sayers, Anthony and Alcantara, Christopher},
@@ -149,6 +156,7 @@
 	month        = {May},
 	url          = {https://www.elections.ca/content.aspx?section=pol&document=index&lang=e},
 	urldate      = {2026-05-22},
+	abstract     = {Information for political parties (forms, manuals, registration, software).},
 	language     = {eng}
 }
 @misc{canada_timeline_2023,
@@ -158,6 +166,7 @@
 	month        = {October},
 	url          = {https://www.elections.ca/content.aspx?section=res&dir=cir/red/over&document=index&lang=e},
 	urldate      = {2026-06-04},
+	abstract     = {Detailed breakdown of the legal milestones, deadlines, and operational timelines governing the decennial federal electoral boundary readjustment process in Canada.},
 	language     = {eng}
 }
 @book{young_money_2011,
@@ -389,15 +398,6 @@
 	urldate      = {2026-05-28},
 	language     = {en}
 }
-@inproceedings{jansen_donates_2012,
-  title     = {Who Donates to Canada's Political Parties?},
-  author    = {Jansen, Harold J. and Thomas, Melanee and Young, Lisa},
-  booktitle = {Annual Meeting of the Canadian Political Science Association},
-  address   = {Edmonton, Alberta},
-  month     = jun,
-  year      = {2012},
-  url       = {https://www.cpsa-acsp.ca/papers-2012/Jansen-Thomas-Young.pdf}
-}
 @misc{canada_annual_2026,
 	title        = {Annual {Limits} on {Contributions} – 2026},
 	author       = {{Elections Canada}},
@@ -469,14 +469,14 @@
 @misc{canada_financing_2026,
   author       = {{Elections Canada}},
   title        = {Political Financing},
-  url          = {https://www.elections.ca/content.aspx?section=fin&document=index&lang=e},
+  howpublished = {\url{https://www.elections.ca/content.aspx?section=fin&document=index&lang=e}},
   year         = {2026},
   note         = {Accessed: 2026-06-19}
 }
 @misc{canada_audit_2026,
   author       = {{Elections Canada}},
   title        = {Financial Returns},
-  url          = {https://www.elections.ca/content.aspx?section=fin&dir=rev&document=index&lang=e},
+  howpublished = {\url{https://www.elections.ca/content.aspx?section=fin&dir=rev&document=index&lang=e}},
   year         = {2026},
   note         = {Accessed: 2026-06-19}
 }
@@ -522,7 +522,7 @@
 @misc{canada_post_guidelines_2026,
   author       = {{Canada Post}},
   title        = {Addressing Guidelines: Overview},
-  url          = {https://www.canadapost-postescanada.ca/cpc/en/support/articles/addressing-guidelines/overview.page#1414221},
+  howpublished = {\url{https://www.canadapost-postescanada.ca/cpc/en/support/articles/addressing-guidelines/overview.page#1414221}},
   year         = {2026}
 }
 @manual{r_citation,
@@ -534,7 +534,7 @@
   url = {https://www.R-project.org/},
 }
 @misc{statcan_pccf_2025,
-  author       = {{Statistics Canada}},
+  author       = {{Statistics Canada, Geography Division}},
   title        = {Postal Code Conversion File, June 2024, Census of Canada 2021},
   year         = {2025},
   version      = {V2},
@@ -577,51 +577,4 @@
   author       = {Grumbach, Jacob M. and Sahn, Alexander},
   year         = {2020},
   pages        = {206–221}
-}
-@inbook{waters_geography_2018,
-author = {Waters, Nigel},
-publisher = {John Wiley & Sons, Ltd},
-isbn = {9781118786352},
-title = {Tobler's First Law of Geography},
-booktitle = {International Encyclopedia of Geography},
-chapter = {},
-pages = {1-15},
-doi = {https://doi.org/10.1002/9781118786352.wbieg1011.pub2},
-url = {https://onlinelibrary.wiley.com/doi/abs/10.1002/9781118786352.wbieg1011.pub2},
-eprint = {https://onlinelibrary.wiley.com/doi/pdf/10.1002/9781118786352.wbieg1011.pub2},
-year = {2018},
-keywords = {geographic theory, geovisualization, GIScience, network theory, social networks, spatial analysis, spatial modeling, spatial statistics, spatial thinking, urban geography},
-abstract = {Tobler's first law (TFL) of geography was introduced into the geographical literature in an article that Waldo Tobler published in the journal Economic Geography in 1970. In this article, which described a simulation of population growth in Detroit, Tobler stated that to make his model operational he would “invoke the first law of geography: everything is related to everything else, but near things are more related than distant things.” This entry considers whether TFL is an accurate description of the real world. Specifically, it considers the following questions: Is TFL really a law and, if so, is it the most important law in geography? Do modern spatial interpolation techniques allow the model to be operationalized? How can “near” and “distant” be measured? Is it true for Euclidean and network space? Do classic models of human and urban geography conform to TFL?}
-}
-
-@misc{elections_financing_handbook_2026,
-  author       = {{Elections Canada}},
-  title        = {Political Financing Handbook for Candidates and Official Agents (EC 20155) -- June 2026},
-  year         = {2026},
-  url          = {https://www.elections.ca/content.aspx?section=pol&dir=can%2Ffin%2FEC20155_c76&document=p3&lang=e},
-  urldate      = {2026-07-10},
-  note         = {Accessed via Elections Canada}
-}
-@article{betareg,
- title={Beta Regression in R},
- volume={34},
- url={https://www.jstatsoft.org/index.php/jss/article/view/v034i02},
- doi={10.18637/jss.v034.i02},
- number={2},
- journal={Journal of Statistical Software},
- author={Cribari-Neto, Francisco and Zeileis, Achim},
- year={2010}
-}
-@article{generalized_beta_regression,
-   title={Improved estimators for a general class of beta regression models},
-   volume={54},
-   ISSN={0167-9473},
-   url={http://dx.doi.org/10.1016/j.csda.2009.08.017},
-   DOI={10.1016/j.csda.2009.08.017},
-   number={2},
-   journal={Computational Statistics & Amp; Data Analysis},
-   publisher={Elsevier BV},
-   author={Simas, Alexandre B. and Barreto-Souza, Wagner and Rocha, Andréa V.},
-   year={2010},
-   month=Feb, pages={348–366}
 }

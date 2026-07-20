@@ -17,6 +17,10 @@ raw_IJF_data <- fread(
   "data/raw_data/raw_data_IJF_fix2026-06-17.csv",
   data.table = FALSE
 )
+# raw_IJF_data_flagged <- fread(
+#   "data/raw_data/don-fd-donation-date-null.csv",
+#   data.table = FALSE
+# )
 
 # --- Constants ----
 
@@ -79,8 +83,28 @@ VALID_POLITICAL_PARTIES <- c(
 
 # -------- Cleaning --------
 
-# 0. Perform ingestion de-duping (normally done in IJF pipeline, special case)
+# 0. Perform ingestion de-duping (normally done in IJF pipeline, special case).
 raw_IJF_data <- raw_IJF_data %>% distinct()
+raw_IJF_data_flagged <- raw_IJF_data_flagged %>% distinct()
+
+# 1. Augment existing data with date flag.
+raw_IJF_data_flagged_small <- raw_IJF_data_flagged %>%
+  select(rid, `_donation_date_null`)
+
+all(raw_IJF_data$rid %in% raw_IJF_data_flagged_small$rid)
+
+tail(raw_IJF_data)
+tail(raw_IJF_data_flagged_small)
+
+raw_IJF_data_aug <- raw_IJF_data %>%
+  left_join(raw_IJF_data_flagged_small, by = "rid")
+
+this <- raw_IJF_data %>% filter(rid == "82326218558fa7e452fa8e49c4d34d7")
+View(this)
+this2 <- raw_IJF_data_flagged %>%
+  filter(rid == "82326218558fa7e4502fa8e49c4d34d7")
+View(this2)
+
 
 # 1. Remove Columns `s`, `added` (since irrelevant).
 
