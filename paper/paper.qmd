@@ -29,6 +29,53 @@ bibliography: references.bib
 link-citations: true
 ---
 
+<!-- TODO: Note that small losses were incurred from missing Census data in the model results table.
+     TODO: Note that donations were not grouped by individual, since we were interested in both donor and recipient characteristics in this model, partly as a control. Diagnostics showed that autocorrelation, the statistical bias incurred by not doing this did not greatly impact our model.
+-->
+
+
+<!-- Paper Vision (state clearly in Introduction)
+      - Primary contribution: We provide a first characterization of out-of-district donations in a non-American context.
+      - Second contribution: We provide a novel dataset of geolocated donors. Has been done by Garnett, but not obvious.
+-->
+
+<!-- TODO: Rewrite Background:
+      - SECTION ONE: "Motivation: Out of District Donations in the U.S."
+              - 1.1. Donations from individuals finance the majority of electoral campaigns in North America (GET AN ESTIMATE). They are of particular interest due to their versatility: donations can come from anywhere, anytime, etc. In Westminster-style political out-of-district donations are perhaps the most popular and impactful means by which an individual extends their political influence outside their district. In light of this, and given the huge sums of political financing relative to other countries, 21st century American researchers have sought to (1) document rates and trends in ou-of-district donations, and (2) developed ideas behind (2.1) donor motivations and (2.2) assessed the impacts of representation  Briefly define surrogate representation (from Mansbridge), 
+              - 1.2. U.S. descriptive findings.
+              - 1.3. U.S. representational findings.
+              - 1.4. Statement that this doesn't exist in other countries. We SUSPECT that U.S. research exists because of their well-maintained powerful [STATE NAME OF DATABASE] where donors are naturally geolocated in their districts, and because individual donor caps are much larger than in other countries [NUMBERS FOR U.S., compared to Canada and U.K.]. This naturally calls for research to be done on this topic in a sperarate political system.  so we start with a description of the phenomenon. Also state here that , and we provide a dataset.
+      - SECTION TWO: "Brief Review of Donations in the Canadian Context"
+              - 2.1. Out-of-district donation is scarce in Canada, and more generally in other countries. Talk about Besco & Tolley. RESEARCH FOR WORK IN OTHER COUNTRIES, ESPACIALLY U.K. We note also that donor-geolocation in Canada is not new. Studies such as Garnett et al., 2024 have done this, but only for donations to candidates during the 2015 general election period. Our dataset succeeds in geolocating a large majority of donations above \$200 to both Candidates and District Associtions during the 2013 representatinal order (see Data section below).
+              - 2.2. State that we focus on findings about Candidates and EDAs (HERE, define localized entities). "For research on other entities, see the following [list studies, to prove that I've considered them]".
+              - 2.3. Canadian descriptive findings.
+              - NOTE: Focus on a description of donation, how it differs from the U.S. (ex: limitations).
+              - NOTE: Be pretty terse here. Don't need to go very far in depth.
+-->
+<!-- Primary Discussion Points (broad, not specific):
+      - I want to emphasize the predictability of the variation, and how it is greatly improved by integrating socio-demographic characteristics of a donor's location.
+      - Our ethnic finding is striking, but may be attributed to multiple things that we cannot disentangle:
+            - multicollinearity with other covariates.
+            - could be co-ethnic donor networks. The Brampton districts are suggestive of this; they account for the plurality of districts in terms of out-of-district output, and in the received vs. sent graph, we see that they are major nodes in the netowrk, and send to themselves. Existing co-ethnic research supports this [CITE RESEARCH, MAINLY BESCO AND TOLLEY].
+            - colud be a genuine relationship.
+-->
+
+<!-- Other:
+      - In data section, provide link to GitHub. Tell Rohan that it's really important that the larger product is available, and that I wolud need more time for that.
+      - In the U.S. Bckground section, stay this: Missing rates in the U.S. are much lower because donation caps are higher, meaning that geolocatable donations forma more representative sample of the full localized political funding network.
+-->
+
+
+<!-- Limitations:
+        - Our dataset lacks more specific characteristics commonly present in similar studies, such as margin of defeat or  making it difficult to make conclusive statements about donor motivations. These variables have also been found to be associated with out-of-district donation propensity, so we cannot claim that donors are motivated or not by partisan interest, and are maybe lacking a major predictor. Despite this limitation, (1) we still present a robust, descriptive picture of the phenomenon, and (2) we achieve a relatively strong fit in our propensity models, especially when looking at the picture at the district-level.
+        - Donations under $200 could not be accounted for. We note also that this meant missing donors who were geolocated by donating over $200 in multiple installments, and are required to have. These are likely a minority of cases, however. [WHY?? CHECK THAT THE NUMBER OF REPEAT NAME-POSTALCODE-YEAR PAIRS].
+        - .However, our dataset offers geolocated donors in this wider category, allowing for the further exploration of trends in national party donor bases, with the caveat that missingness if of even greater concern at these levels (45%).
+-->
+
+<!-- Future Directions:
+        - Extension to more targeted questions, such as whether or not donors are motivated by partisan gain.
+-->
+
 \newpage
 
 ```{r}
