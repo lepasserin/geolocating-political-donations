@@ -56,7 +56,6 @@ link-citations: true
 
 <!-- Other:
       - In data section, provide link to GitHub. Tell Rohan that it's really important that the larger product is available, and that I wolud need more time for that.
-      - In the U.S. Bckground section, stay this: Missing rates in the U.S. are much lower because donation caps are higher, meaning that geolocatable donations forma more representative sample of the full localized political funding network.
 -->
 
 
