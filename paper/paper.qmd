@@ -44,7 +44,7 @@ source(here::here("paper/paper_helpers.R"))
 
 # Introduction {#sec-intro}
 
-In Westminster-style parliamentary democracies such as Canada, the U.S., and the U.K., federal representation is structurally geographical; citizens are grouped into a few hundred electoral districts based on where they live, each represented by a single Member of Parliament (MP). An individual’s political influence in these systems is canonically exercised by voting for their parliamentary candidate of choice during election periods, however alternate forms of engagement have emerged to support a broader scope of political activities, political entities, and without the spatio-temporal constraints imposed by elections. Citizens may volunteer at their local district associations (which are active between election cycles), advocate for their preferred national party online, vote in intra-party nomination contests, or contribute financially (i.e. donate) to a candidate’s campaign [@bednar_political_2011; @baker_getting_2016; @garnett_where_2024]. 
+In Canada, federal representation is structurally geographical; citizens are grouped into a few hundred electoral districts based on where they live, each represented by a single Member of Parliament (MP). An individual’s political influence in these systems is canonically exercised by voting for their parliamentary candidate of choice during election periods, however alternate forms of engagement exist to support a broader scope of political activities, political entities, and without the spatio-temporal constraints imposed by elections. Citizens may volunteer at their local district associations, advocate for their preferred national party online, vote in intra-party nomination contests, or contribute financially (i.e. donate) to a candidate’s campaign [@bednar_political_2011; @baker_getting_2016; @garnett_where_2024]. 
 
 Whether intentional or not, many of these alternative forms of political participation can serve to extend a citizen’s political influence beyond their district’s boundaries. Among these, out-of-district donations are perhaps the clearest and most flexible mechanism through which individuals can influence political entities and activities outside their district, for two main reasons. First, donations are largely unconstrained in time and space. In North America, citizens and permanent residents can legally contribute to various federal political entities at any time, in any district, and as often as they want, subject to annual and per-election limits [@gimpel_check_2008; @canada_annual_2026]. Second, in North America, contributions from individuals in general are the primary source of funding for electoral campaigns [@gimpel_check_2008; @garnett_where_2024; @canada_understanding_2026] and a  major source of revenue for national parties [@corrado_new_2010; @garnett_lifeblood_2022]. In the U.S., even incumbent representatives often attribute a majority of their income to their donor base [@baker_getting_2016]. While the activities of many of these entities may be reimbursed through public stipends and subsidies, the gross funding needed for a party leadership contestant or electoral candidate to run a strong campaign often needs to available on-demand, and is expected  [@garnett_where_2024]. Despite a growing body of Canadian research documenting the extent of and patterns of federal political donations generally [e.g. @besco_ethnic_2022; @tolley_who_2022; @garnett_where_2024], comparatively little attention has been given to out-of-district donations.
 
@@ -77,8 +77,6 @@ Limited accounts of out-of-district donation rates exist in the Canadian context
 [^3]: We refer the reader to @young_money_2011, @garnett_lifeblood_2022, and @pruysers_leadership_2024 for examples of such studies.
 
 Considerable research has examined socio-demographic characteristics of donors and candidates in Canada. Preliminary analyses of individual donations from 2006 to 2011 [@jansen_donates_2012; @carmichael_political_2014], and a more recent analysis of candidate-bound donations during the 2015, 2019, and 2021 general elections [@garnett_where_2024] have found that donors are more likely to originate from older, wealthier, and better-educated districts. The gender gap in giving has also received attention, likely given the broader context of established gender gaps in political participation [@tolley_who_2022; @mcmahon_covid_2023]. From 2004 to 2015, overall federal donation amounts have increased, particularly in Western Canada, and among Conservative political entities [@mcmahon_follow_2015]. However, contribution rates to candidates during the following three general elections (in 2015, 2019, and 2021) have since decreased [@garnett_where_2024], and the COVID-19 pandemic saw overall reduced political participation [@mcmahon_covid_2023].
-
-@garnett_lifeblood_2022 propose that donors in Canada donate for two reasons: political (i.e. for representational gain) and transactional (i.e. a favour for a friend, or a willingness to be seen). Using survey response data, they find that political motivations for giving are more prevalent overall, but especially among older and affluent donors who contributed larger sums. Transactional donations were more likely at the local level, while political donations were more likely at the national level.
 
 Canadian donors tend to donate more to candidates that they share aspects of their identity with. For instance, women donors are more likely to donate to women candidates [@tolley_who_2022], and there are high rates of co-ethnic donation, particularly among South Asian donors [@besco_ethnic_2022]. More generally, South Asian political participation appears to be particularly heightened in Canada, relative to other ethnocultural groups [@garnett_where_2024].
 
@@ -226,7 +224,9 @@ panel_b <- timeline_panel(filter(donations_data, is_local), "B. Localized entiti
 
 ### Spatio-temporal Trends in Out-of-District Donation Rates {#sec-data-summaries-ood-rate}
 
-In this section, we present data summaries describing when and where out-of-district contributions are more or less common.  @tbl-data-summaries-ood-rate-overall displays the proportion of contributions above $200 (raw and amount-weighted) that were sent out-of-district, for candidate- and EDA-bound donations. Overall, candidates received 37.6% of these donations from outside their district, and EDAs received 43.8%[^10]. In both cases, these proportions increase  when donations are weighed by their value, indicating that out-of-district donations are larger, on average, than their within-district counterparts. @tbl-data-summaries-ood-rate-candidates and @fig-data-summaries-ood-rate-EDAs show how out-of-district funding rates change over time, for candidates and district associations respectively. Candidate out-of-district rates show a slight decreasing trend, from 39.5% in the 42nd general election in 2015 to around 35.4% in subsequent periods (@tbl-data-summaries-ood-rate-candidates). However, this may reflect the heightened absolute number of contributions garnered in 2015 compared to other periods. EDAs received roughly the same proportion of out-of-district contributions during the entire study period, including during writ periods[^11].
+In this section, we present data summaries describing when and where out-of-district contributions are more or less common.  @tbl-data-summaries-ood-rate-overall displays the proportion of contributions above $200 (raw and amount-weighted) that were sent out-of-district, for candidate- and EDA-bound donations. Overall, candidates received 37.6% of these donations from outside their district, and EDAs received 43.8%[^10]. In both cases, these proportions increase  when donations are weighed by their value, indicating that out-of-district donations are larger, on average, than their within-district counterparts. 
+
+@tbl-data-summaries-ood-rate-candidates and @fig-data-summaries-ood-rate-EDAs show how out-of-district funding rates change over time, for candidates and district associations respectively[^12]. Candidate out-of-district rates show a slight decreasing trend, from 39.5% in the 42nd general election in 2015 to around 35.4% in subsequent periods (@tbl-data-summaries-ood-rate-candidates). However, this may reflect the heightened absolute number of contributions garnered in 2015 compared to other periods. EDAs received roughly the same proportion of out-of-district contributions during the entire study period, including during writ periods[^11].
 
 [^10]: A comparison of the value distributions of in- and out-of-district donations is available in [Appendix -@sec-additional-data-summaries].
 [^11]: Roughly similar rates, and the same consistency through time, were observed when entities from individual parties were examined ([Appendix -@sec-additional-data-summaries]).
@@ -603,7 +603,7 @@ where:
 - $\text{Density}_i$ is the population density (persons per $km^2$) of the donor's home district. As mentioned in-text, the model was fit using the square root of this variable.
 
 [^17]: An alternative model where regions were disaggregated into provinces showed qualitatively similar results. An alternative model where the visible minority proportion was disaggregated into specific ethnic groups is shown in [Appendix -@sec-alternate-model-specifications].
-[^18]: Districts were more likely to have elected an MP from the same party (or simply the same MP) for all three elections when their average margin of victory is higher ($\text{pseudo} \space R^2 = 0.22$), meaning that this competitiveness metric also captures a decent share of the variation in district-level party stability.
+[^18]: Districts were more likely to have elected an MP from the same party (or simply the same MP) for all three elections when their average margin of victory is higher ($\text{pseudo} \space R^2 = 0.22$), meaning that this competitiveness metric also captures a decent share of the variation in district-level party stability. These data were sourced from Open Government Canada [@canada_open_government_2026].
 [^19]: The observed spatial variation in out-of-district propensity cannot be fully explained by the spatial arrangement of districts alone ([Appendix -@sec-district-propensity-simulation]), however it remains an important consideration.
 
 ### District-Level Model {#sec-model-specification-district}
@@ -1322,7 +1322,7 @@ plot_missingness_comparison(
   comparison_label_2 = "Donor-Geolocated (Under $200)")
 ```
 
-# Alternate Model Specifications {sec-alternate-model-specifications}
+# Alternate Model Specifications {#sec-alternate-model-specifications}
 
 Here we present the results of six alternate out-of-district propensity models, mainly fit to assess the robustness of our results in @sec-results to other resonable model specifications.
 
@@ -1712,7 +1712,7 @@ modelsummary(
 #| warning: false
 #| message: false
 #| echo: false
-#| label: tbl-results-model-district-EDA
+#| label: tbl-results-model-district-disaggregated
 #| tbl-cap: "Results from a beta regression model where the outcome is the out-of-district share of the sum of contributions over $200 originating from an individual district during our study period. The reference province is Ontario. Estimates are bolded when significant at the alpha = 0.05 level. Small losses (~ 1.1% of individual transactions) were incurred due to missingness in the census data. Each of the 338 districts is represented in this model."
 
 # Fit Model
@@ -2216,4 +2216,4 @@ p1 / p2 / p3
 
 \newpage
 
-# References
+# References {.unnumbered}

@@ -79,6 +79,14 @@ data/other/province_shapes.rds
 data/other/localized_donations_data_distances.parquet
 data/other/FED_neighbour_edges.rds
 
+
+scripts/analysis/02-ood_deviation_model.R
+
 paper/paper_base.qmd
 paper/paper_base.pdf
 data/raw_data/don-fd-donation-date-null.csv
+data/raw_data/election_results/2015_42_election_results.csv
+.gitignore
+data/clean_data/election_results.parquet
+data/raw_data/election_results/2019_43_election_results.csv
+data/raw_data/election_results/2021_44_election_results.csv

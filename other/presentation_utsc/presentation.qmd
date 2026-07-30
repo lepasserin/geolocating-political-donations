@@ -42,40 +42,14 @@ source(here::here("other/presentation_utsc/presentation_helpers.R"))
 ## Donations & Federal Representation
 
 ::: {.notes}
-... citizens grouped into spatially-defined districts --> vote to elect a single politician to represent them in parliament.
-:::
-
-- In many parliamentary democracies, citizens are <span style="color: #4169E1;">represented</span> at the federal level based on **where they live**[^1].
-
-. . .
-
-:::: {.columns}
-
-::: {.column width="40%"}
-![](university_rosedale.png){width=100% .bordered}
-:::
-
-::: {.column width="20%"}
-![](right_arrow.png){width=50% fig-align="center"}
-:::
-
-::: {.column width="40%"}
-![](danielle_martin.png){width=70% .bordered}
-:::
-
-::::
-
-[^1]: Many sovereign nations model federal representation in this way, including Canada, the United States, the United Kingdom, Australia, and New Zealand.
-
-## Donations & Federal Representation
-
-::: {.notes}
 - **Versatile:** unconstrained in space and time; multiple entities [LIST]; subject to limitations.
 - **Impactful:** in Canada and the U.S., donations are the primary source of campaign funding, national party financing.
 - **LAST:** [DEFINE OOD] --> ... --> and are the primary means of doing so.
 :::
 
 - In many parliamentary democracies, citizens are <span style="color: #4169E1;">represented</span> at the federal level based on **where they live**[^2].
+
+. . . 
 
 - While voting is the most direct form of individual political participation, <span style="color: #4169E1;">political donations</span> are a **versatile** and **impactful** alternative.
 

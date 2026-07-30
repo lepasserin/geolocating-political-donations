@@ -1,23 +1,56 @@
-# Purpose: Constants, Helper Functions, and Specific Datasets Sourced by `paper.qmd`.
+# Purpose: Constants, Visualization Helper Functions, and Modelling Datasets Sourced by `paper.qmd`.
 # Author: Benedict Cummins-Mburu
-# Last Updated: 12 July 2026
+# Last Updated: 30 July 2026
 # Contact: b.cumminsmburu@utoronto.ca
 # License: MIT
 
-# ---- Setup ----
+# ---- Setup: Libraries -----
+
+# Data Loading & Manipulation
 library(tidyverse)
 library(arrow)
-library(sf)
 library(here)
+library(sf)
+
+# Visualization Tools
 library(patchwork)
+library(modelsummary)
+library(tinytable)
+library(png)
+library(mgcv)
+
+# Analysis
+library(betareg)
+
+# ---- Setup: Data Sources For Main Paper ONLY -----
+
+# Donations Datasets
 donations_data_appendix <- read_parquet(here::here(
   "data/processed_data/donations_data_appendix.parquet"
 ))
-localized_donations_data <- read_parquet(
-  here::here("data/processed_data/donations_data.parquet")
-) %>%
+donations_data <- read_parquet(here::here(
+  "data/processed_data/donations_data.parquet"
+))
+
+# Additional Simulation Datasets
+distance_hyp_test_results <- read_parquet(here::here(
+  "data/other/distance_hyp_test_results.parquet"
+))
+localized_donations_data_distances <- read_parquet(here::here(
+  "data/other/localized_donations_data_distances.parquet"
+))
+localized_donations_data_neighbours <- read_parquet(here::here(
+  "data/other/localized_donations_data_neighbours.parquet"
+))
+
+# ---- Setup: Shared Data Sources -----
+
+# Donations Dataset
+localized_donations_data <- donations_data %>%
   filter(is_local) %>%
   mutate(donor_dissemination_area = as.character(donor_dissemination_area))
+
+# Correlaries
 census_lookup <- read_parquet(here::here(
   "data/clean_data/census_lookup.parquet"
 )) %>%
@@ -29,6 +62,9 @@ PCCF_lookup <- read_parquet(here::here(
   "data/clean_data/PCCF_lookup.parquet"
 )) %>%
   mutate(FEDUID = as.character(FEDUID))
+election_results <- read_parquet(here::here(
+  "data/clean_data/election_results.parquet"
+))
 
 # ------ Constants -------
 
@@ -122,79 +158,28 @@ district_to_province <- FED_lookup %>%
     recipient_region = factor(REGION_BY_CODE[prov_code], levels = REGION_LEVELS)
   )
 
-# ------ Functions -------
+DAUID_to_FED_name <- PCCF_lookup %>%
+  distinct(DAUID, FEDUID) %>%
+  left_join(FED_lookup, by = "FEDUID") %>%
+  transmute(DAUID = as.character(DAUID), FED_name = name)
 
-# 1. Redistribute each December's donation total/count evenly across its year, and replace December with a centred 3-month moving average.
-redistribute_december_ma <- function(
-  data,
-  stratifying_column = "political_party"
-) {
-  required_cols <- c("month", "total_donated", "n_donors", stratifying_column)
-  missing_cols <- setdiff(required_cols, names(data))
-  if (length(missing_cols) > 0) {
-    stop(paste(
-      "The input data is missing required columns:",
-      paste(missing_cols, collapse = ", ")
-    ))
-  }
-  data %>%
-    arrange(across(all_of(stratifying_column)), month) %>%
-    mutate(
-      month_num = lubridate::month(month),
-      year_num = lubridate::year(month)
-    ) %>%
-    group_by(across(all_of(stratifying_column)), year_num) %>%
-    mutate(
-      true_dec_amount = sum(total_donated[month_num == 12], na.rm = TRUE),
-      true_dec_count = sum(n_donors[month_num == 12], na.rm = TRUE),
+census_lookup_FED <- census_lookup %>%
+  filter(missing_stage == "complete") %>%
+  left_join(DAUID_to_FED_name, by = "DAUID") %>%
+  group_by(FED_name) %>%
+  summarise(
+    density_per_sqkm = sum(population) / sum(land_area_sqkm),
+    avg_age = weighted.mean(avg_age, population),
+    median_hh_income = weighted.mean(median_hh_income, population),
+    postsec_prop = weighted.mean(postsec_prop, population),
+    across(starts_with("vismin_"), ~ weighted.mean(.x, population)),
+    .groups = "drop"
+  )
 
-      dec_increment_amount = true_dec_amount / 12,
-      dec_increment_count = true_dec_count / 12,
 
-      amt_no_dec = if_else(month_num == 12, NA_real_, total_donated),
-      cnt_no_dec = if_else(month_num == 12, NA_real_, n_donors)
-    ) %>%
-    group_by(across(all_of(stratifying_column))) %>%
-    mutate(
-      ma_amount = slider::slide_dbl(
-        amt_no_dec,
-        mean,
-        na.rm = TRUE,
-        .before = 1,
-        .after = 1,
-        .complete = FALSE
-      ),
-      ma_count = slider::slide_dbl(
-        cnt_no_dec,
-        mean,
-        na.rm = TRUE,
-        .before = 1,
-        .after = 1,
-        .complete = FALSE
-      ),
+# ------ Helper Functions -------
 
-      total_donated = if_else(month_num == 12, ma_amount, total_donated),
-      n_donors = if_else(month_num == 12, ma_count, n_donors),
-
-      total_donated = total_donated + dec_increment_amount,
-      n_donors = n_donors + dec_increment_count
-    ) %>%
-    select(
-      -month_num,
-      -year_num,
-      -amt_no_dec,
-      -cnt_no_dec,
-      -ma_amount,
-      -ma_count,
-      -true_dec_amount,
-      -true_dec_count,
-      -dec_increment_amount,
-      -dec_increment_count
-    ) %>%
-    ungroup()
-}
-
-# 2. Point-and-whiskers coefficient plot for regression models.
+# 1. Point-and-whiskers coefficient plot for regression models.
 coef_whisker_plot <- function(
   model,
   term_labels = NULL # so I can change the nasty raw labels
@@ -251,7 +236,7 @@ coef_whisker_plot <- function(
     )
 }
 
-# 3. Helper for 4.
+# 2. Helper for 3.
 build_comparison_panel <- function(
   df,
   xvar,
@@ -288,7 +273,7 @@ build_comparison_panel <- function(
   p
 }
 
-# 4. Compare the marginal distributions of two datasets (weighted by contributed amount) across five categorical factors.
+# 3. Compare the marginal distributions of two datasets (weighted by contributed amount) across five categorical factors.
 plot_missingness_comparison <- function(
   comparison_data_1,
   comparison_data_2,
@@ -482,35 +467,32 @@ plot_missingness_comparison <- function(
   p_all & theme(axis.title.y = element_blank())
 }
 
-# ------ Datasets -------
+# ------ Modelling Datasets -------
 
-# 1. Individual OOD Propensity Model Dataset (outcome + covariates, sqrt(`density_per_sqkm`) = `density_per_sqkm_sqrt`).
+# We specify three model datasets:
+#         - Individual (with everything needed for all variants)
+#         - FED (aggregated both)
+#         - FED (EDAs only)
+
+# 1. Individual
 individual_model_data <- localized_donations_data %>%
   mutate(donor_dissemination_area = as.character(donor_dissemination_area)) %>%
-  filter(is_general_election_period | political_entity != "Candidates") %>% # TODO: deal with this later.
+  filter(is_general_election_period | political_entity != "Candidates") %>% # TODO: deal with this somewhere else later; 1179 entries.
   mutate(
     political_party_cat = case_when(
       political_party == "Conservative Party of Canada" ~ "Conservative",
       political_party == "Liberal Party of Canada" ~ "Liberal",
       political_party == "New Democratic Party" ~ "N.D.P",
       TRUE ~ "Other"
-    ),
-    donor_region = case_when(
-      # checked that no NAs appear here
-      donor_province == "Ontario" ~ "Ontario",
-      donor_province == "Quebec" ~ "Quebec",
-      donor_province == "British Columbia" ~ "British Columbia",
-      donor_province %in% c("Alberta", "Saskatchewan", "Manitoba") ~ "Prairies",
-      donor_province %in%
-        c(
-          "Nova Scotia",
-          "New Brunswick",
-          "Prince Edward Island",
-          "Newfoundland and Labrador"
-        ) ~ "Atlantic Canada",
-      donor_province %in%
-        c("Yukon", "Northwest Territories", "Nunavut") ~ "Territories"
-    ),
+    )
+  ) %>%
+  left_join(
+    district_to_province %>%
+      rename(donor_region = recipient_region),
+    by = c("donor_district" = "name")
+  ) %>%
+  left_join(election_results, by = c("donor_district" = "FED")) %>%
+  mutate(
     donor_parliament = case_when(
       donation_date <= as.Date("2015-10-19") ~ "41st Parliament",
       donation_date > as.Date("2015-10-19") &
@@ -535,38 +517,26 @@ individual_model_data <- localized_donations_data %>%
   ) %>%
   select(
     is_out_of_district,
-    is_general_election_period,
+    general_election_period,
     political_entity,
     political_party_cat,
     total_amount,
+    donor_province,
     donor_region,
     avg_age,
     median_hh_income,
     postsec_prop,
     starts_with("vismin_"),
+    `margin_of_victory_42nd general election`,
+    `margin_of_victory_43rd general election`,
+    `margin_of_victory_44th general election`,
+    margin_of_victory_avg,
     density_per_sqkm_sqrt,
-    donor_parliament
+    donor_parliament,
+    donor_district
   )
 
-# 2. District OOD Propensity Model Dataset (outcome + covariates, sqrt(`density_per_sqkm`) = `density_per_sqkm_sqrt`).
-DAUID_to_FED_name <- PCCF_lookup %>%
-  distinct(DAUID, FEDUID) %>%
-  left_join(FED_lookup, by = "FEDUID") %>%
-  transmute(DAUID = as.character(DAUID), FED_name = name)
-
-census_lookup_FED <- census_lookup %>%
-  filter(missing_stage == "complete") %>%
-  left_join(DAUID_to_FED_name, by = "DAUID") %>%
-  group_by(FED_name) %>%
-  summarise(
-    density_per_sqkm = sum(population) / sum(land_area_sqkm),
-    avg_age = weighted.mean(avg_age, population),
-    median_hh_income = weighted.mean(median_hh_income, population),
-    postsec_prop = weighted.mean(postsec_prop, population),
-    across(starts_with("vismin_"), ~ weighted.mean(.x, population)),
-    .groups = "drop"
-  )
-
+# 2. District - Aggregated
 FED_model_data <- localized_donations_data %>%
   group_by(donor_district) %>%
   summarise(
@@ -576,36 +546,65 @@ FED_model_data <- localized_donations_data %>%
     donor_province = first(donor_province),
     .groups = "drop"
   ) %>%
-  mutate(
-    donor_region = case_when(
-      donor_province == "Ontario" ~ "Ontario",
-      donor_province == "Quebec" ~ "Quebec",
-      donor_province == "British Columbia" ~ "British Columbia",
-      donor_province %in% c("Alberta", "Saskatchewan", "Manitoba") ~ "Prairies",
-      donor_province %in%
-        c(
-          "Nova Scotia",
-          "New Brunswick",
-          "Prince Edward Island",
-          "Newfoundland and Labrador"
-        ) ~ "Atlantic Canada",
-      donor_province %in%
-        c("Yukon", "Northwest Territories", "Nunavut") ~ "Territories"
-    )
+  left_join(
+    district_to_province %>%
+      rename(donor_region = recipient_region),
+    by = c("donor_district" = "name")
   ) %>%
+  left_join(election_results, by = c("donor_district" = "FED")) %>%
   left_join(census_lookup_FED, by = c("donor_district" = "FED_name")) %>%
   mutate(
     density_per_sqkm_sqrt = sqrt(density_per_sqkm),
     donor_region = relevel(factor(donor_region), ref = "Ontario")
   ) %>%
   select(
+    donor_district,
     prop_ood,
     density_per_sqkm_sqrt,
     total_amount,
+    donor_province,
     donor_region,
     avg_age,
     median_hh_income,
     postsec_prop,
+    margin_of_victory_avg,
+    n,
+    starts_with("vismin_")
+  )
+
+# 3. District - EDA Only
+FED_model_data_EDA <- localized_donations_data %>%
+  filter(political_entity == "Registered associations") %>%
+  group_by(donor_district) %>%
+  summarise(
+    n = n(),
+    prop_ood = sum(total_amount * is_out_of_district) / sum(total_amount),
+    total_amount = sum(total_amount),
+    donor_province = first(donor_province),
+    .groups = "drop"
+  ) %>%
+  left_join(
+    district_to_province %>%
+      rename(donor_region = recipient_region),
+    by = c("donor_district" = "name")
+  ) %>%
+  left_join(election_results, by = c("donor_district" = "FED")) %>%
+  left_join(census_lookup_FED, by = c("donor_district" = "FED_name")) %>%
+  mutate(
+    density_per_sqkm_sqrt = sqrt(density_per_sqkm),
+    donor_region = relevel(factor(donor_region), ref = "Ontario")
+  ) %>%
+  select(
+    donor_district,
+    prop_ood,
+    density_per_sqkm_sqrt,
+    total_amount,
+    donor_province,
+    donor_region,
+    avg_age,
+    median_hh_income,
+    postsec_prop,
+    margin_of_victory_avg,
     n,
     starts_with("vismin_")
   )
