@@ -39,8 +39,8 @@ The majority of our data is openly accessible at <https://zenodo.org/records/217
 
 Our primary dataset, named `raw_data_IJF.csv`, is available upon request from the Inestigative Journalism Foundation (contact at info@theijf.org). Once obtained, this file should be placed in `data/raw_data/`. In addition, the 2024 Postal Code Conversion File must be requested either directly from Canada Post or through your Research Institution. We accessed this file here: <https://borealisdata.ca/dataset.xhtml?persistentId=doi:10.5683/SP3/OHYOJV>. This file should be named `raw_PCCF_2024.tab`, and also placed in the `data/raw_data/` folder of this repository. Please note the TAB filteype.
 
-[!IMPORTANT]
-This project uses `renv` to manage R package dependencies. Before running anything, open the repository from its root directory (so that `.Rprofile` is sourced) and run `renv::restore()` to install the package versions recorded in `renv.lock`.
+>[!IMPORTANT]
+>This project uses `renv` to manage R package dependencies. Before running anything, open the repository from its root directory (so that `.Rprofile` is sourced) and run `renv::restore()` to install the package versions recorded in `renv.lock`.
 
 Once the above two files have been added to `data/raw_data/`, run the following scripts already present in this repo, in order, to recover the remaining data necessary for our analysis:
 
@@ -62,6 +62,6 @@ These scripts should have created the following datasets:
 
 Once these additional datasets have been added, `paper.qmd` may be run (the file with most of our analyses), as well as any other script present in the repository.
 
-[!NOTE]
-We note that, if the reader is solely interested in accessing our dataset of geolocated political donations ot all federal political entities from 2015 to 2024, they need only run the first three scripts listed above, and look for `donations_data_full.parquet` in the `data/analysis_data/` folder.
+> [!NOTE]
+> We note that, if the reader is solely interested in accessing our dataset of geolocated political donations ot all federal political entities from 2015 to 2024, they need only run the first three scripts listed above, and look for `donations_data_full.parquet` in the `data/analysis_data/` folder.
 
