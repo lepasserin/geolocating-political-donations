@@ -45,7 +45,7 @@ Once the above two files have been added to `data/raw_data/`, run the following 
 2. `scripts/processing/00-clean_IJF_data.R`
 3. `scripts/cleaning/05-create_donations_data.R`
 4. `scripts/other/00-FED_network_extra.R`
-5. `scripts/other/01-distance_simluation.R`
+5. `scripts/other/01-distance_simulation.R`
 
 These scripts should have created the following datasets:
 

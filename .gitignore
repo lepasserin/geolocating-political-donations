@@ -13,7 +13,6 @@ data/raw_data/98-401-X2021.zip
 data/raw_data/raw_PCCF_2024.tab
 data/raw_data/raw_data_IJF.csv
 
-data/processed_data/census_uncompressed_2021.parquet
 data/processed_data/clean_data_IJF.parquet
 
 data/analysis_data/census_lookup.parquet

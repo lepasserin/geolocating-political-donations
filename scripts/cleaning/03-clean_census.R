@@ -8,7 +8,6 @@
 # -------- Setup -------
 library(tidyverse)
 library(arrow)
-library(cancensus)
 census_uncompressed <- read_parquet(
   "data/processed_data/census_uncompressed_2021.parquet"
 )
