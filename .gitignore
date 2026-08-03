@@ -23,7 +23,11 @@ data/analysis_data/donations_data.parquet
 data/analysis_data/FED_lookup.rds
 data/analysis_data/PCCF_lookup.parquet
 
+data/cached_data/distance_hyp_test_results.parquet
+data/cached_data/localized_donations_data_distances.parquet
+data/cached_data/localized_donations_data_neighbours.parquet
 data/cached_data/province_shapes.rds
+
 
 # Other Files (only kept locally, for personal reference)
 other/*

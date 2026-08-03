@@ -16,7 +16,7 @@ The repository is structured as follows:
             - `raw_data`: datasets as they were downloaded from their respective sources.
             - `processed_data`: intermediary pipeline datasets.
             - `analysis_data`: primary datasets used for analysis.  
-            - `other`: specialized datasets (mainly pre-rendered intermediates to save on compute).
+            - `cached_data`: specialized datasets (mainly pre-rendered intermediates to save on compute).
 
 -   `paper`: files used to generate the paper, including the Quarto document, the bibliography (.bib) file, and the renderted PDF of the paper.
 
@@ -41,9 +41,11 @@ Our primary dataset, named `raw_data_IJF.csv`, is available upon request from th
 
 Once the above two files have been added to `data/raw_data/`, run the following scripts already present in this repo, in order, to recover the remaining data necessary for our analysis:
 
-1. `scripts/cleaning/03-clean_PCCF.R`
+1. `scripts/cleaning/02-clean_PCCF.R`
 2. `scripts/processing/00-clean_IJF_data.R`
-3. `scripts/cleaning/00-create_donations_data.R`
+3. `scripts/cleaning/05-create_donations_data.R`
+4. `scripts/other/00-FED_network_extra.R`
+5. `scripts/other/01-distance_simluation.R`
 
 These scripts should have created the following datasets:
 
@@ -51,5 +53,11 @@ These scripts should have created the following datasets:
 - `data/analysis_data/PCCF_lookup.parquet`
 - `data/analysis_data/donations_data_full.parquet`
 - `data/analysis_data/donations_data.parquet`
+- `data/cached_data/distance_hyp_test_results.parquet`
+- `data/cached_data/localized_donations_data_distances.parquet`
+- `data/cached_data/localized_donations_data_neighbours.parquet`
 
 Once these additional datasets have been added, `paper.qmd` may be run (the file with most of our analyses), as well as any other script present in the repository.
+
+We note that, if the reader is solely interested in accessing our dataset of geolocated political donations ot all federal political entities from 2015 to 2024, they need only run the first three scripts listed above, and look for `donations_data_full.parquet` in the `data/analysis_data/` folder.
+

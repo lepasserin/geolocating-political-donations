@@ -18,9 +18,9 @@
 library(tidyverse)
 library(arrow)
 library(sf)
-IJF_data <- read_parquet("data/clean_data/clean_data_IJF.parquet")
-PCCF_lookup <- read_parquet("data/clean_data/PCCF_lookup.parquet") # to validate postal codes and recipient FED names
-FED_lookup <- readRDS("data/clean_data/FED_lookup.rds") # to fetch valid FED names
+IJF_data <- read_parquet("data/processed_data/clean_data_IJF.parquet")
+PCCF_lookup <- read_parquet("data/analysis_data/PCCF_lookup.parquet") # to validate postal codes and recipient FED names
+FED_lookup <- readRDS("data/analysis_data/FED_lookup.rds") # to fetch valid FED names
 FED_lookup <- FED_lookup %>%
   st_drop_geometry() %>%
   select(FEDUID, name)

@@ -102,10 +102,6 @@ FED_to_margin <- results %>%
       c_across(starts_with("margin_of_victory_prop_")),
       na.rm = TRUE
     ),
-    margin_of_victory_min = mean(
-      c_across(starts_with("margin_of_victory_prop_")),
-      na.rm = TRUE
-    ),
     margin_of_victory_range = max(
       c_across(starts_with("margin_of_victory_prop_")),
       na.rm = TRUE

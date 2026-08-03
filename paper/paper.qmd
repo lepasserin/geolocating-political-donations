@@ -531,7 +531,7 @@ Tbl_data_summaries_ood_neighbours
 #| fig-height: 7
 #| fig-width: 6
 
-# Pre-rendered PNGs (generated in scripts/analysis/00-FED_network_summaries.R)
+# Pre-rendered PNGs (generated in scripts/other/00-FED_network_extra.R)
 flow_EDAs <- grid::rasterGrob(
   readPNG(here::here("paper/static_figures/Figure_province_flow_EDAs.png")),
   interpolate = TRUE
@@ -1117,7 +1117,7 @@ donations_data_full %>%
 
 In this section we describe how we created two custom lookup tables that the cleaning scripts in [Appendix -@sec-pipeline] rely on; one to convert between different levels of spatial hierarchy, and a second to retrieve specific socio-demographic statistics at the census dissemination area. Their place in the full pipeline is illustrated in @fig-data-pipeline.
 
-## Spatial Lookup Table (`PCCF_lookup` on GitHub) {#sec-data-supplements-spatial}
+## Spatial Lookup Table {#sec-data-supplements-spatial}
 
 The purpose of the table constructed in this section is to provide unambiguous links between any administrative area of interest and another at a larger scale (e.g. postal code to district, dissemination area to province, etc.). This custom table is a version of Statistics Canada's 2024 postal code conversion files (PCCF), modified to resolve many-to-many spatial overlaps between postal codes, dissemination areas (DAs), and electoral districts (FEDs). The PCCF we used provides linkages between all registered Canadian postal codes (accurate as of June 2024) and various administrative divisions, including the dissemination areas (DAs) of the 2021 Census, and the federal electoral districts (FEDs) of the 2013 representational order [@statcan_pccf_2025]. These sets of DAs and FEDs are the same versions we chose for our study. Access to this PCCF was granted to us by the University of Toronto. The result of this process is shown in part in @tbl-spatial-final.
 
@@ -1145,7 +1145,7 @@ Table_1_2 %>% tinytable::tt(width = 1) %>%
   style_tt(i = 0, bold = TRUE)
 ```
 
-## Census Lookup Table (`census_lookup` on GitHub) {#sec-data-supplements-census}
+## Census Lookup Table {#sec-data-supplements-census}
 
 The purpose of the table constructed in this section is to provide specific socio-demographic variables (listed in @tbl-data-supplements-census) for every dissemination area (DA) present in the spatial lookup table (described in @sec-data-supplements-spatial). Socio-demographic information at this spatial scale was sourced from the 2021 Census, and specifically from the "Canada, provinces, territories, census divisions (CDs), census subdivisions (CSDs) and dissemination areas (DAs)" available for download online [@statcan_census_zip_2022]. We chose the 2021 Census over the 2016 Census since the midpoint of our time period (2019) is closer to 2021 than 2016. We chose the dissemination area, an administrative region that houses roughly 400 to 700 people, since it is the smallest spatial scale where each of our desired statistics are recorded [@statcan_da_2021]. All DAs listed in our spatial lookup file (see [Appendix -@sec-data-supplements-spatial]) were present in the Census dataset we used. Since these DAs are the only ones we would ever use for analysis, the other 15.1% of DAs were dropped.
 
