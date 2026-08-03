@@ -10,7 +10,7 @@ library(tidyverse)
 library(arrow)
 library(sf)
 
-FED_lookup <- readRDS("data/clean_data/FED_lookup.rds") %>%
+FED_lookup <- readRDS("data/analysis_data/FED_lookup.rds") %>%
   st_drop_geometry()
 
 # ------- Pre-Processing -------
@@ -138,18 +138,4 @@ FED_to_margin <- results %>%
   rename(FED = name)
 
 # ------ Save to File ------
-write_parquet(FED_to_margin, "data/clean_data/election_results.parquet")
-
-# Check: Relationship between party stability and average margin of victory.
-stopifnot(all(FED_to_margin$n_unique_winning_parties %in% c(1, 2)))
-
-margin_model <- glm(
-  I(n_unique_winning_parties == 2) ~ margin_of_victory_avg,
-  data = FED_to_margin,
-  family = binomial(link = "logit")
-)
-
-# McFadden's pseudo-R²
-1 - margin_model$deviance / margin_model$null.deviance
-
-summary(margin_model)
+write_parquet(FED_to_margin, "data/analysis_data/election_results.parquet")

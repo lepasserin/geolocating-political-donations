@@ -1,92 +1,29 @@
-# History files
+# R and Mac Metadata Files
 .Rhistory
 .Rapp.history
-
-# Session Data files
 .RData
 .RDataTmp
-
-# User-specific files
 .Ruserdata
-
-# Example code in package build process
-*-Ex.R
-
-# Output files from R CMD build
-/*.tar.gz
-
-# Output files from R CMD check
-/*.Rcheck/
-
-# RStudio files
-.Rproj.user/
-
-# produced vignettes
-vignettes/*.html
-vignettes/*.pdf
-
-# OAuth2 token, see https://github.com/hadley/httr/releases/tag/v0.3
-.httr-oauth
-
-# knitr and R markdown default cache directories
-*_cache/
-/cache/
-
-# Temporary files created by R markdown
-*.utf8.md
-*.knit.md
-
-# R Environment Variables
-.Renviron
-
-# pkgdown site
-docs/
-
-# translation temp files
-po/*~
-
-# RStudio Connect folder
-rsconnect/
-
-# Mac data storage temp files
 .DS_Store
 
-# Raw Files
-data/raw_data/lfed000b21a_e
+# Large, Required Datafiles (most are accessible on Zenodo; see README).
 data/raw_data/lda000b21a_e
-data/raw_data/od_cntrbtn_audt_e.csv
-data/raw_data/od_cntrbtn_de_e.csv
-data/raw_data/raw_PCCF_2024.tab
-data/raw_data/raw_GAF_2021.csv
-data/raw_data/raw_data_IJF_fix2026-06-17.csv
+data/raw_data/lfed000b21a_e
 data/raw_data/98-401-X2021.zip
-data/raw_data/census_uncompressed_2021.parquet
+data/raw_data/raw_PCCF_2024.tab
+data/raw_data/raw_data_IJF.csv
 
-data/clean_data/clean_data_IJF.parquet
-data/processed_data/donations_data.parquet
-data/clean_data/clean_FED_shapefile.rds
-data/processed_data/donations_data_appendix.parquet
+data/processed_data/census_uncompressed_2021.parquet
+data/processed_data/clean_data_IJF.parquet
 
-data/clean_data/FED_lookup.rds
-data/clean_data/PCCF_lookup.parquet
-data/clean_data/DA_lookup.parquet
-.vscode/settings.json
-data/clean_data/DA_lookup.rds
-data/clean_data/census_lookup.parquet
-data/other/distance_hyp_test_results.parquet
-data/other/localized_donations_data_neighbours.parquet
-data/other/province_shapes.rds
-data/other/localized_donations_data_distances.parquet
-data/other/FED_neighbour_edges.rds
+data/analysis_data/census_lookup.parquet
+data/analysis_data/DA_lookup.rds
+data/analysis_data/donations_data_full.parquet
+data/analysis_data/donations_data.parquet
+data/analysis_data/FED_lookup.rds
+data/analysis_data/PCCF_lookup.parquet
 
+data/cached_data/province_shapes.rds
 
-scripts/analysis/02-ood_deviation_model.R
-
-paper/paper_base.qmd
-paper/paper_base.pdf
-data/raw_data/don-fd-donation-date-null.csv
-data/raw_data/election_results/2015_42_election_results.csv
-.gitignore
-data/clean_data/election_results.parquet
-data/raw_data/election_results/2019_43_election_results.csv
-data/raw_data/election_results/2021_44_election_results.csv
+# Other Files (only kept locally, for personal reference)
+other/*

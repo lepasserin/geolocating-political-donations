@@ -10,9 +10,9 @@ library(tidyverse)
 library(arrow)
 library(cancensus)
 census_uncompressed <- read_parquet(
-  "data/raw_data/census_uncompressed_2021.parquet"
+  "data/processed_data/census_uncompressed_2021.parquet"
 )
-PCCF_lookup <- read_parquet("data/clean_data/PCCF_lookup.parquet")
+PCCF_lookup <- read_parquet("data/analysis_data/PCCF_lookup.parquet")
 
 # ------ Constants ------
 VALID_DAs <- unique(PCCF_lookup$DAUID)
@@ -272,6 +272,6 @@ clean_census <- clean_census_04
 
 write_parquet(
   clean_census,
-  "data/clean_data/census_lookup.parquet"
+  "data/analysis_data/census_lookup.parquet"
 )
 message("Parquet saved successfully --- END OF SCRIPT.")

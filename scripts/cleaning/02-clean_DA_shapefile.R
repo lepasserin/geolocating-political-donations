@@ -70,5 +70,5 @@ if (all(DA_shapefile_clean$area >= 0.0)) {
 # ------- Write to RDS --------
 saveRDS(
   DA_shapefile_clean,
-  "data/clean_data/DA_lookup.rds"
+  "data/analysis_data/DA_lookup.rds"
 )

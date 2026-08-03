@@ -83,5 +83,5 @@ if (all(FED_shapefile_clean$area > 0.0)) {
 # ------- Write to RDS --------
 saveRDS(
   FED_shapefile_clean,
-  "data/clean_data/FED_lookup.rds"
+  "data/analysis_data/FED_lookup.rds"
 )

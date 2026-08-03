@@ -14,14 +14,8 @@ library(tidyverse)
 library(data.table)
 library(arrow)
 PCCF_2024 <- data.table::fread("data/raw_data/raw_PCCF_2024.tab")
-DA_lookup <- readRDS("data/clean_data/DA_lookup.rds")
-FED_lookup <- readRDS("data/clean_data/FED_lookup.rds")
-donations_data <- read_parquet(
-  # just for informal validation
-  "data/processed_data/donations_data_appendix.parquet"
-)
-donations_data_pc <- donations_data %>%
-  filter(!is.na(donor_postal_code))
+DA_lookup <- readRDS("data/analysis_data/DA_lookup.rds")
+FED_lookup <- readRDS("data/analysis_data/FED_lookup.rds")
 
 # ----- Constants ------
 
@@ -172,13 +166,6 @@ if (!misalignment_exists(clean_PCCF_07, "DAUID", "FEDUID")) {
   stop("Validation Failed: Some DAs still map to multiple FEDs.")
 }
 
-# 5. Contextualize Loss in `donations_data` (DIAGNOSTIC)
-
-# effectively_missing_codes_baseline <- dplyr::setdiff(DONATIONS_DATA_POSTAL_CODES, PCCF_2024$PC)
-# effectively_missing_codes_post_resolution <- dplyr::setdiff(DONATIONS_DATA_POSTAL_CODES, clean_PCCF$PC)
-# this <- donations_data_pc %>%
-#   filter(donor_postal_code %in% effectively_missing_codes_2)
-
 # -------- Save --------
 # END.
 rows_discarded_total <- nrow(clean_PCCF_01) - nrow(clean_PCCF)
@@ -189,6 +176,6 @@ perc_rows_discarded <- round(
 
 write_parquet(
   clean_PCCF,
-  "data/clean_data/PCCF_lookup.parquet"
+  "data/analysis_data/PCCF_lookup.parquet"
 )
 message("Parquet saved successfully --- END OF SCRIPT.")

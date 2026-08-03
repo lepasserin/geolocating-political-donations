@@ -16,6 +16,7 @@ library(sf)
 library(patchwork)
 library(modelsummary)
 library(tinytable)
+library(kableExtra)
 library(png)
 library(mgcv)
 
@@ -25,22 +26,22 @@ library(betareg)
 # ---- Setup: Data Sources For Main Paper ONLY -----
 
 # Donations Datasets
-donations_data_appendix <- read_parquet(here::here(
-  "data/processed_data/donations_data_appendix.parquet"
+donations_data_full <- read_parquet(here::here(
+  "data/analysis_data/donations_data_full.parquet"
 ))
 donations_data <- read_parquet(here::here(
-  "data/processed_data/donations_data.parquet"
+  "data/analysis_data/donations_data.parquet"
 ))
 
 # Additional Simulation Datasets
 distance_hyp_test_results <- read_parquet(here::here(
-  "data/other/distance_hyp_test_results.parquet"
+  "data/cached_data/distance_hyp_test_results.parquet"
 ))
 localized_donations_data_distances <- read_parquet(here::here(
-  "data/other/localized_donations_data_distances.parquet"
+  "data/cached_data/localized_donations_data_distances.parquet"
 ))
 localized_donations_data_neighbours <- read_parquet(here::here(
-  "data/other/localized_donations_data_neighbours.parquet"
+  "data/cached_data/localized_donations_data_neighbours.parquet"
 ))
 
 # ---- Setup: Shared Data Sources -----
@@ -52,18 +53,18 @@ localized_donations_data <- donations_data %>%
 
 # Correlaries
 census_lookup <- read_parquet(here::here(
-  "data/clean_data/census_lookup.parquet"
+  "data/analysis_data/census_lookup.parquet"
 )) %>%
   mutate(DAUID = as.character(DAUID))
-FED_lookup <- readRDS(here::here("data/clean_data/FED_lookup.rds")) %>%
+FED_lookup <- readRDS(here::here("data/analysis_data/FED_lookup.rds")) %>%
   st_drop_geometry() %>%
   mutate(FEDUID = as.character(FEDUID))
 PCCF_lookup <- read_parquet(here::here(
-  "data/clean_data/PCCF_lookup.parquet"
+  "data/analysis_data/PCCF_lookup.parquet"
 )) %>%
   mutate(FEDUID = as.character(FEDUID))
 election_results <- read_parquet(here::here(
-  "data/clean_data/election_results.parquet"
+  "data/analysis_data/election_results.parquet"
 ))
 
 # ------ Constants -------
@@ -515,6 +516,7 @@ individual_model_data <- localized_donations_data %>%
     donor_region = relevel(factor(donor_region), ref = "Ontario"),
     density_per_sqkm_sqrt = sqrt(density_per_sqkm)
   ) %>%
+  mutate(donor_province = relevel(factor(donor_province), ref = "Ontario")) %>%
   select(
     is_out_of_district,
     general_election_period,
@@ -557,6 +559,7 @@ FED_model_data <- localized_donations_data %>%
     density_per_sqkm_sqrt = sqrt(density_per_sqkm),
     donor_region = relevel(factor(donor_region), ref = "Ontario")
   ) %>%
+  mutate(donor_province = relevel(factor(donor_province), ref = "Ontario")) %>%
   select(
     donor_district,
     prop_ood,
@@ -599,7 +602,6 @@ FED_model_data_EDA <- localized_donations_data %>%
     prop_ood,
     density_per_sqkm_sqrt,
     total_amount,
-    donor_province,
     donor_region,
     avg_age,
     median_hh_income,
