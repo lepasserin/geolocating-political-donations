@@ -31,13 +31,13 @@ All files under `paper` and `scripts` are available in this repository. However,
 
 ## Data Acquisition & Reproducibility
 
-The majority of our data is openly accessible at <https://zenodo.org/records/21708657>. If accessing this repository through GitHub, we suggest replacing the `data` folder from this repository with the `data` folder there. When complete, this repository takes up roughly 6.3 GB of space. Optionally, the following raw files may be omitted from download to save space, as they are not strictly necessary to reproduce the analysis (rendered redundant by their cleaned versions):
+The majority of our data is openly accessible on [Zenodo](https://zenodo.org/records/21708657). If accessing this repository through GitHub, we suggest replacing the `data` folder from this repository with the `data` folder there. When complete, this repository takes up roughly 6.3 GB of space. Optionally, the following raw files may be omitted from download to save space, as they are not strictly necessary to reproduce the analysis (rendered redundant by their cleaned versions):
 
 - `data/raw_data/98-401-X2021.zip` (full 2021 Census; 2.25 GB)
 - `data/raw_data/lfed000b21a_e` (raw electoral district shapefiles; 0.4 GB)
 - `data/raw_data/lda000b21a_e` (raw dissemination area shapefiles; 0.4 GB)
 
-Our primary dataset, named `raw_data_IJF.csv`, is available upon request from the Inestigative Journalism Foundation (contact at info@theijf.org). Once obtained, this file should be placed in `data/raw_data/`. In addition, the 2024 Postal Code Conversion File must be requested either directly from Canada Post or through your Research Institution. We accessed this file here: <https://borealisdata.ca/dataset.xhtml?persistentId=doi:10.5683/SP3/OHYOJV>. This file should be named `raw_PCCF_2024.tab`, and also placed in the `data/raw_data/` folder of this repository. Please note the TAB filteype.
+The source for our primary dataset, named `raw_data_IJF.csv`, is available upon request from the Investigative Journalism Foundation (contact at info@theijf.org). Once obtained, this file should be placed in `data/raw_data/`. In addition, the 2024 Postal Code Conversion File must be requested either directly from Canada Post or through your Research Institution. For instance, we accessed this file [here](https://borealisdata.ca/dataset.xhtml?persistentId=doi:10.5683/SP3/OHYOJV). This file should be named `raw_PCCF_2024.tab`, and also placed in the `data/raw_data/` folder of this repository. Please note the TAB filteype.
 
 >[!IMPORTANT]
 >This project uses `renv` to manage R package dependencies. Before running anything, open the repository from its root directory (so that `.Rprofile` is sourced) and run `renv::restore()` to install the package versions recorded in `renv.lock`.
