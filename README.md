@@ -6,7 +6,7 @@ Federal political representation in Canada is geographical: one Member of Parlia
 
 ## Acknowledgements
 
-Code and data are available at: https://zenodo.org/records/21708657. We thank Natural Sciences and Engineering Research Council of Canada (NSERC) Alliance Grant (ALLRP 599949 - 24) and Social Sciences and Humanities Research Council (SSHRC) Partnership Grant (895-2025-1002) for financial support. We thank Chris Cochrane for suggesting this area of research, and Martin Allen with his help procuring our dataset. We also thank Ellie Murray, Inessa De Angelis, Mariana Garcia Mejia, Oscar Heath, Sabrina Kreyzerman, and Zane Schwartz for their helpful comments. The primary author (Benedict Cummins-Mburu) completed this project during the summer of 2026, while interning at the Investigative Journalism Foundation.
+Code and data are available at: https://zenodo.org/records/21781460. We thank Natural Sciences and Engineering Research Council of Canada (NSERC) Alliance Grant (ALLRP 599949 - 24) and Social Sciences and Humanities Research Council (SSHRC) Partnership Grant (895-2025-1002) for financial support. We thank Chris Cochrane for suggesting this area of research, and Martin Allen with his help procuring our dataset. We also thank Ellie Murray, Inessa De Angelis, Mariana Garcia Mejia, Oscar Heath, Sabrina Kreyzerman, and Zane Schwartz for their helpful comments. The primary author (Benedict Cummins-Mburu) completed this project during the summer of 2026, while interning at the Investigative Journalism Foundation.
 
 ## File Structure
 
@@ -27,11 +27,11 @@ The repository is structured as follows:
 
 All files under `paper` and `scripts` are available in this repository. However, many of the necessary files under `data` were too large to be shared on GitHub (although the folder structure is complete). See below for instructions on how to access/request these datasets.
 
-![Visualization of the project's data pipeline. Files shown represent all datasets necessary to reproduce our work, and are named accordingly. All files apart from ones marked with red and yellow dots are freely accessible at <https://zenodo.org/records/21708657>. Red-dotted files and their yellow-dotted dependencies are accessible upon request, following the steps outlined in the README.](paper/static_figures/data_pipeline.png)
+![Visualization of the project's data pipeline. Files shown represent all datasets necessary to reproduce our work, and are named accordingly. All files apart from ones marked with red and yellow dots are freely accessible at <https://zenodo.org/records/21781460>. Red-dotted files and their yellow-dotted dependencies are accessible upon request, following the steps outlined in the README.](paper/static_figures/data_pipeline.png)
 
 ## Data Acquisition & Reproducibility
 
-The majority of our data is openly accessible on [Zenodo](https://zenodo.org/records/21708657). If accessing this repository through GitHub, we suggest replacing the `data` folder from this repository with the `data` folder there. When complete, this repository takes up roughly 6.3 GB of space. Optionally, the following raw files may be omitted from download to save space, as they are not strictly necessary to reproduce the analysis (rendered redundant by their cleaned versions):
+The majority of our data is openly accessible on [Zenodo](https://zenodo.org/records/21781460). If accessing this repository through GitHub, we suggest replacing the `data` folder from this repository with the `data` folder there. The Zenodo repository takes up roughly 3.6 GB of space, and when the scripts below are run, the full repository takes up roughly 6.3 GB of space. Optionally, the following raw files may be deleted immedately after download to save space, as they are not strictly necessary to reproduce the analysis (rendered redundant by their cleaned versions):
 
 - `data/raw_data/98-401-X2021.zip` (full 2021 Census; 2.25 GB)
 - `data/raw_data/lfed000b21a_e` (raw electoral district shapefiles; 0.4 GB)
