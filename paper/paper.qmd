@@ -1106,7 +1106,7 @@ donations_data_full %>%
 
 # Supplementary Datasets {#sec-data-supplements}
 
-In this section we describe how we created two custom lookup tables that the cleaning scripts in [Appendix -@sec-pipeline] rely on; one to convert between different levels of spatial hierarchy, and a second to retrieve specific socio-demographic statistics at the census dissemination area. Their place in the full pipeline is illustrated in @fig-data-pipeline.
+In this section we describe how we created two custom lookup tables that the cleaning scripts in [Appendix -@sec-pipeline] rely on; one to convert between different levels of spatial hierarchy, and a second to retrieve specific socio-demographic statistics at the census dissemination area.
 
 ## Spatial Lookup Table {#sec-data-supplements-spatial}
 
