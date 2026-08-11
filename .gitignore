@@ -5,6 +5,7 @@
 .RDataTmp
 .Ruserdata
 .DS_Store
+paper/paper_files
 
 # Large, Required Datafiles (most are accessible on Zenodo; see README).
 data/raw_data/lda000b21a_e
