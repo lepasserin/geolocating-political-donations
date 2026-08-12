@@ -2,7 +2,7 @@
 
 ## Abstract
 
-Federal political representation in Canada is geographical: one Member of Parliament (MP) represents one electoral district. Despite this representational structure, Canadians can legally donate to a host of political entities, regardless of proximity. Using a public dataset from Elections Canada's Open Data on Contributions matched with census data from Statistics Canada, we characterize broad patterns in Canadian out-of-district donation from 2015 to 2024. We find that out-of-district donations form a persistent share of donor-sourced funding to both candidates and district associations, averaging 40% across time, election periods, and party lines. While relatively constant through time, the propensity for out-of-district donation varies substantially across districts, beyond what spatial proximity alone would predict. Districts with higher population density, median household income, educational attainment, and visible minority proportions see higher rates of out-of-district giving, the same traits that predict donor prevalence generally in Canada. Despite its frequency, out-of-district donation in Canada remains largely regionalized; nearly half of donations that leave their district are received by a political entity in a neighbouring one, and few cross provincial lines. These and other findings provide a helpful characterization of this largely undocumented facet of Canadian political financing, and inform further research on effective representation in Canada and other nations with similar representational structures.
+Federal political representation in Canada is geographical: one Member of Parliament (MP) represents one electoral district. Despite this, Canadians can legally donate to a host of political entities, regardless of proximity. Using Elections Canada's Open Data on Contributions matched with census data from Statistics Canada, we characterize broad patterns in Canadian out-of-district donation from 2015 to 2024. We find that out-of-district donations form a persistent share of donor-sourced funding to both candidates and district associations, averaging 40% across time, election periods, and party lines. While relatively constant through time, their propensity varies substantially across districts, beyond what spatial proximity alone would predict. Districts with higher population density, median household income, educational attainment, and visible minority proportions see higher rates of out-of-district giving, the same traits that predict donor prevalence generally. Still, donor-sourced local campaign funding remains largely regionalized; nearly half of donations that leave their district are received by a political entity in a neighbouring one, and few cross provincial lines. These and other findings may inform further research into the geography of local campaign finance, in Canada and other Westminster-style parliamentary democracies.
 
 ## Acknowledgements
 
@@ -30,6 +30,10 @@ All files under `paper` and `scripts` are available in this repository. However,
 ![Visualization of the project's data pipeline. Files shown represent all datasets necessary to reproduce our work, and are named accordingly. All files apart from ones marked with red and yellow dots are freely accessible at <https://zenodo.org/records/21781460>. Red-dotted files and their yellow-dotted dependencies are accessible upon request, following the steps outlined in the README.](paper/static_figures/data_pipeline.png)
 
 ## Data Acquisition & Reproducibility
+
+> [!NOTE]
+> We note that, if the reader is solely interested in accessing our analysis-ready dataset of geolocated political donations to all federal political entities from 2015 to 2024, we refer them to the download instructions and accompanying documentation in `GEOLOCATION.md`.
+
 
 The majority of our data is openly accessible on [Zenodo](https://zenodo.org/records/21781460). If accessing this repository through GitHub, we suggest replacing the `data` folder from this repository with the `data` folder there. The Zenodo repository takes up roughly 3.6 GB of space, and when the scripts below are run, the full repository takes up roughly 6.3 GB of space. Optionally, the following raw files may be deleted immedately after download to save space, as they are not strictly necessary to reproduce the analysis (rendered redundant by their cleaned versions):
 
@@ -61,7 +65,3 @@ These scripts should have created the following datasets:
 - `data/cached_data/localized_donations_data_neighbours.parquet`
 
 Once these additional datasets have been added, `paper.qmd` may be run (the file with most of our analyses), as well as any other script present in the repository.
-
-> [!NOTE]
-> We note that, if the reader is solely interested in accessing our dataset of geolocated political donations ot all federal political entities from 2015 to 2024, they need only run the first three scripts listed above, and look for `donations_data_full.parquet` in the `data/analysis_data/` folder.
-
