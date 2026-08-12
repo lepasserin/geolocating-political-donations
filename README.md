@@ -32,7 +32,7 @@ All files under `paper` and `scripts` are available in this repository. However,
 ## Data Acquisition & Reproducibility
 
 > [!NOTE]
-> We note that, if the reader is solely interested in accessing our analysis-ready dataset of geolocated political donations to all federal political entities from 2015 to 2024, we refer them to the download instructions and accompanying documentation in `GEOLOCATION.md`.
+> If the reader is solely interested in accessing our analysis-ready dataset of geolocated political donations to all federal political entities from 2015 to 2024, we refer them to the download instructions and accompanying documentation in `GEOLOCATION.md`.
 
 
 The majority of our data is openly accessible on [Zenodo](https://zenodo.org/records/21781460). If accessing this repository through GitHub, we suggest replacing the `data` folder from this repository with the `data` folder there. The Zenodo repository takes up roughly 3.6 GB of space, and when the scripts below are run, the full repository takes up roughly 6.3 GB of space. Optionally, the following raw files may be deleted immedately after download to save space, as they are not strictly necessary to reproduce the analysis (rendered redundant by their cleaned versions):
