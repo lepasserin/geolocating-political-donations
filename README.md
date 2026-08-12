@@ -41,7 +41,10 @@ The majority of our data is openly accessible on [Zenodo](https://zenodo.org/rec
 - `data/raw_data/lfed000b21a_e` (raw electoral district shapefiles; 0.4 GB)
 - `data/raw_data/lda000b21a_e` (raw dissemination area shapefiles; 0.4 GB)
 
-The source for our primary dataset, named `raw_data_IJF.csv`, is available upon request from the Investigative Journalism Foundation (contact at info@theijf.org). Once obtained, this file should be placed in `data/raw_data/`. In addition, the 2024 Postal Code Conversion File must be requested either directly from Canada Post or through your Research Institution. For instance, we accessed this file [here](https://borealisdata.ca/dataset.xhtml?persistentId=doi:10.5683/SP3/OHYOJV). This file should be named `raw_PCCF_2024.tab`, and also placed in the `data/raw_data/` folder of this repository. Please note the TAB filteype.
+The source for our primary dataset, named `raw_data_IJF.csv`, is available upon request from the Investigative Journalism Foundation (contact at info@theijf.org). Once obtained, this file should be placed in `data/raw_data/`. In addition, the 2024 Postal Code Conversion File must be requested either directly from Canada Post or through your Research Institution. For instance, we accessed this file [here](https://borealisdata.ca/dataset.xhtml?persistentId=doi:10.5683/SP3/OHYOJV). This file should be renamed to `raw_PCCF_2024.tab`, and also placed in the `data/raw_data/` folder of this repository. Please note the TAB filteype.
+
+>[!IMPORTANT]
+>For both the Zenodo datasets and the dataset acquired from the IJF, make sure you do not rename any of the filenames, as this will break the pipeline.
 
 >[!IMPORTANT]
 >This project uses `renv` to manage R package dependencies. Before running anything, open the repository from its root directory (so that `.Rprofile` is sourced) and run `renv::restore()` to install the package versions recorded in `renv.lock`.
