@@ -27,7 +27,6 @@ crossref:
   chapters: false
 number-sections: true
 bibliography: references.bib
-csl: chicago.csl
 ---
 
 <!--

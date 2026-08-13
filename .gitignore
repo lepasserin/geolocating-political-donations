@@ -1,4 +1,5 @@
 # R and Mac Metadata Files
+.Rproj.user
 .Rhistory
 .Rapp.history
 .RData

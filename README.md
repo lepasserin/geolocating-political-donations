@@ -18,12 +18,14 @@ The repository is structured as follows:
             - `analysis_data`: primary datasets used for analysis.  
             - `cached_data`: specialized datasets (mainly pre-rendered intermediates to save on compute).
 
--   `paper`: files used to generate the paper and it's analyses, including the Quarto document.
-
 -   `scripts`:
             - `processing`: R scripts used to create the intermediary datasets in `data/processed_data/`
             - `cleaning`: R scripts used to clean and validate raw or pre-processed datasets.
             - `other`: R scripts used to carry out supplimentary analyses or to generate compute-heavy visualizations.
+
+-   `paper`: files used to generate the paper and it's analyses, including the Quarto document.
+
+-   `renv`: files to configure your R environment locally. Generated with `renv::init()`.
 
 All files should be placed in the same root folder (can be named whatver you want). Some files in `data` are not directly accessible in this repository. See below for instructions on how to access/request/generate these datasets.
 
