@@ -247,7 +247,7 @@ Angelis, Mariana Garcia Mejia, Oscar Heath, Sabrina Kreyzerman, and Zane
 Schwartz for their helpful comments. Corresponding author:
 \href{mailto:rohan.alexander@utoronto.ca}{\nolinkurl{rohan.alexander@utoronto.ca}}.}}
 \author{Benedict Cummins-Mburu \and Rohan Alexander}
-\date{August 11, 2026}
+\date{August 12, 2026}
 \begin{document}
 \maketitle
 \begin{abstract}
@@ -408,12 +408,12 @@ out-of-district donations and their representational effects. During
 this period, the typical candidate received roughly two-thirds of
 individual donations from out-of-district, a rate reproduced for more
 recent elections by Canes-Wrone and Miller (2022). For both Republican
-and Democrat candidates, a large majority of these donations orginated
+and Democrat candidates, a large majority of these donations originated
 from a shared set of so-called ``donor districts'': a small number of
 wealthy, educated, older, and affluent districts. Notably, these
 socio-demographic predictors are largely identical to those predicting a
 region's donor output in general (Gimpel et al. 2006). Because district
-competitveness strongly predicts the share of donor funding received
+competitiveness strongly predicts the share of donor funding received
 from out-of-district, they argue that this behaviour is primarily
 motivated by partisan advantage. More recent studies on out-of-state
 donations to Senate candidates report out-of-state donation shares over
@@ -426,7 +426,7 @@ contributions have tangible representational effects. Bramlett et al.
 (2011) pair national donation and survey data to show that donors from
 Gimpel et al. (2008)'s ``donor districts'' have a unique political
 ecology distinct from other parts of the country, which likely
-intensifies bias in opinition. Baker (2016) study the 2006-2010
+intensifies bias in opinion. Baker (2016) study the 2006-2010
 Congressional elections, revealing that representatives become less
 responsive to their constituencies' ideological preferences when heavily
 reliant on out-of-district contributions. Canes-Wrone and Miller (2022)
@@ -445,10 +445,10 @@ constituents and national donor bases.
 \subsection{Individual Donations and Campaign Financing in
 Canada}\label{sec-lit-review}
 
-Few studies analyze of out-of-district donation shares to Canadian
+Few studies analyze out-of-district donation shares to Canadian
 parliamentary candidates\footnote{A notable counter-example is Besco and
   Tolley (2022), discussed later in this section.}, or electoral
-district associaitions (EDAs). We propose three potential reasons why.
+district associations (EDAs). We propose three potential reasons why.
 Most obviously, U.S. campaign financing moves vastly more money, and
 sustains a larger research community which has recently been interested
 in the nationalization of campaign finance. Second, location-disclosed
@@ -465,7 +465,7 @@ are often duplicated since big databases often merge Annual, Quarterly,
 and Electoral financial returns (Elections Canada 2025a).
 
 This lack of research is not, however, a signal that direct individual
-donations are an unimortant piece of Canadian campaign financing.
+donations are an unimportant piece of Canadian campaign financing.
 District campaigns are run by candidates, with financial support from
 their electoral district associations\footnote{Non-partisan
   (i.e.~independent) candidates do not have EDAs, and are therefore
@@ -486,7 +486,7 @@ contributions (limited to \$1775 per contributor\footnote{This limit
 unlimited transfers from their affiliated central party, and unlimited
 transfers to the EDA from other EDAs (Cross et al. 2020; \emph{Canada
 Elections Act} 2000). While in principle this funding scheme allows
-local enitites to source most of it's funds directy from the central
+local entities to source most of its funds directly from the central
 party, in practice, this is rarely the case. For instance, during the
 2015 general election period, central party transfers supplied roughly
 one-quarter of campaign funding\footnote{Similar proportions were found
@@ -541,7 +541,7 @@ individual contributions to federal political entities\footnote{Donations
   national parties, EDAs, leadership contestants, nomination
   contestants, and electoral candidates are covered by the \emph{Act}.}
 valued at over \$20 be recorded by the recipient, shared with the
-government, and made publicly accesible (Elections Canada 2026d). In
+government, and made publicly accessible (Elections Canada 2026d). In
 addition, donors whose cumulative sum of contributions exceeds \$200 are
 required to disclose their full name and address, including their postal
 code. For all contributions, Elections Canada also records the receiving
@@ -606,7 +606,7 @@ similar studies on donor demography (Gimpel et al. 2006, 2008; Garnett
 2024). Further, ethnicities were disaggregated since previous Canadian
 research has found that some minority groups such as South Asians donate
 at much higher rates than others (Besco and Tolley 2022). We again used
-Postal Code Coversion Files to match donor postal codes to the DAs of
+Postal Code Conversion Files to match donor postal codes to the DAs of
 the 2021 Census, and to group DAs into FEDs\footnote{Dissemination areas
   may straddle multiple FEDs.
   Appendix~\ref{sec-data-supplements-spatial} discusses how these cases
@@ -615,9 +615,9 @@ district level.
 
 As a final step, each district was assigned a competitiveness score.
 This was calculated as the average margin of victory of elected MPs
-accross the 42nd, 43rd, and 44th general elections. Data on electoral
+across the 42nd, 43rd, and 44th general elections. Data on electoral
 outcomes was sourced from Open Government Canada (Treasury Board of
-Canada Secretariat 2026), and it's use in our analysis is detailed in
+Canada Secretariat 2026), and its use in our analysis is detailed in
 further sections. A detailed walkthrough of the full data pipeline, from
 the files available for download on Canadian government websites to the
 core datasets used for analysis can be found in
@@ -631,11 +631,11 @@ using the R statistical software (R Core Team 2025).
 Donations}\label{sec-data-summaries-situation}
 
 We first provide summaries of all donations\footnote{From
-  Chapter~\ref{sec-data} onwards, the terms ``donation'' and
+  Section~\ref{sec-data} onwards, the terms ``donation'' and
   ``contribution'' are used interchangeably and implicitly refer to
   individual contributions above \$200 that were successfully
   donor-geolocated.} during our study period, to help situate further
-analysis of out-of-district donations to localized entites.
+analysis of out-of-district donations to localized entities.
 Table~\ref{tbl-data-summaries-situation} breaks down donations by
 recipient type. Parties and leadership contestants received the majority
 (80.8\%) of contributions during our study period. Among donations
@@ -685,7 +685,7 @@ Appendix~\ref{sec-additional-data-summaries}.
 
 \caption{\label{tbl-data-summaries-situation}Breakdown of contributions
 over \$200 to major Canadian federal political entities, from 2015 to
-2024. We note that by-electoral. Nomination contestants and by-electoral
+2024. We note that by-election nomination contestants and by-electoral
 candidates are excluded from this Table.}
 
 \centering{
@@ -774,8 +774,8 @@ entire study period, including during writ periods\footnote{Roughly
 \begin{table}
 
 \caption{\label{tbl-data-summaries-ood-rate-overall}Proportion of
-contributions over \$200 to candidates (exluding by-elections) and
-district associations that were recevied from outside their district,
+contributions over \$200 to candidates (excluding by-elections) and
+district associations that were received from outside their district,
 from 2015 to 2024. The number and total value of contributions received
 by these entities is reported for reference.}
 
@@ -813,8 +813,8 @@ District Association & 108,619 & \$63,354 & 43.8\% & 47.8\% \\
 \begin{table}
 
 \caption{\label{tbl-data-summaries-ood-rate-candidates}Proportion of
-contributions to candidates (exluding by-elections) over \$200 that were
-out-of-district (OOD) over the three general election periods that
+contributions to candidates (excluding by-elections) over \$200 that
+were out-of-district (OOD) over the three general election periods that
 occurred during our study period. Raw and value-weighted proportions are
 reported, along with the overall number of contributions (in- and
 out-of-district) for reference.}
@@ -957,7 +957,7 @@ steeply as that target distance increases, becoming extremely rare past
 1000km. Two exceptions to this rule are donations which travelled around
 2700 and 3400 kilometres (orange and blue lines in
 Figure~\ref{fig-ood-distance-distribution}) respectively, which roughly
-demarkate the distances between Toronto and Calgary, and between Toronto
+demarcate the distances between Toronto and Calgary, and between Toronto
 and Vancouver. Overall, these summaries suggest that out-of-district
 donations are largely regionalized, and, for the most part, contained
 within their province of origin. Those few donations that breach
@@ -1175,8 +1175,8 @@ singularities in the response.
 
 The covariates included in this model were the same environment
 variables chosen for the individual-level model, aggregated at the
-district level\footnote{As with the individual-level model, alternative
-  model specifications with where disaggregated region and visible
+district level\footnote{As with the individual-level model, an
+  alternative model specification with disaggregated regions and visible
   minority proportion is shown in
   Appendix~\ref{sec-alternate-model-specifications}.}. We also included
 the same district-level competitiveness metric used in the individual
@@ -1248,7 +1248,7 @@ summaries of out-of-district propensity (which were used to inform the
 model discussed here). Section~\ref{sec-data-summaries-ood-network}
 briefly characterizes the funding network formed by out-of-district
 donations. Both summary-based and model-based findings are discussed
-together in Chapter~\ref{sec-discussion}.
+together in Section~\ref{sec-discussion}.
 
 Regression results from the individual- and district-level models are
 presented in Table~\ref{tbl-results-model-individual} and
@@ -1514,17 +1514,17 @@ In this paper, we used publicly available political financing data to
 document the extent and spatio-temporal trends in Canadian
 out-of-district donations from 2015 to 2024. Further, we identify
 environmental characteristics associated with out-of-district
-propensity, and quantify the reach of these donations. a first glimpse
-of the spatial network formed by out-of-district donations. Our findings
-are also contextualized within the broader scope of all Canadian federal
-political contributions over \$200 during this time (see
-Section~\ref{sec-data-summaries-situation}). We present and discuss our
-major findings here, along with some notable study limitations.
+propensity, quantify the reach of these donations, and provide an
+initial look at the spatial network formed by out-of-district donations.
+Our findings are also contextualized within the broader scope of all
+Canadian federal political contributions over \$200 during this time
+(see Section~\ref{sec-data-summaries-situation}). We present and discuss
+our major findings here, along with some notable study limitations.
 
 During our study period, out-of-district donations made up a large share
 of all donations received by localized political entities (electoral
-candiates and district associations). Naturally, donation rates to these
-two political entities varied through time; campaign funding was
+candidates and district associations). Naturally, donation rates to
+these two political entities varied through time; campaign funding was
 restricted to election periods, and donations to district associations
 swelled during the holiday season and electoral cycles, bringing in
 nearly five times more contributions compared to baseline rates. The
@@ -1546,7 +1546,7 @@ parties, and between localized entities, we observed drastic differences
 in rates from district-to-district. For example, out-of-district
 donation shares to district associations over the entire studied decade
 were as little as 5\% for some districts (e.g.~Niagara Falls), and as
-high as 75\% in others (e.g.~Trinity --- St.~Paul's). While we might
+high as 75\% in others (e.g.~Toronto --- St.~Paul's). While we might
 expect passively higher out-of-district rates solely due to the spatial
 proximity of other districts, empirical variation in rates of
 out-of-district giving (aggregated at the district level) far exceeded
@@ -1614,7 +1614,7 @@ both Republican and Democrat senators received, respectively, 60\% and
 49\% of their donations from out-of-state during election periods
 (Sievert and Mathiasen 2023). The spatial proximity of U.S. states
 relative to Canadian provinces and territories may explain some of this
-difference, but it's scale speaks to a more fundamental difference
+difference, but its scale speaks to a more fundamental difference
 between the geographical donor bases of each country. The typical
 localized political entity in Canada sources donor-based funding largely
 from within their own province. Further research on this matter should
@@ -1624,7 +1624,7 @@ Figure~\ref{fig-data-summaries-ood-network-senders}.
 
 Our findings are accompanied by some important limitations. Following
 Gimpel et al. (2008) and Garnett (2024), donations under \$200 (34\% of
-the total amount sent to localized entities) were exlcluded from our
+the total amount sent to localized entities) were excluded from our
 study. The majority (75\%) of exclusions were donations whose donors did
 not disclose their location. Comparisons between these contributions and
 those used in our study (see Appendix~\ref{sec-missing-data}) showed
@@ -1656,7 +1656,7 @@ More conceptually, studying out-of-district contributions meant
 restricting our focus to contributions sent directly from donors to
 localized political entities, precluding other essential pathways that
 govern campaign finance broadly. The most important of these excluded
-funding pathways are contributions ot national parties and intra-party
+funding pathways are contributions to national parties and intra-party
 transfers. As shown in Section~\ref{sec-data-summaries}, most
 (\textasciitilde{} 80\%) contributions above \$200 are received by
 national parties or leadership contestants, and roughly 50\% of the time
@@ -1726,11 +1726,11 @@ contribution being recorded. For loans, sums reported during an Annual
 filing might appear in a Quarterly report filed in the same year. In
 such cases, Annual records were preserved and Quarterly records were
 discarded. For all other types of contributions, only true duplicates
-(i.e.~rows with identical entries identical in every field) were
-discarded. Additionally, some entries represented aggregated sums of
-contributions from anonymous donors. For these, Elections Canada reports
-a cumulative total per recipient Annually and Quarterly, meaning that
-the same aggregate sum could appear twice in the same year. To avoid
+(i.e.~rows with identical entries in every field) were discarded.
+Additionally, some entries represented aggregated sums of contributions
+from anonymous donors. For these, Elections Canada reports a cumulative
+total per recipient Annually and Quarterly, meaning that the same
+aggregate sum could appear twice in the same year. To avoid
 double-counting these, only the largest reported aggregate sum per
 recipient per year was retained. Finally, a few smaller cleaning
 procedures were applied to the columns themselves;
@@ -1763,7 +1763,7 @@ IJF Column & EC Source Column(s) & Notes \\
 donor\_full\_name & Contributor name ; Contributor last name ; Contributor first name ; Contributor middle initial & Concatenated source columns, delimited by commas. \\
 donor\_type & Contributor type & No changes from source. \\
 donor\_location & Contributor City ; Contributor Province ; Contributor Postal code & Concatenated source columns, delimited by commas. \\
-donation\_date & Contribution Received date ; Fiscal/Election date & Used `Contribution Received date` when available, filled with Fiscal/Election date otherwise. Flagged when imputation occured. Removed invalid dates. \\
+donation\_date & Contribution Received date ; Fiscal/Election date & Used `Contribution Received date` when available, filled with Fiscal/Election date otherwise. Flagged when imputation occurred. Removed invalid dates. \\
 electoral\_event & Electoral event & Donations to leadership and nomination contestants had NA entries here. Otherwise, no changes from source. \\
 amount\_monetary & Monetary amount & No changes from source. \\
 amount\_non\_monetary & Non-Monetary amount & No changes from source. \\
@@ -1867,7 +1867,7 @@ removed entirely, to simplify analysis. 3\% of donations (7\% of summed
 total) received during general election periods had receipt dates
 outside the stated period (usually dated after the writ period had
 ended, not before it started). These were removed when fitting our
-regression models, but kept in most descriptive visulaizations.
+regression models, but kept in most descriptive visualizations.
 
 As mentioned in the main text, our study considers only donations above
 \$200. This discards 45\% of the total contributed amount during our
@@ -1890,7 +1890,7 @@ Table~\ref{tbl-IJF-to-donations-data-schema}.
 \caption{\label{tbl-IJF-to-donations-data-schema}Primary variables used
 in our study, with examples and descriptions. Although not shown,
 additional information used such as census variables or geographic
-attributes of districts are easily retrived by relating a donor's
+attributes of districts are easily retrieved by relating a donor's
 dissemination area or district to custom-made lookup tables.}
 
 \centering{
@@ -2323,7 +2323,7 @@ Specifications}\label{sec-alternate-model-specifications}
 
 Here we present the results of six alternate out-of-district propensity
 models, mainly fit to assess the robustness of our results in
-Chapter~\ref{sec-results} to other, resonable model specifications.
+Section~\ref{sec-results} to other, reasonable model specifications.
 
 Table~\ref{tbl-results-model-individual-EDA} shows results from an
 individual-level model with the same covariates, fit using only
@@ -2342,10 +2342,10 @@ an individual-level model with the same covariates, fit using only
 donations received by candidates (i.e.~excluding those received by
 district associations). We observe similar coefficient and overall model
 fit. Table~\ref{tbl-results-model-individual-candidiate-competitive}
-shows results from a slighly more elaborate version of this model, that
+shows results from a slightly more elaborate version of this model, that
 includes the election period in which the donation was received, as well
 as how competitive the donor's district was during that period. Both of
-these more specific covariates were significantly assocated with
+these more specific covariates were significantly associated with
 out-of-district propensity, but did not affect the rough magnitudes and
 significances anywhere else in the model.
 
@@ -2360,7 +2360,7 @@ positively associated with out-of-district donation at the individual
 level. However, only the proportion of South Asian, Black, and Chinese
 inhabitants of a district was associated with it's share of donations
 that were bound for other districts. Further, disaggregation greatly
-increased the number of ocefficients used to fit the model, for marginal
+increased the number of coefficients used to fit the model, for marginal
 gains in the model's explanatory power. For example, the disaggregated
 district level model has over double the number of coefficients compared
 to the one included in the main text, for only a single percentage
@@ -2372,7 +2372,7 @@ variables were kept in the main models at both levels.
 \caption{\label{tbl-results-model-individual-EDA}Results from a logistic
 regression model where the outcome is whether or not an individual
 donation was sent out-of-district. Only donations sent to district
-assocaitions are considered. The reference party is the Conservative
+associations are considered. The reference party is the Conservative
 Party, and the reference region is Ontario. Estimates are bolded when
 significant at the alpha = 0.05 level.}
 
