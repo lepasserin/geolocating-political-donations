@@ -6,7 +6,7 @@ Federal political representation in Canada is geographical: one Member of Parlia
 
 ## Acknowledgements
 
-Code and data are available at: https://zenodo.org/records/21781460. We thank Natural Sciences and Engineering Research Council of Canada (NSERC) Alliance Grant (ALLRP 599949 - 24) and Social Sciences and Humanities Research Council (SSHRC) Partnership Grant (895-2025-1002) for financial support. We thank Chris Cochrane for suggesting this area of research, and Martin Allen with his help procuring our dataset. We also thank Ellie Murray, Inessa De Angelis, Mariana Garcia Mejia, Oscar Heath, Sabrina Kreyzerman, and Zane Schwartz for their helpful comments. The primary author (Benedict Cummins-Mburu) completed this project during the summer of 2026, while interning at the Investigative Journalism Foundation.
+Code and data are available at: <https://zenodo.org/records/21921990>. We thank Natural Sciences and Engineering Research Council of Canada (NSERC) Alliance Grant (ALLRP 599949 - 24) and Social Sciences and Humanities Research Council (SSHRC) Partnership Grant (895-2025-1002) for financial support. We thank Chris Cochrane for suggesting this area of research, and Martin Allen with his help procuring our dataset. We also thank Ellie Murray, Inessa De Angelis, Mariana Garcia Mejia, Oscar Heath, Sabrina Kreyzerman, and Zane Schwartz for their helpful comments. The primary author (Benedict Cummins-Mburu) completed this project during the summer of 2026, while interning at the Investigative Journalism Foundation.
 
 ## File Structure
 
