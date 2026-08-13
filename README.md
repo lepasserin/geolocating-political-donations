@@ -18,18 +18,18 @@ The repository is structured as follows:
             - `analysis_data`: primary datasets used for analysis.  
             - `cached_data`: specialized datasets (mainly pre-rendered intermediates to save on compute).
 
--   `paper`: files used to generate the paper, including the Quarto document, the bibliography (.bib) file, and the renderted PDF of the paper.
+-   `paper`: files used to generate the paper and it's analyses, including the Quarto document.
 
 -   `scripts`:
             - `processing`: R scripts used to create the intermediary datasets in `data/processed_data/`
             - `cleaning`: R scripts used to clean and validate raw or pre-processed datasets.
             - `other`: R scripts used to carry out supplimentary analyses or to generate compute-heavy visualizations.
 
-All files under `paper` and `scripts` are available in this repository. However, many of the necessary files under `data` were too large to be shared on GitHub (although the folder structure is complete). See below for instructions on how to access/request these datasets.
+Some files in `data` are not directly accessible in this repository. See below for instructions on how to access/request/generate these datasets.
 
 ![](paper/static_figures/data_pipeline.png)
 
-*Visualization of the project's data pipeline. Files (arrows) displayed represent all datasets (scripts) necessary to reproduce our work. Red-dotted files and their yellow-dotted dependencies are accessible upon request, following the steps outlined in the README. All other files are directly accessible on [Zenodo](https://zenodo.org/records/21781460).*
+*Visualization of the project's data pipeline. Files (arrows) displayed represent all datasets (scripts) necessary to reproduce our work. Red-dotted files and their yellow-dotted dependencies are accessible upon request, following the steps outlined in the README. All other files are directly accessible on [Zenodo](https://zenodo.org/records/21921990).*
 
 ## Data Acquisition & Reproducibility
 
@@ -37,7 +37,7 @@ All files under `paper` and `scripts` are available in this repository. However,
 > If the reader is only interested in accessing our analysis-ready dataset of geolocated political donations to all federal political entities from 2015 to 2024, scripts 4. and 5. below don't need to be run, saving roughly 10 minutes. This file is called `donations_data_full.parquet` and lives in `data/analysis_data/`.
 
 
-The majority of our data is openly accessible on [Zenodo](https://zenodo.org/records/21781460). If accessing this repository through GitHub, we suggest replacing the `data` folder from this repository with the `data` folder there. The Zenodo repository takes up roughly 3.6 GB of space, and when the scripts below are run, the full repository takes up roughly 6.3 GB of space. Optionally, the following raw files may be deleted immedately after download to save space, as they are not strictly necessary to reproduce the analysis (rendered redundant by their cleaned versions):
+The majority of our data is openly accessible on [Zenodo](https://zenodo.org/records/21921990). If accessing this repository through GitHub, we suggest replacing the `data` folder from this repository with the `data` folder there. The Zenodo repository takes up roughly 3.6 GB of space, and when the scripts below are run, the full repository takes up roughly 6.3 GB of space. Optionally, the following raw files may be deleted immedately after download to save space, as they are not strictly necessary to reproduce the analysis (rendered redundant by their cleaned versions):
 
 - `data/raw_data/98-401-X2021.zip` (full 2021 Census; 2.25 GB)
 - `data/raw_data/lfed000b21a_e` (raw electoral district shapefiles; 0.4 GB)
