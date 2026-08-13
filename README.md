@@ -27,7 +27,9 @@ The repository is structured as follows:
 
 All files under `paper` and `scripts` are available in this repository. However, many of the necessary files under `data` were too large to be shared on GitHub (although the folder structure is complete). See below for instructions on how to access/request these datasets.
 
-![Visualization of the project's data pipeline. Files shown represent all datasets necessary to reproduce our work, and are named accordingly. All files apart from ones marked with red and yellow dots are freely accessible at <https://zenodo.org/records/21781460>. Red-dotted files and their yellow-dotted dependencies are accessible upon request, following the steps outlined in the README.](paper/static_figures/data_pipeline.png)
+![](paper/static_figures/data_pipeline.png)
+
+*Visualization of the project's data pipeline. Files (arrows) displayed represent all datasets (scripts) necessary to reproduce our work. Red-dotted files and their yellow-dotted dependencies are accessible upon request, following the steps outlined in the README. All other files are directly accessible on [Zenodo](https://zenodo.org/records/21781460).*
 
 ## Data Acquisition & Reproducibility
 
