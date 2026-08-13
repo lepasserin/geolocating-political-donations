@@ -2,7 +2,7 @@
 
 ## Abstract
 
-Federal political representation in Canada is geographical: one Member of Parliament (MP) represents one electoral district. Despite this, Canadians can legally donate to a host of political entities, regardless of proximity. Using Elections Canada's Open Data on Contributions matched with census data from Statistics Canada, we characterize broad patterns in Canadian out-of-district donation from 2015 to 2024. We find that out-of-district donations form a persistent share of donor-sourced funding to both candidates and district associations, averaging 40% across time, election periods, and party lines. While relatively constant through time, their propensity varies substantially across districts, beyond what spatial proximity alone would predict. Districts with higher population density, median household income, educational attainment, and visible minority proportions see higher rates of out-of-district giving, the same traits that predict donor prevalence generally. Still, donor-sourced local campaign funding remains largely regionalized; nearly half of donations that leave their district are received by a political entity in a neighbouring one, and few cross provincial lines. These and other findings may inform further research into the geography of local campaign finance, in Canada and other Westminster-style parliamentary democracies.
+Federal representation in Canada is structurally geographical: one Member of Parliament (MP) represents one electoral district. Despite this, Canadians can legally donate to a number of political entities, regardless of proximity. Using Elections Canada's Open Data on Contributions matched with socio-demographic data from the Canadian Census, we characterize broad patterns in Canadian out-of-district donation from 2015 to 2024. We find that out-of-district donations form a persistent share of donor-sourced funding to both candidates and district associations, averaging 40% across time, election periods, and parties. While relatively constant through time, the propensity for out-of-district donation varied substantially across districts, and more than what we would expect from their spatial arrangement alone. Districts with higher population density, median household income, educational attainment, and visible minority proportions see higher rates of out-of-district giving, the same traits that predict donor prevalence generally. Still, donor-sourced local campaign funding remains largely regionalized; nearly half of donations that leave their district are received by a political entity in a neighbouring one, and few cross provincial lines. These and other findings may inform further research into the geography of local campaign finance, in Canada and other Westminster-style parliamentary democracies.
 
 ## Acknowledgements
 
@@ -25,7 +25,7 @@ The repository is structured as follows:
             - `cleaning`: R scripts used to clean and validate raw or pre-processed datasets.
             - `other`: R scripts used to carry out supplimentary analyses or to generate compute-heavy visualizations.
 
-Some files in `data` are not directly accessible in this repository. See below for instructions on how to access/request/generate these datasets.
+All files should be placed in the same root folder (can be named whatver you want). Some files in `data` are not directly accessible in this repository. See below for instructions on how to access/request/generate these datasets.
 
 ![](paper/static_figures/data_pipeline.png)
 
@@ -43,7 +43,7 @@ The majority of our data is openly accessible on [Zenodo](https://zenodo.org/rec
 - `data/raw_data/lfed000b21a_e` (raw electoral district shapefiles; 0.4 GB)
 - `data/raw_data/lda000b21a_e` (raw dissemination area shapefiles; 0.4 GB)
 
-The source for our primary dataset, named `raw_data_IJF.csv`, is available upon request from the Investigative Journalism Foundation (contact at info@theijf.org). Once obtained, this file should be placed in `data/raw_data/`. In addition, the 2024 Postal Code Conversion File must be requested either directly from Canada Post or through your Research Institution. For instance, we accessed this file [here](https://borealisdata.ca/dataset.xhtml?persistentId=doi:10.5683/SP3/OHYOJV). This file should be renamed to `raw_PCCF_2024.tab`, and also placed in the `data/raw_data/` folder of this repository. Please note the TAB filteype.
+Our primary dataset, named `raw_data_IJF.csv`, is available upon request from the Investigative Journalism Foundation (contact at info@theijf.org). Once obtained, this file should be placed in `data/raw_data/`. In addition, the 2024 Postal Code Conversion File must be requested either directly from Canada Post or through your Research Institution. For instance, we accessed this file [here](https://borealisdata.ca/dataset.xhtml?persistentId=doi:10.5683/SP3/OHYOJV). This file should be renamed to `raw_PCCF_2024.tab`, and also placed in the `data/raw_data/` folder of this repository. Please note the TAB filteype.
 
 >[!IMPORTANT]
 >For both the Zenodo datasets and the dataset acquired from the IJF, make sure you do not rename any of the filenames, as this will break the pipeline.
