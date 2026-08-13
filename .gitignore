@@ -8,7 +8,7 @@
 .DS_Store
 paper/paper_files
 
-# Large, Required Datafiles (most are accessible on Zenodo; see README).
+# Datafiles (most are accessible on Zenodo; see README).
 data/raw_data/lda000b21a_e
 data/raw_data/lfed000b21a_e
 data/raw_data/98-401-X2021.zip
@@ -32,3 +32,4 @@ data/cached_data/province_shapes.rds
 
 # Other Files (only kept locally, for personal reference)
 other/*
+paper/paper.tex
