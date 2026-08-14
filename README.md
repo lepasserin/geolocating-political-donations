@@ -12,20 +12,20 @@ Code and data are available at: <https://zenodo.org/records/21921990>. We thank 
 
 The repository is structured as follows:
 
--   `data`:
-  - `raw_data`: datasets as they were downloaded from their respective sources.
-  - `processed_data`: intermediary pipeline datasets.
-  - `analysis_data`: primary datasets used for analysis.
-  - `cached_data`: specialized datasets (mainly pre-rendered intermediates to save on compute).
-
--   `scripts`:
-            - `processing`: R scripts used to create the intermediary datasets in `data/processed_data/`
-            - `cleaning`: R scripts used to clean and validate raw or pre-processed datasets.
-            - `other`: R scripts used to carry out supplimentary analyses or to generate compute-heavy visualizations.
-
--   `paper`: files used to generate the paper and it's analyses, including the Quarto document.
-
--   `renv`: files to configure your R environment locally. Generated with `renv::init()`.
+```
+.
+├── data/                   # all project datasets
+│   ├── raw_data/           # datasets as downloaded from their respective sources
+│   ├── processed_data/     # intermediary pipeline datasets
+│   ├── analysis_data/      # primary datasets used for analysis
+│   └── cached_data/        # pre-rendered intermediates, to save on compute
+├── scripts/                # all R scripts
+│   ├── processing/         # creates the intermediary datasets in data/processed_data/
+│   ├── cleaning/           # cleans and validates raw or pre-processed datasets
+│   └── other/              # supplementary analyses and compute-heavy visualizations
+├── paper/                  # files used to generate the paper and its analyses, incl. the Quarto document
+└── renv/                   # local R environment config, generated with renv::init()
+```
 
 All files should be placed in the same root folder (can be named whatver you want). Some files in `data` are not directly accessible in this repository. See below for instructions on how to access/request/generate these datasets.
 
