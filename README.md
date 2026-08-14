@@ -13,10 +13,10 @@ Code and data are available at: <https://zenodo.org/records/21921990>. We thank 
 The repository is structured as follows:
 
 -   `data`:
-            - `raw_data`: datasets as they were downloaded from their respective sources.
-            - `processed_data`: intermediary pipeline datasets.
-            - `analysis_data`: primary datasets used for analysis.  
-            - `cached_data`: specialized datasets (mainly pre-rendered intermediates to save on compute).
+  - `raw_data`: datasets as they were downloaded from their respective sources.
+  - `processed_data`: intermediary pipeline datasets.
+  - `analysis_data`: primary datasets used for analysis.
+  - `cached_data`: specialized datasets (mainly pre-rendered intermediates to save on compute).
 
 -   `scripts`:
             - `processing`: R scripts used to create the intermediary datasets in `data/processed_data/`
