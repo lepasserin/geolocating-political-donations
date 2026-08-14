@@ -1,6 +1,6 @@
 # Characterizing Canadian Out-of-district Political Donations from 2015 to 2024
 
-## Abstract
+## Project Overview
 
 Federal representation in Canada is structurally geographical: one Member of Parliament (MP) represents one electoral district. Despite this, Canadians can legally donate to a number of political entities, regardless of proximity. Using Elections Canada's Open Data on Contributions matched with socio-demographic data from the Canadian Census, we characterize broad patterns in Canadian out-of-district donation from 2015 to 2024. We find that out-of-district donations form a persistent share of donor-sourced funding to both candidates and district associations, averaging 40% across time, election periods, and parties. While relatively constant through time, the propensity for out-of-district donation varied substantially across districts, and more than what we would expect from their spatial arrangement alone. Districts with higher population density, median household income, educational attainment, and visible minority proportions see higher rates of out-of-district giving, the same traits that predict donor prevalence generally. Still, donor-sourced local campaign funding remains largely regionalized; nearly half of donations that leave their district are received by a political entity in a neighbouring one, and few cross provincial lines. These and other findings may inform further research into the geography of local campaign finance, in Canada and other Westminster-style parliamentary democracies.
 
