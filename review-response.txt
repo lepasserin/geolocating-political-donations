@@ -1,0 +1,138 @@
+We have now received assessments of your manuscript. We are grateful to the reviewers for providing detailed and constructive comments. All are quite positively disposed to this work, and we encourage you to revise your manuscript, taking into account these assessments, and resubmit it to the Journal. Normally, we send revised manuscripts back to the original assessors.
+
+Please note that revised manuscripts should conform to CJPS style. For your information, the Journal's styleguide is available online at https://www.editorialmanager.com/cjps-rcsp/.
+
+  - not yet done
+
+When you submit your revised manuscript, please be sure to include a detailed cover letter that explicitly indicates where and how you have made your changes in response to the concerns of each reviewer separately. All reviewers will receive a copy of your comments when the manuscript is sent to them for re-review.
+
+  - not yet done
+
+I will draw your attention, in particular, to Reviewer 3's advice, which provides some suggestions to help augment the contribution of the manuscript. Although it is beyond the ambit of a revise and resubmit to require the collection of new data, there are suggestions within Reviewer 3's comments that I think could be undertaken using available data. You need not take up all of these ideas, but providing some insights as to "why" OOD donations occur would strengthen the manuscript's impact.
+
+  - not yet done
+
+Editorially, I would ask you to give some thought to the framing of the manuscript. In places, it seems to be have been written for an American journal. The motivating question is framed as coming from U.S. literature. This is okay, but even the discussion is largely framed around the U.S. literature. For publication in the CJPS, you want to consider why these results matter for Canada, in and of themselves, not simply in relation to the U.S. See also on p. 34 where you describe Canada as "there" not "here"!
+
+  - Changed "There" to "Here" in the Discussion sentence on Canada's social demography.
+  - Added one sentence to the Discussion regionalization paragraph on what the result means for local representation in Canada.
+  - Broader reframing: not yet done
+
+You should be aware that the space in the Journal is limited given its position as the flagship publication of the Canadian Political Science community. Therefore, revisions are normally accepted only for the three month period following the date of communication from the editor concerning the revise and resubmit decision.
+
+As you revise your manuscript, we ask that you consider citing articles published in the Canadian Journal of Political Science. However, only do so if you think that the articles are relevant or helpful for your paper.
+
+  - Added citations to Eagles 1992, Currie-Wood 2020, Cochrane and Cowan 2026, Armstrong, Lucas and Taylor 2022, Taylor, Lucas, Kirby and Hewitt 2023, Sevi 2021, Johnson, Tolley, Thomas and Bodet 2021, and Baisley and Albaugh 2025.
+
+In keeping with the Journal's commitment to EDID, we also urge you to consider equity in citation. To proactively make space for ways of knowing that have systemically been marginalized in our discipline, the Journal no longer includes references in the word count limit.
+
+  - not yet done
+
+We hope that you will decide to carry out the revisions requested by the reviewers, and resubmit your work for another review.
+
+Any questions or concerns you may have can be addressed to cjps@cpsa-acsp.ca.
+
+Thank you for your interest in publishing in the Canadian Journal of Political Science.
+
+Sincerely,
+
+Erin Tolley, Ph.D.
+Associate Editor
+Canadian Journal of Political Science
+
+
+REVIEWER #1
+-----------
+
+Reviewer #1: This is a fantastic piece of research on an understudied topic in political financing in Canada. Because we know that political geography plays such an important role in donations in Canada, I was thrilled to see scholars tackling this important question with such rigorous methods. The paper was clearly explained, well-researched, and I most appreciated that the data (and its limitations) were so thoughtfully used. This is not easy in the Canadian context using the Political Financing Database and Census data. Each time I had a potential query about how the authors dealt with a specific issue with these data, it was clearly explain in text or in the Appendix.
+
+I have a couple of very small suggestions for this paper before publication:
+
+- The Appendix is quite long and may be better suited for an online appendix, rather than being published alongside the piece.
+
+  - not yet done
+
+- I found the wording in the paragraph about 'distance' for donors a bit odd  ex. "distances travelled" and "breach provincial boundaries" Stylistically, it may make sense to revisit how this is explained, since it conjures images of dollar bills flying across provincial borders. I would also just check if there is a more rigorous way to test that the two 'bumps' in donation distances are in fact between the two cities in question and could not be explained otherwise. This was the only place I was not presented with enough data to be convinced of a (albeit tentative) assertion.
+
+  - Reworded the distance paragraph, its footnote, the Figure 4 caption, and the Figure 4 axis label: "distances travelled" is now "donor-recipient distances" and "breach" is now "cross".
+  - Text now calls the 2700 km line red, matching the figure.
+  - Added a sentence stating that the Toronto-Calgary and Toronto-Vancouver attribution was not formally tested.
+  - Rigorous test of the two bumps: not yet done
+
+- Just a note that for those printing the article, the colours do not appear in Figure 4, so another way to delineating between colours (ex. patterns) may make sense.
+
+  - Figure 4 vertical lines now differ by line type
+
+- I wonder if it would be worth running the models for candidates and districts completely separately, since those who chose to donate to a specific candidate they know somewhere else vs. a party may be quite interesting.
+
+  - Separate candidate-only and EDA-only models are in Appendix D and we have added a sentence at the start of Results to direct readers there
+
+- I might be specific in the conclusion, rather than use the "holiday season" as a time marker
+
+  - We have changes this.
+
+- There are a couple of places missing indents (ex. in the Conclusion and one spot in the Appendix)
+
+  - not yet done
+
+Otherwise, I am looking forward to seeing this published and will undoubtedly cite it in my own work!
+
+
+REVIEWER #2
+-----------
+
+Reviewer #2: I am very grateful to have been given a chance to review this paper. This represents a major contribution to the literature on campaign donations and campaign finance. Once this is published, I will be citing this in my own scholarship. The quality of the data is impressive, the manuscript is very clear and well written, and the analysis is meticulous, well conceived, and properly executed. I considered submitting a recommendation to "accept" as is, but I do have a few suggestions for minor revisions. I don't anticipate it would take more than a couple of hours to resolve my concerns .
+
+(1) This paper will be of interest to students of US elections and campaign finance. For those unfamiliar with Canadian politics, what is a "district association"? How does this relate to "localized entities"? A simple explanation of a sentence or two should suffice.
+
+  - Added two sentences to the Introduction defining electoral district associations and the term localized entities.
+
+(2) A bit of caution about interpreting the results of the Individual-level model. Here, the DV is whether or not a donation was sent out-of-district. Donations are linked to a specific individual, about whom we have very limited information. Instead the author(s) use district-level socio-economic and demographic data. I'm OK with this, but please make clear that this approach means that you are drawing inferences about individual behavior based on the district as a whole. (Forgive me if my interpretation of this analysis is flawed.) As correctly noted in the discussion section, this approach may explain why we observe donations coming from districts with larger visible minority populations are more likely to flow out-of-state. Please be clear about the implications of this finding. On the one hand, as mentioned in the review, some minority groups actually do have a higher propensity to give, but given the correlation between population density and visible minority
+populations, the study cannot provide definitive evidence that individuals from visible minority groups are actually giving out of district at higher rates. Nevertheless, it is an interesting finding that is worth further study in the future.
+
+  - Added a sentence to Section 3.3.1 stating that inference from the model to individual donors is ecological.
+  - Added a sentence to the Discussion stating that the results do not establish that visible minority individuals give out-of-district at higher rates, only that donations from highly minoritized neighbourhoods do.
+
+(3) Page 22 (of the PDF generated by the journal) references "smaller" districts. I take it to mean that this refers to geographic/spacial size, since the population density variable is included in the model. I'm assuming that the decision not to include constituency population size (logged scale is typically best) is because federal ridings (at least within provinces) are approximately equal. But across provinces/terrorities, there is substantial malapportionment. For example, the difference between Newfoundland and the Edmonton—Wetaskiwin ridings are nearly 10:1. Research of Keena (2019; doi:10.1080/07343469.2019.1572673) shows that population size affects campaign fundraising in important ways that have a direct implication for out-of-district money. You may want to put some more thought and discussion into the complex interaction between geographic size, population size, urbanization, and diversity in your Section 3-4 models to identify which variable(s) are really
+important in driving outcomes.
+
+  - "smaller districts" is now "geographically smaller districts".
+  - Added two sentences on why district population was not included as a covariate, citing Keena (2019). Added Keena (2019) to references.bib.
+  - Fuller treatment of size, population, urbanization, and diversity: not yet done
+
+(4) I hate to be nitpick here, but I think it may be better report estimates (Tables 5 and 6) using significant digits, rather than a fixed decimal points. This is standard practice in the physical sciences, and it is highlighted by the problem with the significant effect of income in Table 5 and 6 (0.000). This implies that the effect is small, but that would be wrong. We know that income is hugely important for driving donation outcomes. It would be better to report each effect in terms of the number of significant digits (which is based no the quality and precision of the data available, not the size of the number). Also, a bigger issue with income is how the number is formatted is how to interpret the effect of money. For table 5, for example, we are looking at the increase in likelihood of a donation going out-of-district that is associated with a one-dollar increase in median income of a district. If this is the case, perhaps you can reformat this to "thousands" of
+dollars because we don't need that level of precision in the model! Note that it should not affect the overall performance of the model if you simply covert your median income values to thousands other than the reported magnitude (and standard error) associated with this particular variable. (You will also need to reprint Figures 5 and 6.)
+
+  - Median household income is now in thousands of dollars in all models; table and plot labels now read "Income (thousands)"; variable definitions updated. Figures 5 and 6 regenerate on render.
+  - Significant-digit change: not yet done
+
+(5) Something for the discussion: What does this say about the health of Canadian democracy? Does it tell us anything about the quality of localized representation at the level of the federal riding? The US case may not be a very good baseline, but it makes Canadian democracy seem a lot healthier in terms of the role of money flowing into the national legislature. Just a thought!
+
+  - Added one sentence to the Discussion regionalization paragraph on the health of local representation in Canada.
+
+
+REVIEWER #3
+-----------
+
+Reviewer #3: This study conducts an empirical examination of 'out-of-district' donations in Canada. Despite civic participation in federal elections being rooted in single member voting districts, the author(s) uncover significant amounts of donations going to EDAs / candidates ('localized entities') from individuals who reside in another voting district. Out-of-district donations account for about 40% of the individuals who made a donation and the amounts ($) being raised by localized entities. The study thus aims to contribute to a literature on out-of-district donations to federal congressional candidates in the United States.
+
+The empirical analysis of this article is quite thorough. The very detailed data cleaning report addresses typical concerns about removing duplicates from quarterly vs annual reports, and errors these data are prone to contain because they are often submitted by volunteer agents for localized entities. The author(s) have clearly done a significant amount of work to pair Elections Canada data with Canada Post data and census data. The paper also has some findings. One is that most (though not all) of the out-of-district (OOD) donations go to localized entities in an adjacent district. Another is that districts with higher proportions of socio-cultural diversity correlate with the odds of making an OOD donation.
+
+A major limitation of the study is rooted in what can be gleaned from these data of contributions from individuals. The original hook -- that electoral participation is confined to districts but donations are not -- is an important first step but it must go further to explain why this is occurring.  Studies from the USA are worthy of publication because they test the motives and / or consequences of OOD donations. The study by Gimpel et al. is notable because it assesses the types of candidates who rely more on funding from OOD donations (i.e., new challengers vs incumbents, seniority in Congressional leadership, whether the candidate is from an under-represented group such as women, black, Latino, 2SLGBTQ+). Others test to see if OOD donations impact the ideological position of candidates / elected officials (Jacobs and Imboywa 2024) relative to their districts or whether citizens perceive a cost in terms of their own interests (not) being represented when their congress
+person relies on OOD donations (Nathan et al. 2025). Put differently, the literature on OOD donations goes beyond documenting their existence to theorizing why they occur and testing those theory with additional data.
+
+  - not yet done
+
+Given the relative ease of doing something similar with existing public datasets for Canada, I am inclined to see this study published if it can, upon revision, tease out why these contributions occur. One way to do this is to see if there is variation in the kinds of candidates who receive OOD donations. Other public datasets provide data for election candidate gender, racial / Indigenous background, and sexuality (Johnston et al.'s Candidate Demographic Dataset in this journal; Baisley and Quinn's dataset on 2SLGBTQ+ candidates also in this journal). Do these types of candidates rely less (more) than their white male counterparts? If so, what does this mean for representation in Canadian politics? Or perhaps candidates from racialized backgrounds rely more on OOD donations because their community is rooted in a neighbouring district. The author(s) could pair their database of localized entities to probe for an affinity affect given the odds of an OOD donation from
+districts where high proportions of "Visible Minority."
+
+  - not yet done
+
+Another angle for the recipients is whether OOD donations flow from less competitive districts to more competitive districts or richer districts to poorer districts. This is another theory from the USA literature, and performing this analysis could help make sense of the positive correlation between Margin of Victory in the sender's district and an OOD.  Perhaps OOD donations are being sent from individuals in a district their preferred party is likely to lose (guaranteed to win) and so they donate to candidates in neighbouring districts where purchase power is stronger. They could also see if OOD donations flow into open districts (no incumbent reoffering) to see if these are to help challengers.
+
+  - not yet done
+
+To summarize, this is a great dataset and an interesting project. But in my view the existing study doesn't push far enough into theorizing (then testing) why OOD donations occur to warrant publication as a research article. The study finds that the lion's share of OOD donations often go to localized entities in the neighbouring district (Table 4, page 20), and that it correlates with some demography, but I'm don't know why we should care about this patterns without knowing which candidates / parties in competitive contexts benefit as recipients. Do donors in big cities really know they're donating to a candidate in another riding when that riding boundary is only several blocks away?  The author(s) could address this major limitation by revising their study to examine where OOD donations are going beyond the aggregate party level and neighbouring districts/out of province districts. It would be quite manageable to pair this dataset with other publicly available datasets to
+address who receives this money / the districts where OOD donations are going, thus resulting in a clearer sense of why these types of donations occur.
+
+  - not yet done
