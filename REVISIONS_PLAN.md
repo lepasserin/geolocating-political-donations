@@ -67,4 +67,8 @@ This is a cool analysis, but would make the paper much longer, that's my main is
 STYLEGUIDE: <https://www.cambridge.org/core/journals/canadian-journal-of-political-science-revue-canadienne-de-science-politique/information/author-instructions/preparing-your-materials>
 
 
-- Needs to conform to CJPS style. There are many more requirements to consider. One big thing is the Word formatting, but we're doing PDF output. For now, I think it's fastest to stick with PDF formatting and worry about theirs later.
+- Needs to conform to the full CJPS style now, there are many more requirements to consider: <https://www.cambridge.org/core/journals/canadian-journal-of-political-science-revue-canadienne-de-science-politique/information/author-instructions/preparing-your-materials>.
+
+- AND REMEMBER TO DE-IDENTIFY THE PAPER BEFORE RESUBMITTING:
+    - Remove all ID from titlepage
+    - Remove hyperlink fro, note 1, replace with [OMITTED FOR DE-IDENTIFICATION]
