@@ -1,6 +1,6 @@
 # Purpose: Constants, Visualization Helper Functions, and Modelling Datasets Sourced by `paper.qmd`.
 # Author: Benedict Cummins-Mburu
-# Last Updated: 30 July 2026
+# Last Updated: 8 Nov 2026
 # Contact: b.cumminsmburu@utoronto.ca
 # License: MIT
 
@@ -22,6 +22,7 @@ library(mgcv)
 
 # Analysis
 library(betareg)
+library(lme4)
 
 # ---- Setup: Data Sources For Main Paper ONLY -----
 
@@ -31,6 +32,9 @@ donations_data_full <- read_parquet(here::here(
 ))
 donations_data <- read_parquet(here::here(
   "data/analysis_data/donations_data.parquet"
+))
+recipient_model_data <- read_parquet(here::here(
+  "data/analysis_data/candidate_model_data.parquet"
 ))
 
 # Additional Simulation Datasets

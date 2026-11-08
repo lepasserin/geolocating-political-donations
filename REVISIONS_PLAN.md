@@ -2,8 +2,6 @@
 
 This is also essentially a draft of the cover letter we have to write anyways, which should explicitly indicate where and how we have made changes to each of the reviewer's points.
 
-*NOTE TO ROHAN: There are some discrepancies between the manuscript I submitted and the PDF as it is on the repo right now. I will identify and change these, so that then we can be working on the same updated paper. Ive also saved the original manuscript(before CJPS formatting etc. ), so feel free to work directly on the `paper/paper.qmd`.*
-
 ## Reviewer 1
 
 - I agree that we should resubmit the Appendix as a single Supplimentary Material file, following the guidelines here: <https://www.cambridge.org/core/services/authors/publishing-supplementary-material>. The Supplement may be a PDF, and has no style restrictions (pubilshed as-is), which makes life easier.  
@@ -25,6 +23,7 @@ This is also essentially a draft of the cover letter we have to write anyways, w
 - **Unclear, Benedict figure out**: Kind of unsure what to do about this. We never claim to be studying donor behaviour, but I agree that this is a very tricky line to be treading.
 
 - Clatify that "smaller districts" are physically smaller in size. Good idea to include raw population size, in addition to density (at least to check if it may be driving what we are attributing to density), and to cite <https://www.tandfonline.com/doi/abs/10.1080/07343469.2019.1572673> if we do find an association.
+- *BENEDICT DO THIS*
 
 - **Unclear, Benedict ask Rohan**: Good idea to just divide the median income predictor by 1000 to improve the interpreetability of the model's coefficients. Will also do the same thing with Amount. I don't really understand their point about significant digits vs. fixed decimal points though.
 

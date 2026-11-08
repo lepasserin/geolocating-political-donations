@@ -566,6 +566,7 @@ localized_donations_data_distances %>%
 <!-- Out-of-district-Propensity Models:
       - Individual-Level Model                UOA: Pr(is_out_of_district) (count only)
       - District-Level Model                  UOA: share of total contribution amount (amount only)
+      - Recipient-Based Model                 UOA: Pr(is_out_of_district) (count only)
       - Alternative Models in the Appendix
 -->
 
@@ -594,9 +595,7 @@ individual_model <- glm(
 )
 ```
 
-We used a logistic regression model to explore how the likelihood of out-of-district donation varies across different transactional characteristics, donor demographic environments, and district competitiveness, for individual donations. Our outcome variable is binary: whether or not a donation was sent out-of-district. This model was fit on both donations to EDAs and candidates combined. Models fit on each entity separately had similar coefficient magnitudes, signs and significances ( [Appendix -@sec-alternate-model-specifications]).
-
-<!-- KEEPSAKE: Donations were not grouped by individual, since we were interested in both donor and recipient characteristics in this model. Diagnostics showed that residual autocorrelation, the primary statistical risk associated with this decision, was not a large concern in the model. -->
+We used a logistic regression model to explore how the likelihood of out-of-district donation varies across different transactional characteristics, donor demographic environments, and district competitiveness, for individual donations. Our outcome variable is binary: whether or not a donation was sent out-of-district. This model was fit on both donations to EDAs and candidates combined. Models fit on each entity separately had similar coefficient magnitudes, signs and significances ( [Appendix -@sec-alternate-model-specifications]). Donations were not grouped by individual, since we were interested in both donor and recipient characteristics in this model. Diagnostics showed that residual autocorrelation, the primary statistical risk associated with this decision, was not a large concern in the model.
 
 The transactional predictors in our model are: the type of recipient (candidate or district association), their political party, and the monetary value of the donation. We did not include time-indexed variables since our data summaries showed that out-of-district rates were constant over time, for both candidates and district associations. Following @garnett_where_2024 and @gimpel_political_2006, we also considered the following characteristics of the donor's socio-demographic environment: province (grouped into regions), mean age, median household income, the share of the population with a post-secondary degree, and the share of the population that is a visible minority[^visible-minority-disaggregation], at the dissemination level. These are characteristics of the donor's residential environment rather than of the donor themselves. The model considers the types of places from which out-of-district donations come, not the behaviour of individuals. District competitiveness was proxied using the difference between the percentage of votes received by the winning and runner-up candidates, averaged across all three general elections captured in our study period, inspired by @garnett_where_2024. This predictor was included since we might expect donors from less competitive districts to donate out-of-district more often, perhaps recognizing that a local contribution will do little to affect an outcome that is effectively predetermined.
 
@@ -654,11 +653,11 @@ FED_model <- betareg::betareg(
 )
 ```
 
-Inspired by the large variation in out-of-district giving between districts observed in @fig-data-summaries-ood-rate-district-scatterplot, we fit a second regression model to explore which socio-demographic features were associated with higher rates of out-of-district donation, aggregated at the district level. Our outcome variable in this case was the proportion of the total contributed amount[^20] sent out-of-district during our entire study period, for each district. Given that this outcome is a proportion, we used beta regression, fit using the `betareg` package in R [@betareg]. This model was fit on both donations to EDAs and candidates combined, following from the individual model. A model fit on only EDAs separately had similar coefficient magnitudes, and the same signs and significances (shown in [Appendix -@sec-alternate-model-specifications]).
+Inspired by the large variation in out-of-district giving between districts (@fig-data-summaries-ood-rate-district-scatterplot), we fit a second regression model to explore which socio-demographic features were associated with higher rates of out-of-district donation, aggregated at the district level. Our outcome variable in this case was the proportion of the total contributed amount[^20] sent out-of-district during our entire study period, for each district. Given that this outcome is a proportion, we used beta regression, fit using the `betareg` package in R [@betareg]. This model was fit on both donations to EDAs and candidates combined, following from the individual model. A model fit on only EDAs separately had similar coefficient magnitudes, and the same signs and significances (shown in [Appendix -@sec-alternate-model-specifications]).
 
-<!-- KEEPSAKE: A model fit on only candidates was not fit due to data sparsity and the presence of singularities in the response. -->
+<!-- KEEPSAKE: A candidate-only model was not fit due to data sparsity (i.e. presence of singularities) in the response. -->
 
-The covariates included in this model were the same environment variables chosen for the individual-level model, aggregated at the district level[^21]. We also included the same district-level competitiveness metric used in the individual model.  Since districts had very different numbers of donations used to calculate our outcome proportion, we also assumed a power-law relationship between the common precision parameter $\phi$ and the number of donations, following @generalized_beta_regression.
+The covariates included in this model were the same environment variables and competitiveness metric chosen for the individual-level model, aggregated at the district level[^21]. Since districts had very different numbers of donations used to calculate our outcome proportion, we also assumed a power-law relationship between the common precision parameter $\phi$ and the number of donations, following @generalized_beta_regression.
 
 The resulting model is:
 
@@ -671,11 +670,9 @@ p_i &\sim \text{Beta}(\mu_i, \phi_i) \\
 \end{aligned}
 $$
 
-where:
+where $p_i$ is the proportion of the total contributed amount that was sent out-of-district by donors in district $i$, $\mu_i$ and $\phi_i$ are the mean and common precision parameters of the distribution of $p_i$, and $n_i$ is the number of donations originating from district $i$.
 
-- $p_i$ is the proportion of the total contributed amount that was sent out-of-district by donors in district $i$.
-- $\mu_i$ and $\phi_i$ are the mean and common precision parameters of the distribution of $p_i$.
-- $n_i$ is the number of donations originating from district $i$.
+<!--- KEEPSAKE:
 - $\text{Amount}_i$ is the total amount contributed by donors in district $i$.
 - $\text{Region}_{ji}$ are indicators for the donor region of district $i$.
 - $\text{Age}_i$ is the mean age of residents in district $i$.
@@ -684,15 +681,59 @@ where:
 - $\text{VisMin}_i$ is the proportion of residents in district $i$ who identify as a visible minority.
 - $\text{VictoryMargin}_i$ is the difference between the percentage of votes received by the winning and runner-up candidates, averaged across all three general elections in district $i$.
 - $\text{Density}_i$ is the population density (persons per $km^2$) of district $i$. As mentioned in-text, the model was fit using the square root of this variable.
+--> 
 
-[^20]: We observed high correlation ($\rho = 0.978$) between the proportion of out-of-district donations and the share of total contributed amount that left the district, for both candidates and EDAs. Therefore, results would have been similar if we had used the number of donations as our outcome instead of the amount-weighted share of donations.
+[^20]: We observed high correlation ($\rho = 0.978$) between the proportion of out-of-district donations and the share of total contributed amount that left the district. Therefore, results would have been similar if we had used the number of donations as our outcome instead of the amount-weighted share of donations.
 
 [^21]: As with the individual-level model, an alternative model specification with disaggregated regions and visible minority proportion is shown in [Appendix -@sec-alternate-model-specifications].
+
+### Recipient-Based Model {#sec-model-specification-recipient}
+
+```{r}
+#| warning: false
+#| message: false
+#| echo: false
+#| label: recipient-ood-propensity-model
+
+# Temp Note: `recipient_model_data` is just the result of scripts/cleaning/06. When I'm done fiddling with the model, update 06 to only include exactly those variables that appear in my final model.
+
+recipient_model <- lme4::glmer(
+  is_out_of_district ~
+    # focal covariates
+    candidate_ethnicity +
+    candidate_gender +
+    candidate_incumbency +
+    destination_margin_of_victory +
+    # confounding variables: socio-demographic characteristics of destination district 
+    destination_region +
+    destination_avg_age +
+    destination_median_hh_income +
+    destination_postsec_prop +
+    destination_vismin_total + 
+    destination_density_per_sqkm_sqrt +
+    # confounding variables: other
+    candidate_party +
+    total_amount +
+    # data structure
+    (1 | electoral_event:destination_district) + (1 | candidate_id),
+    data = recipient_model_data,
+    family = binomial
+)
+summary(recipient_model)
+```
+
+<!-- We were able to match 93% of the donations to information on candidate demography and race competitiveness. -->
+
+<!-- This is a mixed-effects logistic regression model. The model is mixed-effects to account for the autocorrelation in our data created by the candidate grouping. Comment on whether I grouped on race here as well. -->
+
+<!-- While the primary goal of the above model was to explain OOD origin, this model was fit to attempt to infer about out-of-district donor motivation distinct from in-district donors. This is the explicit goal of this model. -->
+
+<!-- We note that this model is restricted to donations to candidates during general elections. THIS IS VERY DEFENSIBLE -->
 
 
 # Results {#sec-results}
 
-Here we present the results from our out-of-district propensity models. We note that many of our key findings are best understood as data summaries and visualizations, which are presented in @sec-data-summaries. @sec-data-summaries-situation provides context for how the localized contributions considered in our study fit into the broader scope of financial contributions in general. @sec-data-summaries-ood-rate provides spatio-temporal summaries of out-of-district propensity (which were used to inform the model discussed here). @sec-data-summaries-ood-network briefly characterizes the funding network formed by out-of-district donations. Both summary-based and model-based findings are discussed together in @sec-discussion.
+Here we present the results from our out-of-district propensity models. We note that many of our key findings are best understood as data summaries and visualizations, which are presented in @sec-data-summaries. @sec-data-summaries-situation provides context for how the localized contributions considered in our study fit into the broader scope of financial contributions in general. @sec-data-summaries-ood-rate provides spatio-temporal summaries of out-of-district propensity (which were used to inform the models discussed here). @sec-data-summaries-ood-network briefly characterizes the spatial reach of out-of-district donations. Both summary-based and model-based findings are discussed together in @sec-discussion.
 
 Regression results from the individual- and district-level models are presented in @tbl-results-model-individual and @tbl-results-model-district respectively. @fig-results-models-coefs-1 and @fig-results-models-coefs-2 provide a visualization of coefficient signs, magnitudes, and significances. For both models, exponentiating the coefficients yields a more interpretable value, the odds ratio. For the individual (i.e. logistic) regression model, an odds ratio above one for a categorical variable (e.g. recipient belonging to the Liberal Party) indicates that, holding all else constant, donations of that category have increased odds of being out-of-district, relative to the baseline category (e.g. recipient belonging to the Conservative party). For the district level (i.e. beta) regression model, an odds ratio above one for a categorical variable (e.g. district situated in the Prairies) indicates that, holding all else constant, the expected ratio of out- vs. in-district contributions increases. Odds ratios less than one and continuous variables (e.g. median household income) are interpreted accordingly. Models fit separately to candidate-bound and EDA-bound donations are reported in [Appendix -@sec-alternate-model-specifications] and the results are similar to the ones here.
 
