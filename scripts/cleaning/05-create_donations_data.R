@@ -420,7 +420,8 @@ created_donations_data_08 <- created_donations_data_08 %>%
       electoral_event_OG,
       donor_location,
       donation_year,
-      donor_postal_code
+      donor_postal_code,
+      recipient_name # Dropping because of a bug in `scripts/processing/00-clean_IJF_data.R`. Doesn't affect analysis.
     )
   )
 prop_ood_na <- mean(is.na(created_donations_data_08$is_out_of_district))

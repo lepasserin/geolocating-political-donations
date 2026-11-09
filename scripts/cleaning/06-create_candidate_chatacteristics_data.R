@@ -1,139 +1,182 @@
-# Purpose: Clean and Validate a Dataset of Candidate-bound Donations During the 2015 and 2019 General Elections, Augmented with Candidate Characteristics, OOD Distances, Competitiveness Measures, and Census Characteristics.
+# Purpose: Clean and Validate a Dataset of Candidate-bound Donations, Augmented with Candidate Characteristics, OOD Distances, Competitiveness Measures, and Census Characteristics.
 # Author: Benedict Cummins-Mburu
 # Last Updated: 8 Nov 2026
 # Contact: b.cumminsmburu@utoronto.ca
 # License: MIT
-# Notes:
-#     - So we've got 93% of donations (91% of OODs) for which we know the ethnicity and competitiveness of their race (most important), plus gender, whether or not incumbent, occupation, past experience (may be useful as secondary result, or to verify the first result).
 
 # ------ Setup -------
 library(tidyverse)
+library(haven)
 library(arrow)
 library(sf)
 
-# 1. Load in `donations_data`
-donations_data <- read_parquet("data/analysis_data/donations_data.parquet")
+# 1. Load in `donations_data`, but only candidate-bound donations.
+donations_data <- read_parquet("data/analysis_data/donations_data.parquet") %>%
+  filter(political_entity == "Candidates") %>%
+  select(
+    -c(
+      political_entity,
+      recipient_name,
+      is_local,
+      is_general_election_period,
+      general_election_period
+    )
+  ) %>%
+  rename(
+    candidate_party = political_party,
+    destination_district = recipient_district
+  ) %>%
+  mutate(
+    election_year = case_when(
+      electoral_event == "44th general election" ~ 2021,
+      electoral_event == "43rd general election" ~ 2019,
+      electoral_event == "42nd general election" ~ 2015
+    )
+  ) %>%
+  select(-electoral_event)
 
 # 2. Load in datasets used to augment `donations_data`.
-candidate_demographics <- read_csv(
-  ("data/raw_data/candidate_demographics.csv"),
-  col_names = c(
-    "election_year",
-    "destination_province",
-    "destination_district_ID",
-    "destination_district_name",
-    "candidate_incumbency",
-    "candidate_gender",
-    "candidate_ethnicity", # 12 NA, 0 after cleaning.
-    "candidate_occupation", # 1 NA, 1 after cleaning.
-    "candidate_prior_experience", # 18 NA, 1 after cleaning.
-    "candidate_party",
-    "birth_year", # 37% missing, 42% after cleaning.
-    "election_outcome",
-    "margin_of_victory"
+candidate_demography <- read_dta("data/raw_data/candidate_demography.dta") %>%
+  mutate(across(where(is.labelled), ~ as.character(as_factor(.x)))) %>%
+  transmute(
+    election_year = Year,
+    destination_province = Province,
+    destination_district_ID = as.character(DistrictID),
+    destination_district_name = DistrictName,
+    candidate_party = Party,
+    candidate_gender = Gender,
+    candidate_ethnicity = Race,
+    candidate_incumbency = Incumbent,
+    candidate_challenger = Challenger,
+    candidate_prior_experience = OtherLevels,
+    candidate_out_LGBTQ2S = OutLGBTQ2S,
+    candidate_out_TNB = OutTNB,
+    candidate_out_2S = Out2S,
+    candidate_votes = Votes,
+    candidate_vote_share = VoteShare,
+    candidate_vote_share_lag = VoteShareLag,
+    candidate_elected = Elected,
+    candidate_win_margin = WinMargin,
+    candidate_win_margin_lag = WinMarginLag
   )
-) %>%
-  select(-margin_of_victory, destination_district_name)
 election_results <- read_parquet("data/analysis_data/election_results.parquet")
-
-# 2. Load in validation datasets.
-election_results <- read_parquet("data/analysis_data/election_results.parquet")
-FED_lookup <- st_drop_geometry(readRDS("data/analysis_data/FED_lookup.rds"))
 census_lookup <- read_parquet("data/analysis_data/census_lookup.parquet")
+
+# 2. Load in lookup datasets.
+FED_lookup <- st_drop_geometry(readRDS("data/analysis_data/FED_lookup.rds"))
 DA_lookup <- st_drop_geometry(readRDS("data/analysis_data/DA_lookup.rds"))
 PCCF_lookup <- read_parquet("data/analysis_data/PCCF_lookup.parquet")
 
 # ------ Cleaning & Validation -------
 
-# 1. Scope `donations_data` and `demographic_data` so that both refer to: candidates in 2015/2019 elections.
-donations_data_01 <- donations_data %>%
-  filter(
-    electoral_event %in% c("43rd general election", "42nd general election"),
-    political_entity == "Candidates"
-  )
-demographic_data_01 <- demographic_data %>%
-  filter(election_year %in% c(2015, 2019)) %>%
-  filter(ethnicity != "Not known") # DECISION: Candidates with unknown ethnicities were dropped. Only increases the number of missing donations in the affinity analysis by 0.1%
-
-# 2. Confirm that all FEDs in `demographic_data` are in `FED_lookup`, AND that all FEDs are represented.
-if (setequal(demographic_data_01$recipient_district_ID, FED_lookup$FEDUID)) {
+# 1. Confirm that all FEDs in `demographic_data` are in `FED_lookup`, AND that all FEDs are represented.
+if (setequal(candidate_demography$destination_district_ID, FED_lookup$FEDUID)) {
   message("Validation Passed.")
 } else {
   stop("Validation Failed.")
 }
 
-# 3. Add ID to `donations_data`
-if (all(donations_data_01$recipient_district %in% FED_lookup$name)) {
+# 2. Add `donor_district_ID` and `destination_district_ID` to `donations_data`.
+if (all(donations_data$donor_district %in% FED_lookup$name)) {
   message("Validation Passed.")
 } else {
   stop("Validation Failed.")
 }
-donations_data_03 <- donations_data_01 %>%
+if (all(donations_data$destination_district %in% FED_lookup$name)) {
+  message("Validation Passed.")
+} else {
+  stop("Validation Failed.")
+}
+donations_data_02 <- donations_data %>%
   left_join(
-    select(
+    transmute(
       FED_lookup,
-      recipient_district = name,
-      recipient_district_ID = FEDUID
+      donor_district = name,
+      donor_district_ID = as.character(FEDUID)
     ),
-    by = "recipient_district"
-  )
-
-# 4. Confirm that (party + district_name + election-year) uniquely identifying a row in `demographic_data`. Then, assess missingness.
-test_04 <- demographic_data_01 %>%
-  distinct(recipient_district_ID, party, election_year)
-if (nrow(test_04) == nrow(demographic_data_01)) {
-  message("Validation Passed.")
-} else {
-  stop("Validation Failed.")
-}
-demographic_data_04 <- demographic_data_01 %>%
-  mutate(
-    party = case_when(
-      party == "Conservative" ~ "Conservative Party of Canada",
-      party == "Liberal" ~ "Liberal Party of Canada",
-      party == "NDP" ~ "New Democratic Party",
-      party == "Green" ~ "Green Party of Canada",
-      party == "Bloc" ~ "Bloc Québécois"
-    )
-  ) %>%
-  mutate(
-    recipient_district_ID = as.character(recipient_district_ID),
-    electoral_event = if_else(
-      election_year == 2015,
-      "42nd general election",
-      "43rd general election"
-    )
-  )
-missingness_04 <- mean(
-  !paste(
-    donations_data_03$electoral_event,
-    donations_data_03$recipient_district_ID,
-    donations_data_03$political_party
-  ) %in%
-    paste(
-      demographic_data_04$electoral_event,
-      demographic_data_04$recipient_district_ID,
-      demographic_data_04$party
-    )
-)
-if (missingness_04 < 0.073) {
-  message("Validation Passed.")
-} else {
-  stop("Validation Failed.")
-}
-
-# 5. Augment `donations_data` with candidate demographics.
-donations_data_05 <- donations_data_03 %>%
-  left_join(
-    demographic_data_04,
-    by = c(
-      "electoral_event",
-      "recipient_district_ID",
-      "political_party" = "party"
-    ),
+    by = "donor_district",
     relationship = "many-to-one"
   ) %>%
-  select(-margin_of_victory)
+  left_join(
+    transmute(
+      FED_lookup,
+      destination_district = name,
+      destination_district_ID = as.character(FEDUID)
+    ),
+    by = "destination_district",
+    relationship = "many-to-one"
+  )
+
+# 3. Confirm that (party + district_name + election-year) uniquely identifying a row in `candidate_demography`. Then, assess missingness.
+test_03 <- candidate_demography %>%
+  distinct(destination_district_ID, candidate_party, election_year)
+if (nrow(test_03) == nrow(candidate_demography)) {
+  message("Validation Passed.")
+} else {
+  stop("Validation Failed.")
+}
+candidate_demography_03 <- candidate_demography %>%
+  mutate(
+    candidate_party = case_when(
+      candidate_party == "Conservative" ~ "Conservative Party of Canada",
+      candidate_party == "Liberal" ~ "Liberal Party of Canada",
+      candidate_party == "New Democratic" ~ "New Democratic Party",
+      candidate_party == "Green" ~ "Green Party of Canada",
+      candidate_party == "Bloc Quebecois" ~ "Bloc Québécois"
+    )
+  )
+missingness_03 <- mean(
+  !paste(
+    donations_data_02$election_year,
+    donations_data_02$destination_district_ID,
+    donations_data_02$candidate_party
+  ) %in%
+    paste(
+      candidate_demography_03$election_year,
+      candidate_demography_03$destination_district_ID,
+      candidate_demography_03$candidate_party
+    )
+)
+if (missingness_03 < 0.071) {
+  message("Validation Passed.")
+} else {
+  stop("Validation Failed.")
+}
+
+# 4. Add `candidate_ID` (formatted [Election Year]_FEDUID_[Party]) to `candidate_demograhy`, and remove unused candidate/race characteristics.
+candidate_demography_04 <- candidate_demography_03 %>%
+  mutate(
+    candidate_ID = paste(
+      election_year,
+      destination_district_ID,
+      candidate_party,
+      sep = "_"
+    )
+  ) %>%
+  select(
+    -c(
+      destination_district_name,
+      candidate_votes,
+      candidate_out_2S,
+      candidate_out_TNB
+    )
+  )
+
+# ------ Donation Data Augmentation -------
+
+# 1. Augment `donations_data` with target candidate demographics.
+donations_data_a_01 <- donations_data_02 %>%
+  left_join(
+    candidate_demography_04,
+    by = c(
+      "election_year",
+      "destination_district_ID",
+      "candidate_party"
+    ),
+    relationship = "many-to-one"
+  )
+
+# 2. Augment `donations_data` with target candidate demographics.
 
 # 6. Augment `donations_data` with donor census characteristics (by donor DA).
 donations_data_06 <- donations_data_05 %>%

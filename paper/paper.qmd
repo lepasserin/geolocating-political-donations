@@ -1030,7 +1030,6 @@ Table_1_1 <- tribble(
   "donation_date",            "2015-10-18",                    "Date donation was received.",
   "electoral_event",          "General Election",         "Electoral event (if any) occurring during donation.",
   "total_amount",             "563.3",              "Summed monetary and non-monetary value of the donation, in CAD.",
-  "recipient_name",           "Joe Oliver",                    "Recipient full name.",
   "recipient_district",       "Eglinton--Lawrence",            "District of the recipient (if applicable).",
   "political_entity",         "Candidates",                    "Entity type of the recipient.",
   "political_party",          "Conservative Party of Canada",  "Recipient party affiliation (if any).",
