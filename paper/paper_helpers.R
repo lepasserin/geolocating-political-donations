@@ -1,6 +1,7 @@
 # Purpose: Constants, Visualization Helper Functions, and Modelling Datasets Sourced by `paper.qmd`.
 # Author: Benedict Cummins-Mburu
 # Last Updated: 8 Nov 2026
+# Status: COMPLETE
 # Contact: b.cumminsmburu@utoronto.ca
 # License: MIT
 
@@ -22,7 +23,7 @@ library(mgcv)
 
 # Analysis
 library(betareg)
-library(lme4)
+library(glmmTMB)
 
 # ---- Setup: Data Sources For Main Paper ONLY -----
 
@@ -33,7 +34,7 @@ donations_data_full <- read_parquet(here::here(
 donations_data <- read_parquet(here::here(
   "data/analysis_data/donations_data.parquet"
 ))
-recipient_model_data <- read_parquet(here::here(
+candidate_model_data <- read_parquet(here::here(
   "data/analysis_data/candidate_model_data.parquet"
 ))
 
@@ -579,7 +580,20 @@ FED_model_data <- localized_donations_data %>%
     starts_with("vismin_")
   )
 
-# 3. District - EDA Only
+# 3. Recipient
+recipient_model_data <- candidate_model_data %>%
+  mutate(
+    candidate_gender = factor(
+      if_else(candidate_gender == "Man", "Man", "Non-Man"),
+      levels = c("Man", "Non-Man")
+    ),
+    candidate_ethnicity = factor(
+      if_else(candidate_ethnicity == "White", "White", "Non-White"),
+      levels = c("White", "Non-White")
+    )
+  )
+
+# APPENDIX. District - EDA Only
 FED_model_data_EDA <- localized_donations_data %>%
   filter(political_entity == "Registered associations") %>%
   group_by(donor_district) %>%
