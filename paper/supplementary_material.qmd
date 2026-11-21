@@ -30,6 +30,8 @@ number-sections: true
 bibliography: references.bib
 ---
 
+<!-- TODO: When content is green-lit, fmake sure it renders as a nice-looking PDF. -->
+
 \newpage
 
 <!-- Supplement Structure:
