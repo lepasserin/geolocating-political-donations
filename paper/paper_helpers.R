@@ -1,6 +1,6 @@
 # Purpose: Constants, Visualization Helper Functions, and Modelling Datasets Sourced by `paper.qmd`.
 # Author: Benedict Cummins-Mburu
-# Last Updated: 8 Nov 2026
+# Last Updated: 21 Nov 2026
 # Status: COMPLETE
 # Contact: b.cumminsmburu@utoronto.ca
 # License: MIT
@@ -475,15 +475,18 @@ plot_missingness_comparison <- function(
 
 # ------ Modelling Datasets -------
 
-# We specify three model datasets:
-#         - Individual (with everything needed for all variants)
-#         - FED (aggregated both)
-#         - FED (EDAs only)
+# We specify four model datasets:
+#         - Main Models:
+#             - Individual (plus everything needed for Appendix variants)
+#             - Recipient
+#         - Appendix Models:
+#             - District-level (full)
+#             - District-level (EDAs only)
 
 # 1. Individual
 individual_model_data <- localized_donations_data %>%
   mutate(donor_dissemination_area = as.character(donor_dissemination_area)) %>%
-  filter(is_general_election_period | political_entity != "Candidates") %>% # TODO: deal with this somewhere else later; 1179 entries.
+  filter(is_general_election_period | political_entity != "Candidates") %>% # TODO: deal with this somewhere else later; 1179 entries only.
   mutate(
     political_party_cat = case_when(
       political_party == "Conservative Party of Canada" ~ "Conservative",
@@ -519,7 +522,9 @@ individual_model_data <- localized_donations_data %>%
       ref = "Conservative"
     ),
     donor_region = relevel(factor(donor_region), ref = "Ontario"),
-    density_per_sqkm_sqrt = sqrt(density_per_sqkm)
+    density_per_sqkm_sqrt = sqrt(density_per_sqkm),
+    median_hh_income = median_hh_income / 1000,
+    total_amount = total_amount / 1000
   ) %>%
   mutate(donor_province = relevel(factor(donor_province), ref = "Ontario")) %>%
   select(
@@ -543,7 +548,23 @@ individual_model_data <- localized_donations_data %>%
     donor_district
   )
 
-# 2. District - Aggregated
+# 2. Recipient
+recipient_model_data <- candidate_model_data %>%
+  mutate(
+    candidate_gender = factor(
+      if_else(candidate_gender == "Man", "Man", "Non-Man"),
+      levels = c("Man", "Non-Man")
+    ),
+    candidate_ethnicity = factor(
+      if_else(candidate_ethnicity == "White", "White", "Non-White"),
+      levels = c("White", "Non-White")
+    ),
+    destination_median_hh_income = destination_median_hh_income / 1000,
+    source_median_hh_income = source_median_hh_income / 1000,
+    total_amount = total_amount / 1000
+  )
+
+# 3. District (full)
 FED_model_data <- localized_donations_data %>%
   group_by(donor_district) %>%
   summarise(
@@ -562,7 +583,9 @@ FED_model_data <- localized_donations_data %>%
   left_join(census_lookup_FED, by = c("donor_district" = "FED_name")) %>%
   mutate(
     density_per_sqkm_sqrt = sqrt(density_per_sqkm),
-    donor_region = relevel(factor(donor_region), ref = "Ontario")
+    donor_region = relevel(factor(donor_region), ref = "Ontario"),
+    median_hh_income = median_hh_income / 1000,
+    total_amount = total_amount / 1000
   ) %>%
   mutate(donor_province = relevel(factor(donor_province), ref = "Ontario")) %>%
   select(
@@ -580,20 +603,7 @@ FED_model_data <- localized_donations_data %>%
     starts_with("vismin_")
   )
 
-# 3. Recipient
-recipient_model_data <- candidate_model_data %>%
-  mutate(
-    candidate_gender = factor(
-      if_else(candidate_gender == "Man", "Man", "Non-Man"),
-      levels = c("Man", "Non-Man")
-    ),
-    candidate_ethnicity = factor(
-      if_else(candidate_ethnicity == "White", "White", "Non-White"),
-      levels = c("White", "Non-White")
-    )
-  )
-
-# APPENDIX. District - EDA Only
+# 4. District (EDA Only)
 FED_model_data_EDA <- localized_donations_data %>%
   filter(political_entity == "Registered associations") %>%
   group_by(donor_district) %>%
@@ -613,7 +623,9 @@ FED_model_data_EDA <- localized_donations_data %>%
   left_join(census_lookup_FED, by = c("donor_district" = "FED_name")) %>%
   mutate(
     density_per_sqkm_sqrt = sqrt(density_per_sqkm),
-    donor_region = relevel(factor(donor_region), ref = "Ontario")
+    donor_region = relevel(factor(donor_region), ref = "Ontario"),
+    median_hh_income = median_hh_income / 1000,
+    total_amount = total_amount / 1000
   ) %>%
   select(
     donor_district,

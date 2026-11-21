@@ -63,19 +63,6 @@ Writing – review & editing:   Benedict Cummins-Mburu, Rohan Alexander
 
 # Load in Supplimentary R Script
 source(here::here("paper/paper_helpers.R"))
-
-# Change median household income to thousands of dollars for modelling
-individual_model_data <- individual_model_data |>
-  mutate(median_hh_income = median_hh_income / 1000)
-FED_model_data <- FED_model_data |>
-  mutate(median_hh_income = median_hh_income / 1000)
-recipient_model_data <- recipient_model_data |>
-  mutate(
-    destination_median_hh_income = destination_median_hh_income / 1000,
-    source_median_hh_income = source_median_hh_income / 1000
-  )
-FED_model_data_EDA <- FED_model_data_EDA |>
-  mutate(median_hh_income = median_hh_income / 1000)
 ```
 
 # Introduction {#sec-intro}
@@ -615,7 +602,7 @@ where:
 - $\text{Election}_i$ indicates whether donation $i$ occurred during a general election period.
 - $\text{Candidate}_{i}$ indicates whether donation $i$ was addressed to a Candidate (baseline is EDA).
 - $\text{Party}_{ji}$ indicates recipient party affiliation for donation $i$ (among Liberal, N.D.P, or Other, with baseline being Conservative).
-- $\text{Amount}_i$ is the monetary value of donation $i$.
+- $\text{Amount}_i$ is the monetary value of donation $i$, in thousands of dollars.
 - $\text{Region}_{ki}$ indicates which region (among Atlantic Canada, B.C., Prairies, Quebec, Territories, with baseline being Ontario) the donor is located.
 - $\text{Age}_i$ is the average age of residents in the donor's dissemination area.
 - $\text{Income}_i$ is the median household income in the donor's dissemination area, in thousands of dollars.
@@ -834,7 +821,7 @@ coef_whisker_plot(
     "political_party_catLiberal" = "Liberal",
     "political_party_catN.D.P" = "N.D.P.",
     "political_party_catOther" = "Other Party",
-    "total_amount" = "Amount",
+    "total_amount" = "Amount (thousands)",
     "donor_regionAtlantic Canada" = "Atlantic Canada",
     "donor_regionBritish Columbia" = "British Columbia",
     "donor_regionPrairies" = "Prairies",

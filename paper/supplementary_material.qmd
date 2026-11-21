@@ -471,7 +471,7 @@ Similarly to the main model fit on individual donations, districts with higher p
 #| tbl-cap: "Results from a beta regression model where the outcome is the out-of-district share of the sum of contributions over $200 originating from an individual district during our study period. The reference entity is the district association, and the reference region is Ontario. Estimates are bolded when significant at the alpha = 0.05 level. Small losses (~ 1.1% of individual transactions) were incurred due to missingness in the census data. Each of the 338 districts was represented in this model."
 term_labels = c(
     "(Intercept)" = "(Intercept)",
-    "total_amount" = "Amount",
+    "total_amount" = "Amount (thousands)",
     "donor_regionOntario" = "Ontario",
     "donor_regionAtlantic Canada" = "Atlantic Canada",
     "donor_regionBritish Columbia" = "British Columbia",
