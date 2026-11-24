@@ -1,6 +1,6 @@
-# Purpose: Clean and Validate a Dataset of Candidate-bound Donations, Augmented with Candidate Characteristics, Margins of Victory, and Census Characteristics.
+# Purpose: Clean and Validate a Dataset of Candidate-bound Donations, Augmented with Candidate, Race, and Census Characteristics.
 # Author: Benedict Cummins-Mburu
-# Last Updated: 10 Nov 2026
+# Last Updated: 22 Nov 2026
 # Status: COMPLETE
 # Contact: b.cumminsmburu@utoronto.ca
 # License: MIT
@@ -25,15 +25,13 @@ donations_data <- read_parquet("data/analysis_data/donations_data.parquet") %>%
     -c(
       political_entity,
       recipient_name,
+      donor_province,
       is_local,
       is_general_election_period,
       general_election_period
     )
   ) %>%
-  rename(
-    candidate_party = political_party,
-    destination_district = recipient_district
-  ) %>%
+  rename(candidate_party = political_party) %>%
   mutate(
     election_year = case_when(
       electoral_event == "44th general election" ~ 2021,
@@ -49,7 +47,6 @@ candidate_demography <- read_dta("data/raw_data/candidate_demography.dta") %>%
   mutate(across(where(is.labelled), ~ as.character(as_factor(.x)))) %>%
   transmute(
     election_year = Year,
-    destination_province = Province,
     destination_district_ID = as.character(DistrictID),
     destination_district_name = DistrictName,
     candidate_party = Party,
@@ -83,14 +80,13 @@ census_FED_summary <- census_lookup %>%
   left_join(DAUID_to_FEDUID, by = "DAUID") %>%
   group_by(FEDUID) %>%
   summarise(
-    destination_density_per_sqkm = sum(population) / sum(land_area_sqkm),
-    destination_avg_age = weighted.mean(avg_age, population),
-    destination_median_hh_income = weighted.mean(median_hh_income, population),
-    destination_postsec_prop = weighted.mean(postsec_prop, population),
+    density_per_sqkm = sum(population) / sum(land_area_sqkm),
+    avg_age = weighted.mean(avg_age, population),
+    median_hh_income = weighted.mean(median_hh_income, population),
+    postsec_prop = weighted.mean(postsec_prop, population),
     across(
       starts_with("vismin_"),
-      ~ weighted.mean(.x, population),
-      .names = "destination_{.col}"
+      ~ weighted.mean(.x, population)
     ),
     .groups = "drop"
   )
@@ -122,42 +118,12 @@ REGION_BY_PRUID <- c(
 census_lookup_FED <- FED_lookup %>%
   transmute(
     FEDUID,
-    destination_region = factor(
+    region = factor(
       unname(REGION_BY_PRUID[as.character(PRUID)]),
       levels = REGION_LEVELS
     )
   ) %>%
   left_join(census_FED_summary, by = "FEDUID", relationship = "one-to-one")
-
-# 2.5. DA-level donor (source) census data (`census_lookup_DA`). No aggregation: each donation takes its donor DA's own values.
-census_lookup_DA <- census_lookup %>%
-  select(
-    DAUID,
-    density_per_sqkm,
-    avg_age,
-    median_hh_income,
-    postsec_prop,
-    starts_with("vismin_"),
-    missing_stage
-  ) %>%
-  rename_with(~ paste0("source_", .x), -DAUID)
-
-# 2.6. Donor (source) region, from `donor_province` (same grouping as 2.4).
-REGION_BY_PROVINCE <- c(
-  "Newfoundland and Labrador" = "Atlantic Canada",
-  "Prince Edward Island" = "Atlantic Canada",
-  "Nova Scotia" = "Atlantic Canada",
-  "New Brunswick" = "Atlantic Canada",
-  "Quebec" = "Quebec",
-  "Ontario" = "Ontario",
-  "Manitoba" = "Prairies",
-  "Saskatchewan" = "Prairies",
-  "Alberta" = "Prairies",
-  "British Columbia" = "British Columbia",
-  "Yukon" = "Territories",
-  "Northwest Territories" = "Territories",
-  "Nunavut" = "Territories"
-)
 
 # ------ Cleaning & Validation -------
 
@@ -174,7 +140,7 @@ if (all(donations_data$donor_district %in% FED_lookup$name)) {
 } else {
   stop("Validation Failed.")
 }
-if (all(donations_data$destination_district %in% FED_lookup$name)) {
+if (all(donations_data$recipient_district %in% FED_lookup$name)) {
   message("Validation Passed.")
 } else {
   stop("Validation Failed.")
@@ -192,10 +158,10 @@ donations_data_02 <- donations_data %>%
   left_join(
     transmute(
       FED_lookup,
-      destination_district = name,
+      recipient_district = name,
       destination_district_ID = as.character(FEDUID)
     ),
-    by = "destination_district",
+    by = "recipient_district",
     relationship = "many-to-one"
   )
 
@@ -306,11 +272,7 @@ election_results_05 <- election_results %>%
     )
   ) %>%
   ungroup() %>%
-  select(-margin_of_victory_lag_2015) %>%
-  rename(
-    destination_margin_of_victory = margin_of_victory,
-    destination_margin_of_victory_lag = margin_of_victory_lag
-  )
+  select(-margin_of_victory_lag_2015)
 if (
   nrow(distinct(election_results_05, FEDUID, election_year)) ==
     nrow(election_results_05)
@@ -322,7 +284,7 @@ if (
 
 # 6. Confirm that every district-year pair in `donations_data` exists in `election_results`.
 election_results_06 <- election_results_05 %>%
-  filter(!is.na(destination_margin_of_victory))
+  filter(!is.na(margin_of_victory))
 missingness_06 <- mean(
   !paste(
     donations_data_02$election_year,
@@ -334,45 +296,6 @@ missingness_06 <- mean(
     )
 )
 if (missingness_06 == 0) {
-  message("Validation Passed.")
-} else {
-  stop("Validation Failed.")
-}
-
-# 7. Assess missingness of donor DA matches between `donations_data` and `census_lookup`, and confirm every donor province maps to a region.
-if (nrow(census_lookup_DA) == n_distinct(census_lookup_DA$DAUID)) {
-  message("Validation Passed.")
-} else {
-  stop("Validation Failed.")
-}
-donor_DAs_07 <- as.character(donations_data_02$donor_dissemination_area)
-missingness_07_no_DA <- mean(is.na(donor_DAs_07))
-missingness_07_unmatched <- mean(
-  !donor_DAs_07[!is.na(donor_DAs_07)] %in% census_lookup_DA$DAUID
-)
-missingness_07_incomplete <- mean(
-  census_lookup_DA$source_missing_stage[
-    match(donor_DAs_07[!is.na(donor_DAs_07)], census_lookup_DA$DAUID)
-  ] !=
-    "complete",
-  na.rm = TRUE
-)
-message("Proportion of donations with no donor DA: ", round(missingness_07_no_DA, 4))
-message(
-  "Proportion of donor DAs with incomplete census data: ",
-  round(missingness_07_incomplete, 4)
-)
-if (missingness_07_unmatched == 0) {
-  message("Validation Passed.")
-} else {
-  stop("Validation Failed.")
-}
-if (
-  all(
-    na.omit(unique(donations_data_02$donor_province)) %in%
-      names(REGION_BY_PROVINCE)
-  )
-) {
   message("Validation Passed.")
 } else {
   stop("Validation Failed.")
@@ -413,23 +336,8 @@ donations_data_a_03 <- donations_data_a_02 %>%
     relationship = "many-to-one"
   )
 
-# 4. Augment `donations_data` with donor DA's demographics and donor region.
-donations_data_a_04 <- donations_data_a_03 %>%
-  mutate(
-    donor_dissemination_area = as.character(donor_dissemination_area),
-    source_region = factor(
-      unname(REGION_BY_PROVINCE[donor_province]),
-      levels = REGION_LEVELS
-    )
-  ) %>%
-  left_join(
-    census_lookup_DA,
-    by = c("donor_dissemination_area" = "DAUID"),
-    relationship = "many-to-one"
-  )
-
 # ------ Save Data -------
 write_parquet(
-  donations_data_a_04,
+  donations_data_a_03,
   "data/analysis_data/candidate_model_data.parquet"
 )

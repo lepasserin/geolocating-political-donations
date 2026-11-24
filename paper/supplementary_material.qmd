@@ -40,7 +40,7 @@ bibliography: references.bib
         - S2. Supplementary Datasets             (DONE)
         - S3. Missing Data                       (DONE)
      - Sub-Analyses:
-        - S4. District-Level Propensity Model    (DONE)
+        - S4. Share-based Regression Models      (DONE)
         - S5. Distance Simulation                (DONE)
     - Tertiary Things:
         - S6. Main Model Alternatives            (DONE)
@@ -421,15 +421,17 @@ plot_missingness_comparison(
   comparison_label_2 = "Donor-Geolocated (Under $200)")
 ```
 
-# District-Level Propensity Model {#sec-district-level-model}
+# Share-based Regression Models {#sec-share-based-models}
+
+## Share-base Propensity Model {#sec-share-based-models-propensity}
 
 ```{r}
 #| warning: false
 #| message: false
 #| echo: false
-#| label: district-ood-propensity-model
+#| label: sharebased-model-propensity
 
-FED_model <- betareg::betareg(
+sharebased_propensity_model <- glm(
   prop_ood ~
     total_amount +
     donor_region +
@@ -438,37 +440,31 @@ FED_model <- betareg::betareg(
     postsec_prop +
     vismin_total +
     margin_of_victory_avg +
-    density_per_sqkm_sqrt |
-    log(n),
-  data = FED_model_data
+    density_per_sqkm_sqrt,
+  data = sharebased_propensity_data,
+  family = "quasibinomial"
 )
 ```
 
-Inspired by the large variation in out-of-district giving between districts, we fit a second regression model to explore which socio-demographic features were associated with higher rates of out-of-district donation, aggregated at the district level. Our outcome variable in this case was the proportion of the total contributed amount sent out-of-district during our entire study period, for each district. Given that this outcome is a proportion, we used beta regression, fit using the `betareg` package in R. This model was fit on both donations to EDAs and candidates combined, following from the propensity model in the main text. Since districts had very different numbers of donations used to calculate our outcome proportion, we also assumed a power-law relationship between the common precision parameter $\phi$ and the number of donations.
+Seeking to explain the large district-level variation in out-of-district donation rates, we fit a secondary propensity model where the outcome variable is the share of the total contributed amount sent out-of-district during our entire study period, for each district. Given that this outcome is a proportion bounded between 0 and 1, we use quasibinomial regression. This model takes into account donations sent to both district associations and candidates, following from the propensity model in the main text. However, models that only take into account one or the other showed similar results.
 
-The resulting model is:
+The model is:
 
 $$
 \begin{aligned}
-p_i &\sim \text{Beta}(\mu_i, \phi_i) \\
-\text{logit}(\mu_i) &= \beta_0 + \beta_1 \text{Amount}_i + \sum_{j=2}^{6} \beta_j \text{Region}_{ji} + \beta_7 \text{Age}_i + \beta_8 \text{Income}_i \\
-&\quad  + \beta_9 \text{Education}_i + \beta_{10} \text{VisMin}_i + \beta_{11} \text{VictoryMargin}_i + \beta_{12} \text{Density}_i \\
-\log(\phi_i) &= \gamma_0 + \gamma_1\log(n_i)
+\operatorname{logit}(\mu_i) &= \beta_0 + \beta_1 \text{Amount}_i + \sum_{j=2}^{6} \beta_j \text{Region}_{ji} + \beta_7 \text{Age}_i + \beta_8 \text{Income}_i \\
+&\quad + \beta_9 \text{Education}_i + \beta_{10} \text{VisMin}_i + \beta_{11} \text{VictoryMargin}_i + \beta_{12} \text{Density}_i
 \end{aligned}
 $$
 
-where $p_i$ is the proportion of the total contributed amount that was sent out-of-district by donors in district $i$, $\mu_i$ and $\phi_i$ are the mean and common precision parameters of the distribution of $p_i$, and $n_i$ is the number of donations originating from district $i$. The other terms are the same ones as the main-text model, aggregated within each district. 
-
-## Results
-
-Similarly to the main model fit on individual donations, districts with higher population densities, post-secondary education rates, median household incomes, and visible minority proportions were more likely to allocate more of their contributions to political entities in other districts rather than their own. The average age of a district was, similarly, insignificant in the presence of other socio-demographic variables. Quebec and the Territories were the only regions to differ significantly from Ontario in their out-of-district ratios, and with the same coefficient signs as in the individual model. Unlike the individual model, the total amount of donations raised and the average margin of victory in a district did not have a significant effect on the proportion of that amount that left said district.
+where $\mu_i$ and $\phi\mu_i(1-\mu_i)$ are the mean and variance of $p_i$, the proportion of the total contributed amount that was sent out-of-district by donors in district $i$. $\phi$ represents the over- or under-dispersion of the response distribution relative to a standard binomial distribution. The other terms are the same ones as the main-text model, aggregated within each district. Results from this model (shown in @tbl-results-model-propensity) largely agreed with those from the main propensity model. A key finding from this model is that only eight demographic predictors can explain a large majority of the variation in out-of-district donation rates at the district level.
 
 ```{r}
 #| warning: false
 #| message: false
 #| echo: false
-#| label: tbl-results-model-district
-#| tbl-cap: "Results from a beta regression model where the outcome is the out-of-district share of the sum of contributions over $200 originating from an individual district during our study period. The reference entity is the district association, and the reference region is Ontario. Estimates are bolded when significant at the alpha = 0.05 level. Small losses (~ 1.1% of individual transactions) were incurred due to missingness in the census data. Each of the 338 districts was represented in this model."
+#| label: tbl-results-model-propensity
+#| tbl-cap: "Results from a quasibinomial regression model where the outcome is the out-of-district share of the sum of contributions over $200 originating from an individual district during our study period. Reference categories are included for reference and indicated with dashes. Entries are bolded when significant at the alpha = 0.05 level. Small losses (~ 1.1% of individual transactions) were incurred due to missingness in the census data."
 term_labels = c(
     "(Intercept)" = "(Intercept)",
     "total_amount" = "Amount (thousands)",
@@ -485,29 +481,90 @@ term_labels = c(
     "margin_of_victory_avg" = "Margin of Victory (mean)",
     "density_per_sqkm_sqrt" = "Population Density (sqrt)"
   )
-mod_both <- list(
-  "Coefficient" = FED_model,
-  "Odds Ratio" = FED_model
-)
-p_coef <- summary(FED_model)$coefficients$mean[, "Pr(>|z|)"]
-sig <- p_coef[names(term_labels)] < 0.05
-sig[is.na(sig)] <- FALSE
-est_rows <- which(sig)
 
-modelsummary(
-  mod_both,
-  exponentiate = c(FALSE, TRUE),
-  ci_method = "wald",
-  coef_rename = c(term_labels),
-  shape = term ~ model + statistic,
-  stars = FALSE,
-  output = "tinytable",
-  include_reference = TRUE
-) %>%
-  style_tt(j = 1, align = "l") %>%
-  style_tt(i = 0:nrow(.), fontsize = 0.85) %>%
-  style_tt(i = 0, bold = TRUE) %>%
-  style_tt(i = est_rows, j = 2:5, bold = TRUE)
+quasibinomial_results_table(
+  sharebased_propensity_model,
+  term_labels = term_labels
+)
+```
+
+## Share-based Candidate Donations Model {#sec-share-based-models-recipient}
+
+```{r}
+#| warning: false
+#| message: false
+#| echo: false
+#| label: sharebased-model-recipient
+
+sharebased_recipient_model <- glm(
+  share_ood ~
+    candidate_party +
+    candidate_ethnicity +
+    candidate_gender +
+    candidate_out_LGBTQ2S +
+    candidate_incumbency +
+    candidate_prior_experience +
+    region,
+  data = sharebased_recipient_data,
+  family = "quasibinomial"
+)
+```
+
+We fit a second candidate donations model where the outcome variable is the share of all contributions received by a single candidate that were sent by donors in other districts. This is a direct measure of a candidate's reliance on out-of-district donors for the donor-based portion of their campaign funding (recall that campaigns are also often funded by intra-party transfers from their district associations). Given that this outcome is a proportion bounded between 0 and 1, we use quasibinomial regression.
+
+The model is:
+
+$$
+\begin{aligned}
+\operatorname{logit}(\mu_i) &= \beta_0 + \sum_{j=1}^{4} \beta_j \text{Party}_{ji} + \beta_5 \text{Incumbency}_i + \beta_6 \text{Experience}_i  \\
+&\quad + \beta_7 \text{Ethnicity}_i + \beta_8 \text{Gender}_i + \beta_9 \text{LGBTQ2S}_i \\
+&\quad + \beta_{10} \text{VictoryMargin}_i + \sum_{j=11}^{15} \beta_j \text{Region}_{ki}
+\end{aligned}
+$$
+
+where $\mu_i$ and $\phi\mu_i(1-\mu_i)$ are the mean and variance of $p_i$, the proportion of the total amount contributed to candidate $i$ that was received from out-of-district. $\phi$ represents the over- or under-dispersion of the response distribution relative to a standard binomial distribution. The other terms are the same ones as the main-text model, aggregated within each district. Results from this model (shown in @tbl-results-model-recipient) largely agreed with those from the main candidate donations model.
+
+<!-- What is the goal of this model?:
+      - To establish that the only characteristic of candidates/races per se that increases OOD propensity is ethnicity. From this I can say that ethnic candidates are definitely attracting more out-of-district donors.
+      - Supplemented with the suplement model, I can also say that the same predictors predict reliance on OODs.  
+      - The strong effect was preserved even when the full socio-demogrpahic profile of the candidate's district was considered, showing that it's not an effect that's "carried along" with the attractiveness of a district. 
+Even when controlling for the demographic profile of the candidate's district, there is still a very significant (check if it's strong) positive association between a candidate's visible minority status and the likelihood that a donation they received was from outside their district. In particular, taking these deomgraphic effects into account means that the higher amount of OODs recieved by visible minorities aren't simply produced by the fact that highly minoritized FEDs naturally have more visible minorites as their candidates (which IS true, I checked). However, donations were just as likely to have been sent OOD than not for other minority cases (gender and sexuality).  -->
+
+```{r}
+#| warning: false
+#| message: false
+#| echo: false
+#| label: tbl-results-model-recipient
+#| tbl-cap: "Results from a quasibinomial regression model where the outcome is the out-of-district share of the sum of contributions over $200 received by a candidate during a general election period. Reference categories are included for reference and indicated with dashes. Entries are bolded when significant at the alpha = 0.05 level. Losses (~ 7.2% of individual transactions) were incurred due to missing candidate characteristics."
+term_labels = c(
+    "(Intercept)" = "(Intercept)",
+    "candidate_partyConservative Party of Canada" = "Conservative",
+    "candidate_partyBloc Québécois" = "Bloc Québécois",
+    "candidate_partyGreen Party of Canada" = "Green",
+    "candidate_partyLiberal Party of Canada" = "Liberal",
+    "candidate_partyNew Democratic Party" = "N.D.P",
+    "candidate_ethnicityWhite" = "White",
+    "candidate_ethnicityNon-White" = "Non-White",
+    "candidate_genderMan" = "Man",
+    "candidate_genderNon-Man" = "Non-Man",
+    "candidate_out_LGBTQ2SNot out as LGBTQ2S+" = "Not Out as LGBTQ2S+",
+    "candidate_out_LGBTQ2SOut as LGBTQ2S+" = "Out as LGBTQ2S+",
+    "candidate_incumbencyNot an incumbent" = "Not an Incumbent",
+    "candidate_incumbencyIncumbent" = "Incumbent",
+    "candidate_prior_experienceNo elected experience at other levels" = "No Prior Experience",
+    "candidate_prior_experiencePreviously elected provincially/municipally" = "Prior Experience",
+    "regionOntario" = "Ontario",
+    "regionAtlantic Canada" = "Atlantic Canada",
+    "regionBritish Columbia" = "British Columbia",
+    "regionPrairies" = "Prairies",
+    "regionQuebec" = "Quebec",
+    "regionTerritories" = "Territories"
+  )
+
+quasibinomial_results_table(
+  sharebased_recipient_model,
+  term_labels = term_labels
+)
 ```
 
 # Testing Whether Out-of-district Rates can be Explained by Distance Alone {#sec-district-propensity-simulation}
@@ -634,10 +691,10 @@ Here we present the results of four alternative out-of-district propensity model
 #| message: false
 #| echo: false
 #| label: tbl-results-model-propensity-EDA
-#| tbl-cap: "Results from a logistic regression model where the outcome is whether or not an individual donation was sent out-of-district. Only donations sent to district associations are considered. The reference party is the Conservative Party, and the reference region is Ontario. Estimates are bolded when significant at the alpha = 0.05 level."
+#| tbl-cap: "Results from a logistic regression model where the outcome is whether or not a donation was sent out-of-district. Only donations over $200 sent to district associations from 2015 to 2024 are considered. Reference categories are included for reference and indicated with dashes. Entries are bolded when significant at the alpha = 0.05 level, using district-clustered (Cl.) standard errors. Donations with missingness (1.1% of all donations) were excluded."
 
 # Data Scoping
-individual_model_data_EDA <- individual_model_data %>%
+individual_model_data_EDA <- propensity_model_data %>%
   filter(political_entity == "Registered associations")
 
 # Fit Model
@@ -677,30 +734,11 @@ term_labels = c(
     "margin_of_victory_avg" = "Margin of Victory (mean)",
     "density_per_sqkm_sqrt" = "Population Density (sqrt)"
   )
-mod_both <- list(
-  "Coefficient" = individual_model_EDA,
-  "Odds Ratio" = individual_model_EDA
+logistic_results_table(
+  individual_model_EDA,
+  cluster = ~donor_district,
+  term_labels = term_labels
 )
-p_coef <- summary(individual_model_EDA)$coefficients[, "Pr(>|z|)"]
-sig <- p_coef[names(term_labels)] < 0.05
-sig[is.na(sig)] <- FALSE
-est_rows <- which(sig)
-
-modelsummary(
-  mod_both,
-  exponentiate = c(FALSE, TRUE),
-  ci_method = "wald",
-  coef_rename = c(term_labels),
-  stars = FALSE,
-  shape = term ~ model + statistic,
-  output = "tinytable",
-  include_reference = TRUE
-) %>%
-  style_tt(j = 1, align = "l") %>%
-  style_tt(i = 0:nrow(.), fontsize = 0.85) %>%
-  style_tt(i = "notes", fontsize = 0.7) %>%
-  style_tt(i = 0, bold = TRUE) %>%
-  style_tt(i = est_rows, j = 2:5, bold = TRUE)
 ```
 
 ```{r}
@@ -708,10 +746,10 @@ modelsummary(
 #| message: false
 #| echo: false
 #| label: tbl-results-model-propensity-candidate
-#| tbl-cap: "Results from a logistic regression model where the outcome is whether or not an individual donation was sent out-of-district. Only donations sent to electoral candidates during election periods are considered. The reference party is the Conservative Party, the reference region is Ontario. Estimates are bolded when significant at the alpha = 0.05 level."
+#| tbl-cap: "Results from a logistic regression model where the outcome is whether or not a donation was sent out-of-district. Only donations over $200 sent to candidates during general election periods from 2015 to 2024 are considered. Reference categories are included for reference and indicated with dashes. Entries are bolded when significant at the alpha = 0.05 level, using district-clustered (Cl.) standard errors. Donations with missingness (1.1% of all donations) were excluded."
 
 # Data Scoping
-individual_model_data_candidate <- individual_model_data %>%
+individual_model_data_candidate <- propensity_model_data %>%
   filter(political_entity == "Candidates")
 
 # Fit Model
@@ -751,30 +789,11 @@ term_labels = c(
     "margin_of_victory_avg" = "Margin of Victory (mean)",
     "density_per_sqkm_sqrt" = "Population Density (sqrt)"
   )
-mod_both <- list(
-  "Coefficient" = individual_model_candidate,
-  "Odds Ratio" = individual_model_candidate
+logistic_results_table(
+  individual_model_candidate,
+  cluster = ~donor_district,
+  term_labels = term_labels
 )
-p_coef <- summary(individual_model_candidate)$coefficients[, "Pr(>|z|)"]
-sig <- p_coef[names(term_labels)] < 0.05
-sig[is.na(sig)] <- FALSE
-est_rows <- which(sig)
-
-modelsummary(
-  mod_both,
-  exponentiate = c(FALSE, TRUE),
-  ci_method = "wald",
-  coef_rename = c(term_labels),
-  stars = FALSE,
-  shape = term ~ model + statistic,
-  output = "tinytable",
-  include_reference = TRUE
-) %>%
-  style_tt(j = 1, align = "l") %>%
-  style_tt(i = 0:nrow(.), fontsize = 0.85) %>%
-  style_tt(i = "notes", fontsize = 0.7) %>%
-  style_tt(i = 0, bold = TRUE) %>%
-  style_tt(i = est_rows, j = 2:5, bold = TRUE)
 ```
 
 ```{r}
@@ -782,7 +801,7 @@ modelsummary(
 #| message: false
 #| echo: false
 #| label: tbl-results-model-propensity-complex
-#| tbl-cap: "Results from a logistic regression model where the outcome is whether or not an individual donation was sent out-of-district. Only donations sent to electoral candidates during election periods are considered. The reference party is the Conservative Party, the reference region is Ontario, and the reference general election period is the 42nd. Estimates are bolded when significant at the alpha = 0.05 level."
+#| tbl-cap: "Results from a logistic regression model where the outcome is whether or not a donation was sent out-of-district, including the general election period and that period's margin of victory as covariates. Only donations over $200 sent to candidates during general election periods from 2015 to 2024 are considered. Reference categories are included for reference and indicated with dashes. Entries are bolded when significant at the alpha = 0.05 level, using district-clustered (Cl.) standard errors. Donations with missingness (1.1% of all donations) were excluded."
 
 # Data Scoping
 individual_model_data_candidate_competitive <- individual_model_data_candidate %>%
@@ -838,30 +857,11 @@ term_labels = c(
     "margin_of_victory_contemp" = "Margin of Victory (per-cycle)",
     "density_per_sqkm_sqrt" = "Population Density (sqrt)"
   )
-mod_both <- list(
-  "Coefficient" = individual_model_candiate_competitive,
-  "Odds Ratio" = individual_model_candiate_competitive
+logistic_results_table(
+  individual_model_candiate_competitive,
+  cluster = ~donor_district,
+  term_labels = term_labels
 )
-p_coef <- summary(individual_model_candiate_competitive)$coefficients[, "Pr(>|z|)"]
-sig <- p_coef[names(term_labels)] < 0.05
-sig[is.na(sig)] <- FALSE
-est_rows <- which(sig)
-
-modelsummary(
-  mod_both,
-  exponentiate = c(FALSE, TRUE),
-  ci_method = "wald",
-  coef_rename = c(term_labels),
-  stars = FALSE,
-  shape = term ~ model + statistic,
-  output = "tinytable",
-  include_reference = TRUE
-) %>%
-  style_tt(j = 1, align = "l") %>%
-  style_tt(i = 0:nrow(.), fontsize = 0.85) %>%
-  style_tt(i = "notes", fontsize = 0.7) %>%
-  style_tt(i = 0, bold = TRUE) %>%
-  style_tt(i = est_rows, j = 2:5, bold = TRUE)
 ```
 
 ```{r}
@@ -869,7 +869,7 @@ modelsummary(
 #| message: false
 #| echo: false
 #| label: tbl-results-model-propensity-disaggregated
-#| tbl-cap: "Results from a logistic regression model where the outcome is whether or not an individual donation was sent out-of-district. The reference entity is district associations, the reference party is the Conservative Party, the reference province is Ontario. Estimates are bolded when significant at the alpha = 0.05 level."
+#| tbl-cap: "Results from a logistic regression model where the outcome is whether or not a donation was sent out-of-district, with region and visible minority proportion disaggregated into provinces and specific visible minority groups. All donations over $200 sent to candidates and district associations from 2015 to 2024 are considered. Reference categories are included for reference and indicated with dashes. Entries are bolded when significant at the alpha = 0.05 level, using district-clustered (Cl.) standard errors. Donations with missingness (1.1% of all donations) were excluded."
 
 # Fit Model
 individual_model_disaggregated <- glm(
@@ -893,7 +893,7 @@ individual_model_disaggregated <- glm(
     vismin_japanese +
     margin_of_victory_avg +
     density_per_sqkm_sqrt,
-  data = individual_model_data,
+  data = propensity_model_data,
   family = "binomial"
 )
 
@@ -907,19 +907,19 @@ term_labels = c(
     "political_entityRegistered associations" = "District association",
     "political_entityCandidates" = "Candidate",
     "total_amount" = "Amount (thousands)",
-    "donor_provinceOntario" = "Ontario",
-    "donor_provinceQuebec" = "Quebec",
-    "donor_provinceBritish Columbia" = "British Columbia",
-    "donor_provinceAlberta" = "Alberta",
-    "donor_provinceSaskatchewan" = "Saskatchewan",
-    "donor_provinceManitoba" = "Manitoba",
-    "donor_provinceNova Scotia" = "Nova Scotia",
-    "donor_provinceNew Brunswick" = "New Brunswick",
-    "donor_provincePrince Edward Island" = "Prince Edward Island",
-    "donor_provinceNewfoundland and Labrador" = "Newfoundland and Labrador",
-    "donor_provinceYukon" = "Yukon",
-    "donor_provinceNorthwest Territories" = "Northwest Territories",
-    "donor_provinceNunavut" = "Nunavut",
+    "donor_provinceOntario" = "ON",
+    "donor_provinceQuebec" = "QC",
+    "donor_provinceBritish Columbia" = "BC",
+    "donor_provinceAlberta" = "AB",
+    "donor_provinceSaskatchewan" = "SK",
+    "donor_provinceManitoba" = "MB",
+    "donor_provinceNova Scotia" = "NS",
+    "donor_provinceNew Brunswick" = "NB",
+    "donor_provincePrince Edward Island" = "PE",
+    "donor_provinceNewfoundland and Labrador" = "NL",
+    "donor_provinceYukon" = "YT",
+    "donor_provinceNorthwest Territories" = "NT",
+    "donor_provinceNunavut" = "NU",
     "avg_age" = "Age",
     "median_hh_income" = "Income (thousands)",
     "postsec_prop" = "Education",
@@ -936,32 +936,14 @@ term_labels = c(
     "margin_of_victory_avg" = "Margin of Victory (mean)",
     "density_per_sqkm_sqrt" = "Population Density (sqrt)"
   )
-mod_both <- list(
-  "Coefficient" = individual_model_disaggregated,
-  "Odds Ratio" = individual_model_disaggregated
-)
-p_coef <- summary(individual_model_disaggregated)$coefficients[, "Pr(>|z|)"]
-sig <- p_coef < 0.05
-sig[is.na(sig)] <- FALSE
-est_rows <- which(sig)
-
-modelsummary(
-  mod_both,
-  exponentiate = c(FALSE, TRUE),
-  ci_method = "wald",
-  coef_rename = c(term_labels),
-  stars = FALSE,
-  shape = term ~ model + statistic,
-  output = "kableExtra",
-  gof_omit = 'DF|Deviance|AIC|BIC|Log.Lik',
-  include_reference = FALSE
+logistic_results_table(
+  individual_model_disaggregated,
+  cluster = ~donor_district,
+  term_labels = term_labels
 ) %>%
-  kableExtra::row_spec(0, bold = TRUE) %>%
-  kableExtra::row_spec(est_rows, bold = TRUE) %>%
-  kableExtra::kable_styling(
-    latex_options = "HOLD_position",
-    font_size = 10
-  )
+  # This table alone is too long for one page: tighten row spacing and shrink the font (helper default is 0.85).
+  theme_latex(inner = "rowsep=0pt") %>%
+  style_tt(fontsize = 0.7)
 ```
 
 # Additional Data Summaries {#sec-additional-data-summaries}
@@ -1245,4 +1227,4 @@ p1 / p2
 
 \newpage
 
-# Rerences {.unnumbered}
+# References {.unnumbered}

@@ -28,6 +28,7 @@ crossref:
   chapters: false
 number-sections: true
 bibliography: references.bib
+csl: chicago.csl
 supp:
   pipeline: "S1"
   supplement-data: "S2"
@@ -150,7 +151,7 @@ Every ten years, federal electoral district (FED) boundaries are redrawn to acco
 <!-- Census augmentation -->
 Postal codes were also used to situate donors within census dissemination areas (DA), allowing us to attribute socio-demographic characteristics to their environments at a fine spatial grain. For each dissemination area, we identified its population density, median household income, mean age, proportion of the population with a post-secondary education, and proportions of various visible minority ethnicities. A full list of the ethnicities we consider is available in Supplement {{< meta supp.supplement-data >}}. These variables were informed by similar studies on donor demography [@gimpel_political_2006 ; @gimpel_check_2008 ; @garnett_where_2024]. Further, ethnicities were disaggregated since previous Canadian research has found that some minority groups such as South Asians donate at much higher rates than others [@besco_ethnic_2022]. We again used Postal Code Conversion Files to match donor postal codes to the DAs of the 2021 Census, and to group DAs into FEDs[^DA-to-FED] to deduce the same socio-demographic information at the district level.
 
-[^PC-to-FED]: Postal codes may straddle multiple FEDs. For this study, we created a deterministic spatial lookup table that resolves these cases using reasonable criteria. Donations whose postal codes could not be matched in this way were dropped. Our methodologies, and loss impact assessments are detailed further in Supplement {{< meta supp.supplement-data >}}..
+[^PC-to-FED]: Postal codes may straddle multiple FEDs. For this study, we created a deterministic spatial lookup table that resolves these cases using reasonable criteria. Donations whose postal codes could not be matched in this way were dropped. Our methodologies, and loss impact assessments are detailed further in Supplement {{< meta supp.supplement-data >}}.
 
 [^DA-to-FED]: Dissemination areas may straddle multiple FEDs. Supplement {{< meta supp.supplement-data >}} discusses how these cases were handled.
 
@@ -170,11 +171,11 @@ Finally, we obtained data on election outcomes and candidate traits for each rac
 
 <!-- DECISION: In TS plots, keeping Fiscal-assigned donation dates. Doesn't matter for analysis or models. -->
 
-We first provide summaries of all donations[^contribution-donation-inter] during our study period, to help situate further analysis of out-of-district donations to localized entities. @tbl-data-summaries-situation breaks down donations by recipient type. Parties and leadership contestants received the majority (80.8%) of contributions during our study period. Among donations addressed to localized entities, 24.3% are received by candidates, and 75.7% were received by district associations (EDAs). During election periods, donations to candidates formed 48% of the funding received by localized entities, with district associations making up the remaining 52% (Supplement {{< meta supp.extra-viz >}}.).
+We first provide summaries of all donations[^contribution-donation-inter] during our study period, to help situate further analysis of out-of-district donations to localized entities. @tbl-data-summaries-situation breaks down donations by recipient type. Parties and leadership contestants received the majority (80.8%) of contributions during our study period. Among donations addressed to localized entities, 24.3% are received by candidates, and 75.7% were received by district associations (EDAs). During election periods, donations to candidates formed 48% of the funding received by localized entities, with district associations making up the remaining 52% (Supplement {{< meta supp.extra-viz >}}).
 
 @fig-data-summaries-situation-timelines shows how contributions during our study period were distributed in time[^time-disclaimer], for national and localized entities separately. Among national-level donations, we observe three distinct temporal signatures. First, donation rates are higher in December of every year during our study, likely since charitable donations tend to be more common in this period in general, as individuals claim tax deductions and give more during the holidays. Second, we observe six peaks corresponding to general election periods (peaks during and immediately before grey shaded regions), and Conservative party leadership campaigns (peaks in the blue trend line in the first half of 2017, 2020, and 2022). Third, national-entity donation rates generally increased over our study period, following trends observed from 2004 to 2015 by @mcmahon_follow_2015, and particularly following the 2021 general election in the Conservative party.
 
-Donation rates to localized entities exhibited the same December and election period peaks that were observed for donations to national entities, however an increasing trend was not observed. This agrees with trends observed in candidate-bound donations by @garnett_where_2024 and @canada_report_2026 over similar periods. We also observe a significant reduction in donations to EDAs from the start of 2019 to mid-2021. This may in part be attributed to the COVID-19 pandemic [@mcmahon_covid_2023], however it is not entirely clear why donations to district associations do not appear in our dataset during this period. Simple spatial comparisons between the donor bases of national and localized entities during our study period yielded only minor differences, and are presented in Supplement {{< meta supp.extra-viz >}}..
+Donation rates to localized entities exhibited the same December and election period peaks that were observed for donations to national entities, however an increasing trend was not observed. This agrees with trends observed in candidate-bound donations by @garnett_where_2024 and @canada_report_2026 over similar periods. We also observe a significant reduction in donations to EDAs from the start of 2019 to mid-2021. This may in part be attributed to the COVID-19 pandemic [@mcmahon_covid_2023], however it is not entirely clear why donations to district associations do not appear in our dataset during this period. Simple spatial comparisons between the donor bases of national and localized entities during our study period yielded only minor differences, and are presented in Supplement {{< meta supp.extra-viz >}}.
 
 [^contribution-donation-inter]: From @sec-data onwards, the terms "donation" and "contribution" are used interchangeably and implicitly refer to individual contributions above $200 that were successfully donor-geolocated.
 [^time-disclaimer]: All donations to electoral candidates and leadership contestants were tied to specific events in time. A small proportion (0.7% of the total contributed amount) of contributions to EDAs and national parties over \$200 were missing specific dates, but could always be attributed to a fiscal year. Plots over time in this report include these cases, which slightly exaggerates the observed December peaks in contribution rates. 
@@ -419,7 +420,7 @@ ggplot(eda_data, aes(x = donation_date)) +
   )
 ```
 
-@fig-data-summaries-ood-rate-district-scatterplot displays the relationship between in- and out-of-district contribution amounts, for each electoral district present in our dataset. We display donations to candidates and district associations separately. In both cases, out-of-district contribution rates vary greatly from district to district[^marginal-OOD-distribution]. Some Toronto metropolitan districts such as Toronto---St. Paul's and University---Rosedale sent between 70% and 80% of their contributions to localized entities in other districts, while others such as Alberta's Lethbridge and Ontario's Niagara Falls only sent between 5% and 15% of their localized contribution sum to other districts. Many districts, especially for donations addressed to candidates, have low out-of-district donation rates, as is illustrated by the line of points near $y = 0$ in @fig-data-summaries-ood-rate-district-scatterplot. We also find that, at least among the few top districts by contribution amount, out-of-district propensity is not a simple function of urbanization; Vancouver Granville in British Columbia and Brampton North in Ontario are similarly metropolitan, but have very different out-of-district contribution rates to electoral candidates. District-level differences in candidate-bound out-of-district contribution rates are even more pronounced when election periods are examined individually (Supplement {{< meta supp.extra-viz >}}.).
+@fig-data-summaries-ood-rate-district-scatterplot displays the relationship between in- and out-of-district contribution amounts, for each electoral district present in our dataset. We display donations to candidates and district associations separately. In both cases, out-of-district contribution rates vary greatly from district to district[^marginal-OOD-distribution]. Some Toronto metropolitan districts such as Toronto---St. Paul's and University---Rosedale sent between 70% and 80% of their contributions to localized entities in other districts, while others such as Alberta's Lethbridge and Ontario's Niagara Falls only sent between 5% and 15% of their localized contribution sum to other districts. Many districts, especially for donations addressed to candidates, have low out-of-district donation rates, as is illustrated by the line of points near $y = 0$ in @fig-data-summaries-ood-rate-district-scatterplot. We also find that, at least among the few top districts by contribution amount, out-of-district propensity is not a simple function of urbanization; Vancouver Granville in British Columbia and Brampton North in Ontario are similarly metropolitan, but have very different out-of-district contribution rates to electoral candidates. District-level differences in candidate-bound out-of-district contribution rates are even more pronounced when election periods are examined individually (Supplement {{< meta supp.extra-viz >}}).
 
 [^marginal-OOD-distribution]: The marginal distribution of out-of-district proportions across all districts is shown in Supplement {{< meta supp.extra-viz >}}.
 ```{r}
@@ -546,13 +547,16 @@ localized_donations_data_distances %>%
   theme_classic()
 ```
 
-## Regression Model Specifications {#sec-model-specification}
-<!--
-      - Propensity Model                UOA: Pr(is_out_of_district)                 PURPOSE: characterization            
-      - Candidate Model                 UOA: Pr(is_out_of_district)                 PURPOSE: motivation HT    
+## Regression Models {#sec-model}
+<!-- Models:
+      - Propensity Model      UOA: Pr(OOD)    ANSWERS: where are donations coming from?       
+      - Candidate Model       UOA: n_OOD      ANSWERS: which types of candidates are receiving them?
 -->
 
-### Individual-Level Model {#sec-model-specification-individual}
+<!-- TODO: add in future research: "do more research into the motivations of EDA donations (becuuse I only modelled candidate recipients), and EDAs in general." -->
+<!-- TODO: I don't like the titles of #sec-model. Think of better ones. -->
+
+### Modelling Out-of-District Propensity {#sec-model-propensity}
 
 <!-- TODO: BIG DECISION TO STATE IN THE REVIEW RESPONSE: THE DISTRICT-LEVEL MODEL WAS MOVED TO THE SUPPLEMENT. THIS WAS DONE TO MAKE ROOM FOR THE CANDIDATE-FOCUSED MODEL. WE FEEL THAT THE READER IS NOT IMPACTED AS THE RESULTS LARGELY AGREED WITH THE INDIVIDUAL MODEL, AND THEY ARE BOTH GETTING AT THE IDEA OF PROPENSITY. WHAT THE SECOND MODEL BROUGHT SUBSTANTIALLY WAS  --> 
 
@@ -560,9 +564,9 @@ localized_donations_data_distances %>%
 #| warning: false
 #| message: false
 #| echo: false
-#| label: individual-ood-propensity-model
+#| label: propensity-model
 
-individual_model <- glm(
+propensity_model <- glm(
   is_out_of_district ~
     political_entity +
     political_party_cat +
@@ -574,188 +578,121 @@ individual_model <- glm(
     vismin_total +
     margin_of_victory_avg +
     density_per_sqkm_sqrt,
-  data = individual_model_data,
+  data = propensity_model_data,
   family = "binomial"
 )
 ```
 
-We used a logistic regression model to explore how the likelihood of out-of-district donation varies across different transactional characteristics, donor demographic environments, and district competitiveness, for individual donations. Our outcome variable is binary: whether or not a donation was sent out-of-district. This model was fit on both donations to EDAs and candidates together. Models fit on each entity separately had similar coefficient magnitudes, signs and significances (Supplement {{< meta supp.alt-models >}}). Donations were not grouped by individual, since we were interested in both donor and recipient characteristics in this model. Diagnostics showed that residual autocorrelation, the primary statistical risk associated with this decision, was negligible.
+We used a logistic regression model to explore how the likelihood of out-of-district donation varies across different transactional characteristics, donor demographic environments, and district competitiveness. Our outcome variable is binary: whether or not a donation was sent out-of-district. This model was fit on both donations to EDAs and candidates together. Models fit on each entity separately had similar coefficient magnitudes, signs and significances (Supplement {{< meta supp.alt-models >}}). Model diagnostics showed that residuals were correlated within dissemination areas and districts (intraclass correlations of 0.2 and 0.06 respectively). Therefore, we report standard errors clustered by district [@cameron_practitioners_2015].
 
-The transactional predictors in our model are: the type of recipient (candidate or district association), their political party, and the monetary value of the donation. We did not include time-indexed variables since our data summaries showed that out-of-district rates were constant over time, for both candidates and district associations. Following @garnett_where_2024 and @gimpel_political_2006, we also considered the following characteristics of the donor's socio-demographic environment: province (grouped into regions), mean age, median household income, the share of the population with a post-secondary degree, and the share of the population that is a visible minority[^visible-minority-disaggregation], at the dissemination level. These are characteristics of the donor's residential environment rather than of the donor themselves. As such, this model speaks to the types of places (rather than the types of people) from which out-of-district donations come. District competitiveness was proxied using the difference between the percentage of votes received by the winning and runner-up candidates, averaged across all three general elections captured in our study period, inspired by @garnett_where_2024. This predictor was included since we might expect donors from less competitive districts to donate out-of-district more often, perhaps recognizing that a local contribution will do little to affect an outcome that is effectively predetermined.
+The transactional predictors in our model are: the type of recipient (candidate or district association), their political party, and the monetary value of the donation. We did not include time-indexed variables since our data summaries showed that out-of-district rates were constant over time, for both candidates and district associations. Following @garnett_where_2024 and @gimpel_political_2006, we also considered the following characteristics of the donor's socio-demographic environment: province (grouped into regions), mean age, median household income, the share of the population with a post-secondary degree, and the share of the population that is a visible minority, at the dissemination level. These are characteristics of the donor's residential environment rather than of the donor themselves. As such, significance in these covariates speaks to the types of places (rather than the types of people) from which out-of-district donations come. District competitiveness was proxied using the difference between the percentage of votes received by the winning and runner-up candidates, averaged across all three general elections captured in our study period [@garnett_where_2024]. This predictor was included since we might expect donors from less competitive districts to donate out-of-district more often, perhaps recognizing that a local contribution will do little to affect an outcome that is effectively predetermined[^competitiveness-correlation].
 
 We also included the population density of the donor’s district, for two reasons. First, out-of-district donors are more likely to come from urban (and therefore more densely populated) districts in the U.S. [@gimpel_political_2006]. Second, population density serves as a relatively good proxy for how spatially clustered a district is, since Canadian districts are designed to have similar population sizes [@canada_redistribution_2025], and for the urban--rural character of a district, which has been found to matter in Canadian federal elections [@armstrong_urbanrural_2022]. Out-of-district donation rates are likely naturally higher in geographically smaller districts, since donors are more likely to interact with individuals, businesses, or politicians close by that happen to be located in a different district. Population density was transformed in the model by applying a square root, allowing us to interpret the metric as the inverse of the average distance between people,capturing this distance effect more faithfully.
+
+[^competitiveness-correlation]: Districts were more likely to have elected an MP from the same party (or simply the same MP) for all three elections when their average margin of victory is higher ($\text{pseudo} \space R^2 = 0.22$), meaning that this competitiveness metric also captures a decent share of the variation in district-level party stability.
 
 The resulting model is:
 
 $$
 \begin{aligned}
-\text{logit}(p_i) &= \beta_0 + \beta_1 \text{Election}_i + \beta_2 \text{Candidate}_{i} + \sum_{j=3}^{5} \beta_j \text{Party}_{ji} + \beta_6 \text{Amount}_i \\
+\text{logit}(p_i) &= \beta_0 + \beta_1 \text{Entity}_i + \sum_{j=2}^{5} \beta_j \text{Party}_{ji} + \beta_6 \text{Amount}_i \\
 &\quad + \sum_{k=7}^{11} \beta_k \text{Region}_{ki} + \beta_{12} \text{Age}_i + \beta_{13} \text{Income}_i + \beta_{14} \text{Education}_i + \beta_{15} \text{VisMin}_i \\
-&\quad + \beta_{16} \text{VictoryMargin}_i + \beta_{17} \text{Density}_i \\
+&\quad + \beta_{16} \text{Density}_i + \beta_{17} \text{VictoryMargin}_i  \\
 \end{aligned}
 $$
 
 where:
 
 - $p_i$ is the probability that donation $i$ was an out-of-district donation.
-- $\text{Election}_i$ indicates whether donation $i$ occurred during a general election period.
-- $\text{Candidate}_{i}$ indicates whether donation $i$ was addressed to a Candidate (baseline is EDA).
+- $\text{Entity}_{i}$ indicates whether donation $i$ was addressed to a Candidate (baseline is EDA).
 - $\text{Party}_{ji}$ indicates recipient party affiliation for donation $i$ (among Liberal, N.D.P, or Other, with baseline being Conservative).
 - $\text{Amount}_i$ is the monetary value of donation $i$, in thousands of dollars.
-- $\text{Region}_{ki}$ indicates which region (among Atlantic Canada, B.C., Prairies, Quebec, Territories, with baseline being Ontario) the donor is located.
+- $\text{Region}_{ki}$ indicates which region (among Atlantic Canada, B.C., Prairies, Quebec, Territories, with baseline being Ontario) the donor originates from.
 - $\text{Age}_i$ is the average age of residents in the donor's dissemination area.
 - $\text{Income}_i$ is the median household income in the donor's dissemination area, in thousands of dollars.
 - $\text{Education}_i$ is the proportion of residents in the donor's dissemination are holding a post-secondary qualification.
 - $\text{VisMin}_i$ is the proportion of residents in the donor's dissemination area who identify as a visible minority.
-- $\text{VictoryMargin}_i$ is the difference between the percentage of votes received by the winning and runner-up candidates, averaged across all three general elections in the donor's home district.
 - $\text{Density}_i$ is the square root of the population density of the donor's dissemination area.
+- $\text{VictoryMargin}_i$ is the difference between the percentage of votes received by the winning and runner-up candidates, averaged across all three general elections in the donor's home district.
 
-[^visible-minority-disaggregation]: An alternative model where the visible minority proportion was disaggregated into specific ethnic groups is shown in Supplement {{< meta supp.alt-models >}}.
-
-<!-- KEEPSAKE: Districts were more likely to have elected an MP from the same party (or simply the same MP) for all three elections when their average margin of victory is higher ($\text{pseudo} \space R^2 = 0.22$), meaning that this competitiveness metric also captures a decent share of the variation in district-level party stability. -->
-
-### Recipient-Based Model {#sec-model-specification-recipient}
-
-<!-- What is the goal of this model?:
-      - To establish that the only characteristic of candidates/races per se that increases OOD propensity is ethnicity. From this I can say that ethnic candidates are definitely attracting more out-of-district donors.  
-      - Margin of victory effect dissapeared in the presence of demographic characteristics.
-      - We also identified a strong interaction effect between the source vismin proportion and this candidate effect.
- -->
-
-The primary goal of the first model was to model out-of-district propensity at their source across space. Here we fit a final model with the goal of better understanding the types of candidates and races that receive out of district donations. Like with the individual variable, our outcome variable is whether or not a donation was sent out-of-district. 
-
-The resulting model is:
-
-$$
-\begin{aligned}
-\text{logit}(p_i) &= \beta_0 + \beta_1 \text{Ethnicity}_j + \beta_2 \text{Gender}_j + \beta_3 \text{Incumbency}_j + \beta_4 \text{LGBTQ2S}_j \\ 
-&\quad + \beta_5 \text{VictoryMargin}_k + \eta_{ij} + u_j + v_k \quad \\ \\
-&\quad  u_j \sim N(0, \sigma^2_u), \quad v_k \sim N(0, \sigma^2_v)
-\end{aligned}
-$$
-
-where: 
-- $\text{Ethnicity}_j$ indicates whether candidate $j$ is white.
-- $\text{Gender}_j$ indicates whether candidate $j$ is male.
-- $\text{Incumbency}_j$ indicates whether candidate $j$ was an incumbent during their race.
-- $\text{LGBTQ2S}_j$ indicates whether candidate $j$ is out as LGBTQ2S. 
-- $\text{VictoryMargin}_k$ indicates the margin of victory of race $k$.
-- $\eta_{ijk}$ represents every covariate used to fit the district model (acting as controls in this model).
-- $u_j$ and $v_k$ represent random intercepts for candidates and races respectively.
+### Modelling Out-of-District Pull {#sec-model-recipient}
 
 ```{r}
 #| warning: false
 #| message: false
 #| echo: false
-#| label: recipient-ood-propensity-model
+#| label: recipient-model
 
-# Temp Note: `recipient_model_data` is just the result of scripts/cleaning/06. When I'm done fiddling with the model, update 06 to only include exactly those variables that appear in my final model.
-
-recipient_model_full <- glmmTMB(
+recipient_model <- glm(
   is_out_of_district ~
-    # focal covariates
+    candidate_party +
+    candidate_incumbency +
+    candidate_prior_experience +
     candidate_ethnicity +
     candidate_gender +
-    candidate_incumbency +
     candidate_out_LGBTQ2S +
-    destination_margin_of_victory +
-    destination_margin_of_victory_lag +
-    # confounding variables: socio-demographic characteristics of destination district 
-    destination_region +
-    destination_avg_age +
-    destination_median_hh_income +
-    destination_postsec_prop +
-    destination_vismin_total + 
-    sqrt(destination_density_per_sqkm) +
-    # confounding variables: other
-    candidate_party +
-    total_amount +
-    # data structure
-    (1 | election_year:destination_district) + (1 | candidate_ID),
-  data = recipient_model_data_noIndigenous,
-  family = binomial
-)
-
-recipient_model_affinity_effect <- glmmTMB(
-  is_out_of_district ~
-    # focal covariates
-    candidate_ethnicity +
-    candidate_gender +
-    candidate_incumbency +
-    candidate_out_LGBTQ2S +
-    destination_margin_of_victory +
-    destination_margin_of_victory_lag +
-    candidate_ethnicity * source_vismin_total +
-    # confounding variables: socio-demographic characteristics of destination district 
-    destination_region +
-    destination_avg_age +
-    destination_median_hh_income +
-    destination_postsec_prop +
-    destination_vismin_total + 
-    sqrt(destination_density_per_sqkm) +
-    # confounding variables: socio-demographic characteristics of source district (THIS IS A LITTLE SILLY)
-    # source_region +
-    # source_avg_age +
-    # source_median_hh_income +
-    # source_postsec_prop +
-    # source_vismin_total + 
-    # sqrt(destination_density_per_sqkm) +
-    # confounding variables: other
-    candidate_party +
-    total_amount +
-    # data structure
-    (1 | election_year:destination_district) + (1 | candidate_ID),
+    margin_of_victory +
+    region,
   data = recipient_model_data,
-  family = binomial
+  family = "binomial"
 )
-summary(recipient_model_affinity_effect)
-
 ```
 
-<!-- This is a mixed-effects logistic regression model. The model is mixed-effects to account for the autocorrelation in our data created by the candidate grouping. Comment on whether I grouped on race here as well. -->
+To better understand why out-of-district donations may be occuring, we fit a second logistic regression model to explore which characteristics of candidates and races attract more out-of-district donations[^candidate-restriction]. Our outome variable is whether or not a candidate's donation was received from out-of-district. Similar to the first model, we report district-clustered SEs, since residuals were correlated when belonging to the same candidate and district[^cluster-robustness] (intraclass correlations of 0.24 and 0.15 respectively).
 
-<!-- While the primary goal of the above model was to explain OOD origin, this model was fit to attempt to infer about out-of-district donor motivation distinct from in-district donors. This is the explicit goal of this model. -->
+We considered both political and personal characteristics of candidates. Politically, we considered a candidate's party affiliation (if any), incumbency, and their previous experience in elected office. and the margin of victory of their race. In terms of personal characteristics, we considered their ethnicity, gender, and whether or not they publically identify as LGBTQ2S+. We also took into account some characteristics of their race, including their margin of victory. Each of these covariates represents information (or on the case of victory margin, a proxy of the information) that a donor could reasonably gain access to, and therefore take into account when deciding where to donate.       
 
-<!-- Even when controlling for the demographic profile of the candidate's district, there is still a very significant (check if it's strong) positive association between a candidate's visible minority status and the likelihood that a donation they received was from outside their district. In particular, taking these deomgraphic effects into account means that the higher amount of OODs recieved by visible minorities aren't simply produced by the fact that highly minoritized FEDs naturally have more visible minorites as their candidates (which IS true, I checked). However, donations were just as likely to have been sent OOD than not for other minority cases (gender and sexuality).  -->
+[^candidate-restriction]: Naturally, this model was fit using only candidate-bound donations. For 7.2% of these donations, we were unable to identify enough about their receiving candidate to include them in the model, mainly since the dataset we used to get candidate characteristics did not included data from minor Canadian parties.
 
-<!-- Taking deomgraphy into account, our measures of district competitiveness were not significant, however this is an effect of multicollinerarity between FED demography and margin of victory [MAYBE A SOURCE FOR THIS?]. Regardless, it remains the case that candidate demography is more strongly related to OOD  propensity than district competitiveness, since a model without socio-demographic controls on the candidate's environment [APPENDIX] fit a much stronger relationship between OOD and candidate traits than OOD and margin of victory. -->
+[^cluster-robustness]: Residuals were correlated when grouped by donor district as well (interclass correlation of 0.19). Clustering SEs by donor district or by using a more conservative two-way approach resulted in a very similar fit. In particular, all insignificant covariates under recipient district clustering stayed insignificant, and our most significant covariates (the Territory region indicator and Ethnicity) remained significant in ether case.      
 
-<!-- This model does not provide proof of affinity. -->
+The resulting model is:
 
-<!-- We note that this model is restricted to donations to candidates during general elections. -->
+$$
+\begin{aligned}
+\text{logit}(p_i) &= \beta_0 + \sum_{j=1}^{4} \beta_j \text{Party}_{ji} + \beta_5 \text{Incumbency}_i + \beta_6 \text{Experience}_i  \\
+&\quad + \beta_7 \text{Ethnicity}_i + \beta_8 \text{Gender}_i + \beta_9 \text{LGBTQ2S}_i \\
+&\quad + \beta_{10} \text{VictoryMargin}_i + \sum_{j=11}^{15} \beta_j \text{Region}_{ki}
+\end{aligned}
+$$
 
+where $p_i$, $\text{Party}_{ij}$ are the same as the previous model and:
+
+- $\text{Incumbency}_i$ indicates whether the candidate was an incumbent during their race.
+- $\text{Experience}_i$ indicates whether the candidate had previously been elected provincially or municipally. 
+- $\text{Ethnicity}_i$ indicates whether the candidate is non-white.
+- $\text{Gender}_i$ indicates whether the candidate is non-male.
+- $\text{LGBTQ2S}_i$ indicates whether the candidate is publicly out as LGBTQ2S. 
+- $\text{VictoryMargin}_i$ represents the margin of victory of the candidate's district.
+- $\text{Region}_{ki}$ indicates the region of the candidate's district (among Atlantic Canada, B.C., Prairies, Quebec, Territories, with baseline being Ontario).
 
 # Results {#sec-results}
 
 Here we present the results from our fitted regression models. We note that many of our key findings are best understood as data summaries and visualizations, which are presented in @sec-data-summaries. @sec-data-summaries-situation provides context for how the localized contributions considered in our study fit into the broader scope of financial contributions in general. @sec-data-summaries-ood-rate provides spatio-temporal summaries of out-of-district propensity (which were used to inform the models discussed here). @sec-data-summaries-ood-network briefly characterizes the spatial reach of out-of-district donations. Both summary-based and model-based findings are discussed together in @sec-discussion.
 
 <!-- Explaining how the models should be interpreted. -->
-Regression results from the out-of-district propensity model are presented in @tbl-results-model-propensity and @fig-results-model-propensity. provide a visualization of coefficient signs, magnitudes, and significances. For both models, exponentiating the coefficients yields a more interpretable value, the odds ratio. For the individual (i.e. logistic) regression model, an odds ratio above one for a categorical variable (e.g. recipient belonging to the Liberal Party) indicates that, holding all else constant, donations of that category have increased odds of being out-of-district, relative to the baseline category (e.g. recipient belonging to the Conservative party). For the district level (i.e. beta) regression model, an odds ratio above one for a categorical variable (e.g. district situated in the Prairies) indicates that, holding all else constant, the expected ratio of out- vs. in-district contributions increases. Odds ratios less than one and continuous variables (e.g. median household income) are interpreted accordingly.
+Results from both models are reported in @tbl-results-model-propensity and @tbl-results-model-recipient, and their fitted coefficients are shown graphically in @fig-coef-visualization-propensity and @fig-coef-visualization-recipient. For both models, exponentiating the coefficients yields a more interpretable value, the odds ratio. An odds ratio above one for a categorical variable (e.g. recipient belonging to the Liberal Party) indicates that, holding all else constant, donations of that category have increased odds of being out-of-district, relative to the baseline category (e.g. recipient belonging to the Conservative party). Odds ratios less than one and continuous variables (e.g. median household income) are interpreted accordingly.
 
-<!-- Walking through basic findings of the propensity model. -->
-Donations over \$200 are less likely to be sent out-of-district when they are bound for candidates instead of district associations (EDAs). Out-of-district propensity is higher when the donation is addressed to a Liberal instead of a Conservative recipient, however differences between Conservative and N.D.P recipients were insignificant. Larger donations were more likely to leave the district compared to smaller ones, helping to explain why amount-weighted proportions in our data summaries were consistently larger than count-based proportions. The average margin of victory (taken to be a measure of district non-competitiveness) was, expectedly, positively associated with out-of-district propensity. Donations originating from all regions were less likely to be be sent out-of-district compared to Ontario, with the exception of Quebec, whose donors have nearly 1.5 times the odds to donate out-of-district, holding all else constant. Donors originating in the Territories were especially unlikely to donate outside their district, with nearly one-eighth the baseline Ontario odds. Turning to the donor's socio-demographic environment, higher population densities, post-secondary education rates, median household incomes, and visible minority proportions[^brampton-removal] all favoured out-of-district donation. However, the average age did not significantly impact out-of-district chances in the presence of other socio-demographic variables. When ethnicities were disaggregated, the positive effect of the visible minority proportion was observed for all minority ethnic groups recorded in the Census (Supplement {{< meta supp.alt-models >}}).
+<!-- Propensity model results. -->
+Focusing on the first model, donations over \$200 are less likely to be sent out-of-district when they are bound for candidates instead of district associations (EDAs). Out-of-district propensity is higher when the donation is addressed to a Liberal instead of a Conservative recipient, however differences between Conservative and N.D.P recipients were insignificant. Larger donations were more likely to leave the district compared to smaller ones, helping to explain why amount-weighted proportions in our data summaries were consistently larger than count-based proportions. The average margin of victory (taken to be a measure of district non-competitiveness) was, expectedly, positively associated with out-of-district propensity. Donations originating from all regions were less likely to be be sent out-of-district compared to Ontario, with the exception of Quebec, whose donors have nearly 1.5 times the odds to donate out-of-district, holding all else constant. Donors originating in the Territories were especially unlikely to donate outside their district, with nearly one-eighth the baseline Ontario odds. Turning to the donor's socio-demographic environment, higher population densities, post-secondary education rates, median household incomes, and visible minority proportions[^brampton-removal] all favoured out-of-district donation. However, the average age did not significantly impact out-of-district chances in the presence of other socio-demographic variables. When ethnicities were disaggregated, the positive effect of the visible minority proportion was observed for all minority ethnic groups recorded in the Census (Supplement {{< meta supp.alt-models >}}).
 
-<!-- Commenting on the explanatory power of  -->
+<!-- Commenting on the explanatory power of demographic characteristics, and especially visible minory proportion. -->
 
-
+<!-- Keepsake:
 The eight variables used in our district-level model were able to explain a large amount of the variance in the ratio of out- to in-district donation (${pseudo} \space R^2 = 0.67$). The same model fit on only population density also achieved a relatively good fit (${pseudo} \space R^2 = 0.45$), however other variables, and especially socio-demographic ones such as educational attainment and visible minority proportion, improved the model's explanatory power well past what population density alone could offer.
-
+-->
 
 <!-- Walking through findings of the candidate model. -->
 <!-- TODO -->
 
-
-
-
-
-[^brampton-removal]: This effect was observed even when donations from the four Brampton constituencies were removed, since data summaries showed that these clearly had very high influence on the model fit. A similar check was performed on the district-level model.
+[^brampton-removal]: This effect was observed even when donations from the four Brampton constituencies were removed, since diagnostics showed that these had a high influence on the model fit.
 
 ```{r}
 #| warning: false
 #| message: false
 #| echo: false
 #| label: tbl-results-model-propensity
-#| tbl-cap: "Results from a logistic regression model where the outcome is whether or not an individual donation was sent out-of-district. The reference entity is the district association, the reference party is the Conservative Party, and the reference region is Ontario. Estimates are bolded when significant at the alpha = 0.05 level. Small losses (~ 1.1% of entries) were incurred due to missingness in the census data."
+#| tbl-cap: "Results from a logistic regression model where the outcome is whether or not a donation was sent out-of-district. All donations over $200 sent to candidates and district associations from 2015 to 2024 are considered. Reference categories are included for reference and indicated with dashes. Entries are bolded when significant at the alpha = 0.05 level, using district-clustered (Cl.) standard errors. 1.1% of donations were excluded due to missingness."
 
 term_labels = c(
     "(Intercept)" = "(Intercept)",
@@ -779,42 +716,65 @@ term_labels = c(
     "margin_of_victory_avg" = "Margin of Victory (mean)",
     "density_per_sqkm_sqrt" = "Population Density (sqrt)"
   )
-mod_both <- list(
-  "Coefficient" = individual_model,
-  "Odds Ratio" = individual_model
-)
-p_coef <- summary(individual_model)$coefficients[, "Pr(>|z|)"]
-sig <- p_coef[names(term_labels)] < 0.05
-sig[is.na(sig)] <- FALSE
-est_rows <- which(sig)
 
-modelsummary(
-  mod_both,
-  exponentiate = c(FALSE, TRUE),
-  ci_method = "wald",
-  coef_rename = c(term_labels),
-  stars = FALSE,
-  shape = term ~ model + statistic,
-  output = "tinytable",
-  include_reference = TRUE
-) %>%
-  style_tt(j = 1, align = "l") %>%
-  style_tt(i = 0:nrow(.), fontsize = 0.85) %>%
-  style_tt(i = "notes", fontsize = 0.7) %>%
-  style_tt(i = 0, bold = TRUE) %>%
-  style_tt(i = est_rows, j = 2:5, bold = TRUE)
+logistic_results_table(
+  propensity_model,
+  cluster = ~donor_district,
+  term_labels = term_labels
+)
 ```
 
 ```{r}
 #| warning: false
 #| message: false
 #| echo: false
-#| label: fig-results-model-propensity
-#| fig-cap: 'Coefficient estimates and 95% confidence intervals from a logistic regression model where the outcome is whether or not an individual donation was sent out-of-district. Coefficients are coloured grey if they are insignificant at alpha = 0.05, red if they are significant with a negative effect, and green if they are significant with a positive effect. The reference entity is the district association, the reference party is the Conservative Party, and the reference region is Ontario.'
+#| label: tbl-results-model-recipient
+#| tbl-cap: "Results from a logistic regression model where the outcome is whether or not a donation received by a candidate was sent from out-of-district. All donations sent to candidates during the 2015, 2019, and 2021 election periods are considered. Reference categories are included for reference, and indicated with dashes. Entries are bolded when significant at the alpha = 0.05 level, using district-clustered (Cl.) standard errors. 7.2% of candidate-bound donations were exluded included due to missingness."
+
+term_labels = c(
+    "(Intercept)" = "(Intercept)",
+    "candidate_partyConservative Party of Canada" = "Conservative",
+    "candidate_partyBloc Québécois" = "Bloc Québécois",
+    "candidate_partyGreen Party of Canada" = "Green",
+    "candidate_partyLiberal Party of Canada" = "Liberal",
+    "candidate_partyNew Democratic Party" = "N.D.P",
+    "candidate_incumbencyIncumbent" = "Incumbent",
+    "candidate_incumbencyNot an incumbent" = "Not an Incumbent",
+    "candidate_prior_experienceNo elected experience at other levels" = "No Prior Experience",
+    "candidate_prior_experiencePreviously elected provincially/municipally" = "Prior Experience",
+    "candidate_ethnicityWhite" = "White",
+    "candidate_ethnicityNon-White" = "Non-White",
+    "candidate_genderMan" = "Man",
+    "candidate_genderNon-Man" = "Non-Man",
+    "candidate_out_LGBTQ2SNot out as LGBTQ2S+" = "Not Out as LGBTQ2S+",
+    "candidate_out_LGBTQ2SOut as LGBTQ2S+" = "Out as LGBTQ2S+",
+    "margin_of_victory" = "Margin of Victory",
+    "regionOntario" = "Ontario",
+    "regionAtlantic Canada" = "Atlantic Canada",
+    "regionBritish Columbia" = "British Columbia",
+    "regionPrairies" = "Prairies",
+    "regionQuebec" = "Quebec",
+    "regionTerritories" = "Territories"
+  )
+
+logistic_results_table(
+  recipient_model,
+  cluster = ~recipient_district,
+  term_labels = term_labels
+)
+```
+
+```{r}
+#| warning: false
+#| message: false
+#| echo: false
+#| label: fig-coef-visualization-propensity
+#| fig-cap: 'Coefficient estimates and 95% confidence intervals from a logistic regression model where the outcome is whether or not a donation was sent out-of-district. Confidence intervals and significance are based on standard errors clustered by district. Coefficients are coloured grey if they are insignificant at alpha = 0.05, red if they are significant with a negative effect, and green if they are significant with a positive effect. The reference entity is the district association, the reference party is the Conservative Party, and the reference region is Ontario.'
 #| fig-height: 3.5
 
 coef_whisker_plot(
   propensity_model,
+  vcov = sandwich::vcovCL(propensity_model, cluster = ~donor_district, type = "HC1"),
   term_labels = c(
     "political_entityCandidates" = "Candidate",
     "political_party_catLiberal" = "Liberal",
@@ -832,6 +792,37 @@ coef_whisker_plot(
     "vismin_total" = "Visible minority",
     "margin_of_victory_avg" = "Margin of Victory (mean)",
     "density_per_sqkm_sqrt" = "Population Density (sqrt)"
+  )
+)
+```
+
+```{r}
+#| warning: false
+#| message: false
+#| echo: false
+#| label: fig-coef-visualization-recipient
+#| fig-cap: 'Coefficient estimates and 95% confidence intervals from a logistic regression model where the outcome is whether or not a donation received by a candidate was sent from out-of-district. Confidence intervals and significance are based on standard errors clustered by district. Coefficients are coloured grey if they are insignificant at alpha = 0.05, red if they are significant with a negative effect, and green if they are significant with a positive effect. The reference party is the Conservative Party, and the reference region is Ontario. Reference categories for candidate characteristics are non-incumbent, no prior elected experience, white, man, and not out as LGBTQ2S+.'
+#| fig-height: 3.5
+
+coef_whisker_plot(
+  recipient_model,
+  vcov = sandwich::vcovCL(recipient_model, cluster = ~recipient_district, type = "HC1"),
+  term_labels = c(
+    "candidate_partyBloc Québécois" = "Bloc Québécois",
+    "candidate_partyGreen Party of Canada" = "Green",
+    "candidate_partyLiberal Party of Canada" = "Liberal",
+    "candidate_partyNew Democratic Party" = "N.D.P.",
+    "candidate_incumbencyIncumbent" = "Incumbent",
+    "candidate_prior_experiencePreviously elected provincially/municipally" = "Prior Experience",
+    "candidate_ethnicityNon-White" = "Non-White",
+    "candidate_genderNon-Man" = "Non-Man",
+    "candidate_out_LGBTQ2SOut as LGBTQ2S+" = "Out as LGBTQ2S+",
+    "margin_of_victory" = "Margin of Victory",
+    "regionAtlantic Canada" = "Atlantic Canada",
+    "regionBritish Columbia" = "British Columbia",
+    "regionPrairies" = "Prairies",
+    "regionQuebec" = "Québec",
+    "regionTerritories" = "Territories"
   )
 )
 ```
@@ -854,11 +845,9 @@ Donations originating from more densely populated, higher-income, and better-edu
 Despite empirically non-trivial rates of out-of-district donation, our study provides evidence that these donations remain a largely regionalized phenomenon. Nearly half of donations that leave their district during our study period were destined for entities in adjacent ones, and only around 12% ever even left their donor's province (in particular, 9% for candidate-bound donations). U.S. research on out-of-state donations describes highly nationalized donor bases among incumbent and campaigning House representatives [@gimpel_political_2006; @canes_wrone_out_2022; @sievert_out_2023; @keena_out_2024]. For example, a study on Senate elections from 2000 to 2020 found that both Republican and Democrat senators received, respectively, 60% and 49% of their donations from out-of-state during election periods [@sievert_out_2023]. The spatial proximity of U.S. states relative to Canadian provinces and territories may explain some of this difference, but its scale speaks to a more fundamental difference between the geographical donor bases of each country. The typical localized political entity in Canada sources donor-based funding largely from within their own province. In terms of thinking about local representation in Canada, our results are perhaps reassuring. For the most part donors are within or adjacent to the communities that the recipients want to represent. Further research should examine whether more complex patterns exist in this donor network, such as the clear divide between sender and receiver districts displayed in Supplement {{< meta supp.extra-viz >}}. Further research should also examine which candidates receive out-of-district funds. Publicly available datasets on Canadian federal candidates [@sevi_who_2021; @johnson_dataset_2021; @baisley_lgbtq_2025] would allow the exploration of the relationship between district funding and candidate gender, race, Indigenous background, and sexuality.
 
 <!-- Data Limitation: Missing donations under $200, which form a non-ignorable proportion  of localized donations. -->
-Our findings are accompanied by some important limitations. Following @gimpel_check_2008 and @garnett_where_2024, donations under \$200 (34% of the total amount sent to localized entities) were excluded from our study. The majority (75%) of exclusions were donations whose donors did not disclose their location. Comparisons between these contributions and those used in our study (Supplement {{< meta supp.missing-data >}}.) showed that they were similarly distributed across recipient characteristics such as party affiliation, region, and over time, suggesting that their exclusion introduced little systematic bias into our study dataset. However, 25% of donations under \$200 were location-disclosed (8.5% of the total), and were distributed quite differently. To an overwhelming degree, these were in-district donations to Liberal district associations outside of election cycles. Further investigation revealed that only 12.4% of these transactions had a unique donor name, postal code and year, against 92.7% in our study data, suggesting that most come from donors whose annual total contributions exceeded the $200 disclosure threshold [@canada_annual_2026]. Their exclusion therefore likely inflates our out-of-district estimates for Liberal district associations, already the highest of any entity-party pair (57% against a 40% average). More generally, this finding, paired with the positive association between amount donated and out-of-district propensity, suggests that our estimates of out-of-district donation rates (particularly the amount-unweighted point estimates) are overestimating the true underlying out-of-district propensity. Nevertheless, since contributions under \$200 remained similarly distributed to the study data, particularly in space, their exclusion is unlikely to have qualitatively affected the fitted coefficients of the most interesting covariates in our out-of-district propensity models, including those related to social demography.
+Our findings are accompanied by some important limitations. Following @gimpel_check_2008 and @garnett_where_2024, donations under \$200 (34% of the total amount sent to localized entities) were excluded from our study. The majority (75%) of exclusions were donations whose donors did not disclose their location. Comparisons between these contributions and those used in our study (Supplement {{< meta supp.missing-data >}}) showed that they were similarly distributed across recipient characteristics such as party affiliation, region, and over time, suggesting that their exclusion introduced little systematic bias into our study dataset. However, 25% of donations under \$200 were location-disclosed (8.5% of the total), and were distributed quite differently. To an overwhelming degree, these were in-district donations to Liberal district associations outside of election cycles. Further investigation revealed that only 12.4% of these transactions had a unique donor name, postal code and year, against 92.7% in our study data, suggesting that most come from donors whose annual total contributions exceeded the $200 disclosure threshold [@canada_annual_2026]. Their exclusion therefore likely inflates our out-of-district estimates for Liberal district associations, already the highest of any entity-party pair (57% against a 40% average). More generally, this finding, paired with the positive association between amount donated and out-of-district propensity, suggests that our estimates of out-of-district donation rates (particularly the amount-unweighted point estimates) are overestimating the true underlying out-of-district propensity. Nevertheless, since contributions under \$200 remained similarly distributed to the study data, particularly in space, their exclusion is unlikely to have qualitatively affected the fitted coefficients of the most interesting covariates in our out-of-district propensity models, including those related to social demography.
 
 <!-- Conceptual Limitation: Donor-based funding is only one side of the campaign funding story. -->
-More conceptually, studying out-of-district contributions meant restricting our focus to contributions sent directly from donors to localized political entities, precluding other essential pathways that govern campaign finance broadly. The most important of these excluded funding pathways are contributions to national parties and intra-party transfers. As shown in @sec-data-summaries, most (~ 80%) contributions above \$200 are received by national parties or leadership contestants, and roughly 50% of the time during general election periods. Because transfers limit the financial leverage of direct individual donations, the regionalization of donor bases we identify cannot be read as evidence that the overall funding of these entities is regionalized: in principle, localized entities may be routinely funded by party transfers originally sourced from donors thousands of kilometres away. Despite this, direct individual contributions are clearly an essential pathway for the financing of many local campaigns [@cross_money_2020; @garnett_where_2024], especially when taking into account contributions to district associations [@cross_money_2020], which we do. Given the prevalence of individual donations to national parties, and the essential part they play in local campaign financing, further research should investigate whether national party donor bases are mostly constrained to particular regions of the country, as has been found in U.S. research. Our accessible dataset of donor-geolocated contributions is well-positioned to answer this question.
+More conceptually, studying out-of-district contributions meant restricting our focus to contributions sent directly from donors to localized political entities, precluding other essential pathways that govern campaign finance broadly. The most important of these excluded funding pathways are contributions to national parties and intra-party transfers. As shown in @sec-data-summaries, most ($\approx$ 80%) contributions above \$200 are received by national parties or leadership contestants, and roughly 50% of the time during general election periods. Because transfers limit the financial leverage of direct individual donations, the regionalization of donor bases we identify cannot be read as evidence that the overall funding of these entities is regionalized: in principle, localized entities may be routinely funded by party transfers originally sourced from donors thousands of kilometres away. Despite this, direct individual contributions are clearly an essential pathway for the financing of many local campaigns [@cross_money_2020; @garnett_where_2024], especially when taking into account contributions to district associations [@cross_money_2020], which we do. Given the prevalence of individual donations to national parties, and the essential part they play in local campaign financing, further research should investigate whether national party donor bases are mostly constrained to particular regions of the country, as has been found in U.S. research. Our accessible dataset of donor-geolocated contributions is well-positioned to answer this question.
 
 # References {.unnumbered}
-
-

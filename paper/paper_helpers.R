@@ -1,6 +1,6 @@
 # Purpose: Constants, Visualization Helper Functions, and Modelling Datasets Sourced by `paper.qmd`.
 # Author: Benedict Cummins-Mburu
-# Last Updated: 21 Nov 2026
+# Last Updated: 22 Nov 2026
 # Status: COMPLETE
 # Contact: b.cumminsmburu@utoronto.ca
 # License: MIT
@@ -19,11 +19,12 @@ library(modelsummary)
 library(tinytable)
 library(kableExtra)
 library(png)
-library(mgcv)
 
 # Analysis
-library(betareg)
-library(glmmTMB)
+library(mgcv)
+library(spdep)
+library(sandwich)
+library(lmtest)
 
 # ---- Setup: Data Sources For Main Paper ONLY -----
 
@@ -70,6 +71,9 @@ PCCF_lookup <- read_parquet(here::here(
   mutate(FEDUID = as.character(FEDUID))
 election_results <- read_parquet(here::here(
   "data/analysis_data/election_results.parquet"
+))
+FED_neighbours <- readRDS(here::here(
+  "data/cached_data/FED_neighbour_edges.rds"
 ))
 
 # ------ Constants -------
@@ -188,10 +192,13 @@ census_lookup_FED <- census_lookup %>%
 # 1. Point-and-whiskers coefficient plot for regression models.
 coef_whisker_plot <- function(
   model,
-  term_labels = NULL # so I can change the nasty raw labels
+  term_labels = NULL, # so I can change the nasty raw labels
+  vcov = NULL # optional covariance matrix (e.g. clustered) used for SEs, Wald CIs, and p-values
 ) {
-  # handle glm() and betareg() separately.
-  if (inherits(model, "betareg")) {
+  # handle a supplied vcov, betareg(), and glm() separately.
+  if (!is.null(vcov)) {
+    tidied <- broom::tidy(lmtest::coeftest(model, vcov = vcov))
+  } else if (inherits(model, "betareg")) {
     tidied <- broom::tidy(model) %>%
       filter(component == "mean")
   } else {
@@ -242,7 +249,223 @@ coef_whisker_plot <- function(
     )
 }
 
-# 2. Helper for 3.
+# 2. Results table for a basic logistic regression model.
+logistic_results_table <- function(
+  model,
+  cluster,
+  term_labels = NULL
+) {
+  if (
+    !inherits(model, "glm") ||
+      model$family$family != "binomial" ||
+      model$family$link != "logit"
+  ) {
+    stop("`model` must be a glm() with family = binomial(link = \"logit\").")
+  }
+
+  # A. Row order: intercept, then each formula term; factors get their reference level first.
+  coef_names <- names(coef(model))
+  coef_assign <- attr(model.matrix(model), "assign")
+  formula_terms <- attr(terms(model), "term.labels")
+  rows <- intersect("(Intercept)", coef_names)
+  for (k in seq_along(formula_terms)) {
+    term <- formula_terms[k]
+    if (term %in% names(model$xlevels)) {
+      rows <- c(rows, paste0(term, model$xlevels[[term]][1]))
+    }
+    rows <- c(rows, coef_names[coef_assign == k])
+  }
+
+  # B. Unclustered and clustered inference (NA for reference levels).
+  pick <- function(ct, col) {
+    out <- setNames(rep(NA_real_, length(rows)), rows)
+    hit <- intersect(rows, rownames(ct))
+    out[hit] <- ct[hit, col]
+    out
+  }
+  ct <- lmtest::coeftest(model)
+  ct_cl <- lmtest::coeftest(
+    model,
+    vcov = sandwich::vcovCL(model, cluster = cluster, type = "HC1")
+  )
+  est <- pick(ct, "Estimate")
+  se <- pick(ct, "Std. Error")
+  p <- pick(ct, "Pr(>|z|)")
+  se_cl <- pick(ct_cl, "Std. Error")
+  p_cl <- pick(ct_cl, "Pr(>|z|)")
+  or <- exp(est) # Odds ratios, with delta-method SEs (as `modelsummary(exponentiate = TRUE)` does).
+
+  # C. Assemble.
+  fmt_num <- function(x) ifelse(is.na(x), "-", sprintf("%.3f", x))
+  # p-values: 3 decimals if >= 0.001, else their order of magnitude (<10^k), capped at <10^-16.
+  fmt_p <- function(x) {
+    out <- sprintf("%.3f", x)
+    small <- !is.na(x) & x < 0.001
+    # Text-mode superscripts (not math mode) so that bolding applies to these entries too.
+    out[small] <- sprintf(
+      "\\textless{}10\\textsuperscript{\\textminus{}%d}",
+      -as.integer(ceiling(log10(pmax(x[small], 1e-16))))
+    )
+    out[!is.na(x) & x < 1e-16] <- "\\textless{}10\\textsuperscript{\\textminus{}16}"
+    out[is.na(x)] <- "-"
+    out
+  }
+  labels <- if (is.null(term_labels)) {
+    rows
+  } else {
+    ifelse(is.na(term_labels[rows]), rows, term_labels[rows])
+  }
+  results <- tibble(
+    " " = unname(labels),
+    "Est." = fmt_num(est),
+    "S.E." = fmt_num(se),
+    "Cl. S.E." = fmt_num(se_cl),
+    "Est." = fmt_num(or),
+    "S.E." = fmt_num(or * se),
+    "Cl. S.E." = fmt_num(or * se_cl),
+    "p" = fmt_p(p),
+    "Cl. p" = fmt_p(p_cl),
+    .name_repair = "minimal" # Allow repeated column names across the Coefficient / Odds Ratio sections.
+  )
+  sig_rows <- which(!is.na(p_cl) & p_cl < 0.05)
+
+  # D. Footer: fit statistics.
+  fmt_big <- function(x, digits = 1) {
+    formatC(x, format = "f", digits = digits, big.mark = ",")
+  }
+  footer <- paste0(
+    "Num.Obs. = ",
+    fmt_big(nobs(model), 0),
+    "; Log.Lik. = ",
+    fmt_big(as.numeric(logLik(model))),
+    "; Null Deviance = ",
+    fmt_big(model$null.deviance),
+    "; Residual Deviance = ",
+    fmt_big(model$deviance),
+    "; Residual df = ",
+    fmt_big(model$df.residual, 0),
+    "."
+  )
+
+  table <- tt(results, notes = footer) %>%
+    group_tt(
+      j = list("Coefficient" = 2:4, "Odds Ratio" = 5:7, "Significance" = 8:9)
+    ) %>%
+    style_tt(j = 1, align = "l") %>%
+    style_tt(j = 2:9, align = "c") %>%
+    style_tt(i = 0:nrow(results), fontsize = 0.85) %>%
+    style_tt(i = "notes", fontsize = 0.7) %>%
+    style_tt(i = -1:0, bold = TRUE)
+  if (length(sig_rows) > 0) {
+    table <- style_tt(table, i = sig_rows, j = 2:9, bold = TRUE)
+  }
+  table
+}
+
+# 2b. Results table for a quasibinomial (fractional logit) regression model, without SE clustering.
+quasibinomial_results_table <- function(
+  model,
+  term_labels = NULL
+) {
+  if (
+    !inherits(model, "glm") ||
+      model$family$family != "quasibinomial" ||
+      model$family$link != "logit"
+  ) {
+    stop("`model` must be a glm() with family = quasibinomial(link = \"logit\").")
+  }
+
+  # A. Row order: intercept, then each formula term; factors get their reference level first.
+  coef_names <- names(coef(model))
+  coef_assign <- attr(model.matrix(model), "assign")
+  formula_terms <- attr(terms(model), "term.labels")
+  rows <- intersect("(Intercept)", coef_names)
+  for (k in seq_along(formula_terms)) {
+    term <- formula_terms[k]
+    if (term %in% names(model$xlevels)) {
+      rows <- c(rows, paste0(term, model$xlevels[[term]][1]))
+    }
+    rows <- c(rows, coef_names[coef_assign == k])
+  }
+
+  # B. Inference (NA for reference levels); quasibinomial p-values use the t distribution.
+  pick <- function(ct, col) {
+    out <- setNames(rep(NA_real_, length(rows)), rows)
+    hit <- intersect(rows, rownames(ct))
+    out[hit] <- ct[hit, col]
+    out
+  }
+  ct <- coef(summary(model))
+  est <- pick(ct, "Estimate")
+  se <- pick(ct, "Std. Error")
+  p <- pick(ct, "Pr(>|t|)")
+  or <- exp(est) # Odds ratios, with delta-method SEs.
+
+  # C. Assemble.
+  fmt_num <- function(x) ifelse(is.na(x), "-", sprintf("%.3f", x))
+  # p-values: 3 decimals if >= 0.001, else their order of magnitude (<10^k), capped at <10^-16.
+  fmt_p <- function(x) {
+    out <- sprintf("%.3f", x)
+    small <- !is.na(x) & x < 0.001
+    # Text-mode superscripts (not math mode) so that bolding applies to these entries too.
+    out[small] <- sprintf(
+      "\\textless{}10\\textsuperscript{\\textminus{}%d}",
+      -as.integer(ceiling(log10(pmax(x[small], 1e-16))))
+    )
+    out[!is.na(x) & x < 1e-16] <- "\\textless{}10\\textsuperscript{\\textminus{}16}"
+    out[is.na(x)] <- "-"
+    out
+  }
+  labels <- if (is.null(term_labels)) {
+    rows
+  } else {
+    ifelse(is.na(term_labels[rows]), rows, term_labels[rows])
+  }
+  results <- tibble(
+    " " = unname(labels),
+    "Est." = fmt_num(est),
+    "S.E." = fmt_num(se),
+    "Est." = fmt_num(or),
+    "S.E." = fmt_num(or * se),
+    "p" = fmt_p(p),
+    .name_repair = "minimal" # Allow repeated column names across the Coefficient / Odds Ratio sections.
+  )
+  sig_rows <- which(!is.na(p) & p < 0.05)
+
+  # D. Footer: fit statistics (no log-likelihood under quasi-likelihood).
+  fmt_big <- function(x, digits = 1) {
+    formatC(x, format = "f", digits = digits, big.mark = ",")
+  }
+  footer <- paste0(
+    "Num.Obs. = ",
+    fmt_big(nobs(model), 0),
+    "; Dispersion = ",
+    fmt_big(summary(model)$dispersion, 3),
+    "; Null Deviance = ",
+    fmt_big(model$null.deviance),
+    "; Residual Deviance = ",
+    fmt_big(model$deviance),
+    "; Residual df = ",
+    fmt_big(model$df.residual, 0),
+    "."
+  )
+
+  table <- tt(results, notes = footer) %>%
+    group_tt(
+      j = list("Coefficient" = 2:3, "Odds Ratio" = 4:5, "Significance" = 6)
+    ) %>%
+    style_tt(j = 1, align = "l") %>%
+    style_tt(j = 2:6, align = "c") %>%
+    style_tt(i = 0:nrow(results), fontsize = 0.85) %>%
+    style_tt(i = "notes", fontsize = 0.7) %>%
+    style_tt(i = -1:0, bold = TRUE)
+  if (length(sig_rows) > 0) {
+    table <- style_tt(table, i = sig_rows, j = 2:6, bold = TRUE)
+  }
+  table
+}
+
+# 3. Helper for 4.
 build_comparison_panel <- function(
   df,
   xvar,
@@ -279,7 +502,7 @@ build_comparison_panel <- function(
   p
 }
 
-# 3. Compare the marginal distributions of two datasets (weighted by contributed amount) across five categorical factors.
+# 4. Compare the marginal distributions of two datasets (weighted by contributed amount) across five categorical factors.
 plot_missingness_comparison <- function(
   comparison_data_1,
   comparison_data_2,
@@ -477,14 +700,14 @@ plot_missingness_comparison <- function(
 
 # We specify four model datasets:
 #         - Main Models:
-#             - Individual (plus everything needed for Appendix variants)
+#             - Propensity
 #             - Recipient
-#         - Appendix Models:
-#             - District-level (full)
-#             - District-level (EDAs only)
+#         - Supplement S4 Models:
+#             - Propensity (district-aggregated)
+#             - Recipient  (candidate-aggregated)
 
-# 1. Individual
-individual_model_data <- localized_donations_data %>%
+# 1. Propensity
+propensity_model_data <- localized_donations_data %>%
   mutate(donor_dissemination_area = as.character(donor_dissemination_area)) %>%
   filter(is_general_election_period | political_entity != "Candidates") %>% # TODO: deal with this somewhere else later; 1179 entries only.
   mutate(
@@ -545,12 +768,24 @@ individual_model_data <- localized_donations_data %>%
     margin_of_victory_avg,
     density_per_sqkm_sqrt,
     donor_parliament,
-    donor_district
+    donor_district,
+    donor_dissemination_area
   )
+propensity_model_data <- propensity_model_data[
+  complete.cases(propensity_model_data),
+]
 
 # 2. Recipient
 recipient_model_data <- candidate_model_data %>%
   mutate(
+    candidate_party = relevel(
+      factor(candidate_party),
+      ref = "Conservative Party of Canada"
+    ),
+    candidate_incumbency = relevel(
+      factor(candidate_incumbency),
+      ref = "Not an incumbent"
+    ),
     candidate_gender = factor(
       if_else(candidate_gender == "Man", "Man", "Non-Man"),
       levels = c("Man", "Non-Man")
@@ -559,13 +794,15 @@ recipient_model_data <- candidate_model_data %>%
       if_else(candidate_ethnicity == "White", "White", "Non-White"),
       levels = c("White", "Non-White")
     ),
-    destination_median_hh_income = destination_median_hh_income / 1000,
-    source_median_hh_income = source_median_hh_income / 1000,
+    median_hh_income = median_hh_income / 1000,
     total_amount = total_amount / 1000
   )
+recipient_model_data <- recipient_model_data[
+  complete.cases(recipient_model_data),
+]
 
-# 3. District (full)
-FED_model_data <- localized_donations_data %>%
+# 3. Propensity (district-aggregated)
+sharebased_propensity_data <- localized_donations_data %>%
   group_by(donor_district) %>%
   summarise(
     n = n(),
@@ -603,40 +840,31 @@ FED_model_data <- localized_donations_data %>%
     starts_with("vismin_")
   )
 
-# 4. District (EDA Only)
-FED_model_data_EDA <- localized_donations_data %>%
-  filter(political_entity == "Registered associations") %>%
-  group_by(donor_district) %>%
+# 4. Recipient (candidate-aggregated)
+sharebased_recipient_data <- recipient_model_data %>%
+  group_by(
+    candidate_ID,
+    election_year,
+    candidate_party,
+    candidate_ethnicity,
+    candidate_gender,
+    candidate_out_LGBTQ2S,
+    candidate_incumbency,
+    candidate_prior_experience,
+    region,
+    recipient_district
+  ) %>%
   summarise(
     n = n(),
-    prop_ood = sum(total_amount * is_out_of_district) / sum(total_amount),
-    total_amount = sum(total_amount),
-    donor_province = first(donor_province),
+    n_ood = sum(is_out_of_district),
+    share_ood = sum(total_amount * is_out_of_district) / sum(total_amount),
     .groups = "drop"
-  ) %>%
-  left_join(
-    district_to_province %>%
-      rename(donor_region = recipient_region),
-    by = c("donor_district" = "name")
-  ) %>%
-  left_join(election_results, by = c("donor_district" = "FED")) %>%
-  left_join(census_lookup_FED, by = c("donor_district" = "FED_name")) %>%
-  mutate(
-    density_per_sqkm_sqrt = sqrt(density_per_sqkm),
-    donor_region = relevel(factor(donor_region), ref = "Ontario"),
-    median_hh_income = median_hh_income / 1000,
-    total_amount = total_amount / 1000
-  ) %>%
-  select(
-    donor_district,
-    prop_ood,
-    density_per_sqkm_sqrt,
-    total_amount,
-    donor_region,
-    avg_age,
-    median_hh_income,
-    postsec_prop,
-    margin_of_victory_avg,
-    n,
-    starts_with("vismin_")
   )
+if (
+  nrow(sharebased_recipient_data) ==
+    n_distinct(sharebased_recipient_data$candidate_ID)
+) {
+  message("Validation Passed.")
+} else {
+  stop("Validation Failed.")
+}
